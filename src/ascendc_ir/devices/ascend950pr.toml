@@ -6,16 +6,20 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 
-[build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
+[device]
+id = "ascend950pr"
+npu_arch = 3510
 
-[project]
-name = "ascendc-ir"
-version = "0.1.0"
-description = "Agent-facing explicit schedule IR for Ascend C, lowering to the Ascend C C API"
-requires-python = ">=3.11"
-readme = "README.md"
+[memory]
+ub_usable_bytes = 253952    # 248KB；物理 256KB，编译器预留 8KB
+l1_bytes = 524288           # 512KB
+align_bytes = 32
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[pipes]
+available = ["s", "v", "m", "mte1", "mte2", "mte3", "fix"]
+event_ids = 8
+
+[pathways]
+"gm->ubuf" = "mte2"
+"ubuf->gm" = "mte3"
+"ubuf->ubuf" = "v"

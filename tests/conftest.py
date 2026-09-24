@@ -6,16 +6,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 
-[build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
+import sys
+from pathlib import Path
 
-[project]
-name = "ascendc-ir"
-version = "0.1.0"
-description = "Agent-facing explicit schedule IR for Ascend C, lowering to the Ascend C C API"
-requires-python = ">=3.11"
-readme = "README.md"
-
-[tool.setuptools.packages.find]
-where = ["src"]
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))

@@ -22,15 +22,21 @@ v0.2 相对 v0.1 的变化：形态改为 Python 嵌入式（trace 构建，无�
 | `ubuf(<dtype>, <elems>, stages=<n>)` | 创建 UB buffer；`stages` 声明流水深度 |
 | `mte2.copy(<gm_ref>, <buf_ref>)` | GM → UB 搬运（PIPE_MTE2） |
 | `mte3.copy(<buf_ref>, <gm_ref>)` | UB → GM 搬运（PIPE_MTE3） |
-| `v.add(<dst>, <src0>, <src1>)` | 向量加（PIPE_V），操作数与结果都是 ubuf |
+| `v.add(dst, s0, s1)` | 向量加（PIPE_V） |
+| `v.cast(dst, src)` | 类型转换，dtype 由 buffer 声明决定 |
+| `v.leakyrelu(dst, src, alpha)` | Leaky ReLU，`alpha` 为标量 |
+| `v.repeat_reduce_sum(dst, src)` / `v.datablock_reduce_sum(dst, src)` | 归约求和两种形态 |
 | `sync(<pipe>, <pipe>, on=<buf 或 tuple>, stage=<i>)` | 生产→消费交接边 |
 | `for i in range(<const>):` | 循环，块内可使用循环变量 |
+
+计算 op 集合来自语料证据（`docs/design/vocabulary-evidence.md`）；新增 op 必须先补证据表条目。
 
 引用形式：
 
 - buffer 引用：`x_local[i % 2]`，取第 i 个 stage 槽位。
 - GM 引用：`x[i * TILE]`，按元素偏移。
 - dtype：`f16` `f32`。
+- buffer 默认名取赋值左侧变量名（`x_local = ubuf(...)` 得名 `x_local`），提取失败时回退为 `buf_N`。
 
 `sync` 对应 C API 中必须成对出现的 `asc_sync_notify` + `asc_sync_wait`：生产 PIPE 通知、消费 PIPE 等待，event 由编译器分配。写成一条调用而不是两行，是因为配对、方向和 event 一致性可以在 trace 后静态检查。
 
