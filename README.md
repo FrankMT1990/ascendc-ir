@@ -39,6 +39,8 @@ Ascend C C API（c_api/asc_simd.h，asc_* 指令级接口）
 - `docs/spec/verifier-rules.md` — 检查器规则与诊断 ID
 - `docs/spec/device-spec.md` — 设备规格表结构
 - `docs/design/vocabulary-evidence.md` — 语料驱动词汇方法与证据表
+- `docs/design/decisions/` — 设计决策记录（ADR），含推翻条件
+- `docs/design/review-guide.md` — 评审指南：事实源地图、不变量、已知限制
 - `docs/evaluation/claims.md` — 有效性主张 C1–C5（冻结）
 - `docs/evaluation/metrics.md` — 指标 M0–M9 与计时口径（冻结）
 - `src/ascendc_ir/` — 工具链（trace / model / verify / codegen / pack，后续 PR）
