@@ -1,0 +1,5 @@
+# 生成与对照文件保持 LF，保证 golden diff 字节稳定
+*.asc text eol=lf
+*.py text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
