@@ -41,6 +41,10 @@ python -m pytest tests/ -q            # 单元测试
 python evals/m4_m5/run_injection.py   # M4/M5 注入集
 ```
 
+## 评审记录
+
+2026-09-25 对 `10a8142`…`c37f331` 的结论在 `docs/design/review-findings-2026-09-25.md`。修代码时以那份为准；本指南里「重卷失败则展开生成」与 ADR 0009 不一致，已记在那份结论里，不要单独按本段已知限制改 codegen。
+
 ## PR 历史
 
 | commit | 内容 | 关键上下文 |
