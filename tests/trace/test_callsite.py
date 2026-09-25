@@ -34,10 +34,11 @@ def _trace_add():
 
 def test_callsites_point_into_user_function():
     k = _trace_add()
-    this_file = str(Path(__file__).resolve())
+    this_file = Path(__file__).resolve()
     for stmt in k.statements:
         cs = stmt.callsite
-        assert cs.file == this_file
+        # file 优先为相对 cwd 的路径（canonical JSON 跨机器字节稳定，ADR 0006）
+        assert (Path.cwd() / cs.file).resolve() == this_file
         assert cs.function == "add_custom"
         assert cs.line > 0
         assert cs.statement

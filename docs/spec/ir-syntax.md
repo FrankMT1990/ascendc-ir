@@ -44,7 +44,9 @@ v0.2 相对 v0.1 的变化：形态改为 Python 嵌入式（trace 构建，无�
 
 - 同一 PIPE 内操作按程序顺序执行；不同 PIPE 并行。
 - `sync(p, q, on=b)`：p 上对 b 的生产完成后，q 上的消费方才可开始。编译器分配 `EVENT_ID*`，生成 `asc_sync_notify` / `asc_sync_wait`。
+- **`stage` 是迭代号**：循环体内的 sync 必须写 `stage=i`（i 为循环变量），槽位由编译器按 `stage % stages` 推导；循环外的 sync 不写 `stage`。只写槽位（如 `stage=i % 2`）会让重卷无法还原循环，代码生成拒绝。
 - `stages = N` 的 buffer 是 N 深流水。编译器从 stage 数自动推导 WAR 释放边（消费完成 → 生产方可复用该槽位），agent 不写释放边。
+- buffer 名必须唯一（默认取赋值左侧变量名；列表推导会重名，用循环 `append` 代替）。
 - `for` 循环按程序顺序语义展开；地址推进由编译器生成。
 - 循环上界与 tile 大小必须编译期可知；v0.2 不支持符号 shape。
 

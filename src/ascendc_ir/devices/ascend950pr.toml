@@ -10,6 +10,10 @@
 id = "ascend950pr"
 npu_arch = 3510
 
+# 数值来源：cannbot-knowledge 架构卡
+# （knowledge/ops/triton/apis/ir/architecture/memory_hierarchy.md、
+#   knowledge/ops/triton/apis/ir/architecture/npu_hardware_overview.md）
+# 不变量 4 待完全满足：以 asc-devkit 头文件/官方文档逐字段核对后替换为头文件链接。
 [memory]
 ub_usable_bytes = 253952    # 248KB；物理 256KB，编译器预留 8KB
 l1_bytes = 524288           # 512KB
@@ -17,6 +21,8 @@ align_bytes = 32
 
 [pipes]
 available = ["s", "v", "m", "mte1", "mte2", "mte3", "fix"]
+# event id 按 (生产PIPE, 消费PIPE) 对独立：每对各有 event_ids 个可用 id。
+# 证据：官方 c_api_delicacy_async_add 样例在四条通道上共用 EVENT_ID0。
 event_ids = 8
 
 [pathways]

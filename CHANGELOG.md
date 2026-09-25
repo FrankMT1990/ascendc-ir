@@ -8,3 +8,4 @@
 - PR3：verifier V001–V009 + M4/M5 注入集。新增 V009（跨 PIPE 读取必须先经 sync），覆盖知识仓 runbook「共享 UB 跨流水线须按方向显式同步」；V008 真实注入样本待 2201 设备表。`tests/verify` 11 例、`evals/m4_m5/run_injection.py`（合法 3/3 零误拒、召回 8/8、定位 8/8）。
 - ADR 补充：decisions/0001–0008 与 review-guide.md，供评审 agent 定位每次决定的上下文与推翻条件。
 - PR4：codegen——检查器门控后生成 `.asc`；reroll 仿射重卷（失败拒绝生成）；event 每逻辑通道一个 ID；WAR 释放边由 stages 推导；计算 op fail-closed（当前仅 `asc_add`）。examples/vector_add 三件套（IR、golden、手写对照）；tests/codegen 6 例；全部 30 测试通过。
+- 评审修复（2026-09-25，对应 review-findings-2026-09-25）：六条必修全修——WAR 按槽位分配 event（同一 id 严格交替，ADR 0010）、GM 仿射保留基址、无迭代号标记的槽位复用拒绝生成、reroll 比较 op/PIPE/操作数、V003 先计消费再结束窗口且消费方改为「至少一个」、结果侧 GM 进 V006。事实源对齐——event id 按 PIPE 对独立（V005 同步改）、M5 统一为「file + 行片段」且 callsite 存相对路径恢复字节稳定、设备表补来源注释、pyproject 补 package-data、README/positioning 状态更正。新增 V010（读未写槽位）。注入集重构为隔离样本并增报干净率；buffer 重名 trace 期拒绝；`asc_add` repeat ≤ 255 守卫。43 测试通过；注入集 3/3、9/9、9/9、干净 9/9。

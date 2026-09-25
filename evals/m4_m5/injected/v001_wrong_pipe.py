@@ -6,7 +6,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 
-"""注入 V001：gm->ubuf 搬运写错 PIPE（mte3）。基线：legal/add_legal.py。"""
+"""注入 V001：gm->ubuf 搬运用错 PIPE（mte3）。整核一致用 mte3，隔离 V001（不连带 V004/V009）。"""
 
 from ascendc_ir import f32, gmptr, kernel, sync, ubuf
 from ascendc_ir.pipes import mte2, mte3, v
@@ -20,8 +20,8 @@ def v001_wrong_pipe(x: gmptr(f32), y: gmptr(f32), z: gmptr(f32)):
     z_local = ubuf(f32, TILE, stages=1)
     for i in range(TILES):
         mte3.copy(x[i * TILE], x_local[i % 2])
-        mte2.copy(y[i * TILE], y_local[i % 2])
-        sync(mte2, v, on=(x_local, y_local), stage=i)
+        mte3.copy(y[i * TILE], y_local[i % 2])
+        sync(mte3, v, on=(x_local, y_local), stage=i)
         v.add(z_local, x_local[i % 2], y_local[i % 2])
         sync(v, mte3, on=z_local)
         mte3.copy(z_local, z[i * TILE])

@@ -8,8 +8,10 @@
 
 """M4/M5 注入集测量入口。
 
-合法样本：期望零 block 诊断（M4 误拒）。
-注入样本：期望规则被触发（M4 召回），且诊断 callsite 源码行包含金标片段（M5 定位命中）。
+- 合法样本：期望零 block 诊断（M4 误拒）。
+- 注入样本：期望规则集合被触发（M4 召回）；诊断 callsite 的文件与源码行片段
+  命中金标（M5 定位，对齐 ADR 0006 的「file + 源码行片段」）。
+- 另报干净率：实际诊断 ID 集合 == 期望集合（一处改动、一套规则）。
 
 用法：python evals/m4_m5/run_injection.py
 """
@@ -48,23 +50,39 @@ def main() -> int:
 
     recall = 0
     located = 0
+    clean = 0
     for item in gold["injected"]:
         diags = verify(load_sample(SET_DIR / item["file"]))
-        hits = [d for d in diags if d.id == item["expect_id"]]
-        if hits:
+        actual_ids = sorted({d.id for d in diags})
+        expect_ids = sorted(item["expect_ids"])
+        hits = [d for d in diags if d.id in expect_ids]
+
+        if set(expect_ids) <= set(actual_ids):
             recall += 1
-            if any(item["gold_line_contains"] in d.callsite.statement for d in hits):
-                located += 1
-            else:
-                print(f"[定位偏] {item['file']}: {hits[0].callsite.statement!r} 不含 {item['gold_line_contains']!r}")
         else:
-            print(f"[漏检] {item['file']}: 期望 {item['expect_id']}，实际 {[d.id for d in diags]}")
+            print(f"[漏检] {item['file']}: 期望 {expect_ids}，实际 {actual_ids}")
+
+        located_hit = any(
+            item["gold_line_contains"] in d.callsite.statement
+            and Path(d.callsite.file).name == Path(item["file"]).name
+            for d in hits
+        )
+        if located_hit:
+            located += 1
+        elif hits:
+            print(f"[定位偏] {item['file']}: {hits[0].callsite.statement!r} 不含 {item['gold_line_contains']!r}")
+
+        if actual_ids == expect_ids:
+            clean += 1
+        else:
+            print(f"[不干净] {item['file']}: 期望 {expect_ids}，实际 {actual_ids}")
 
     n_legal = len(gold["legal"])
     n_injected = len(gold["injected"])
     print(f"合法样本零误拒: {legal_ok}/{n_legal}")
     print(f"注入召回: {recall}/{n_injected}")
     print(f"定位命中: {located}/{n_injected}")
+    print(f"诊断干净: {clean}/{n_injected}")
     ok = legal_ok == n_legal and recall == n_injected and located == n_injected
     print("M4/M5 注入集: PASS" if ok else "M4/M5 注入集: FAIL")
     return 0 if ok else 1

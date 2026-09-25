@@ -32,6 +32,12 @@ class TraceBuilder:
         if name is None:
             name = f"buf_{self._buffer_seq}"
             self._buffer_seq += 1
+        if any(b.name == name for b in self.kernel.buffers):
+            raise ValueError(
+                f"buffer 名 {name!r} 重复（{callsite.file}:{callsite.line}）。"
+                "请为每个 buffer 使用不同的变量名；列表推导里的 ubuf 会因共享左侧变量名而重名，"
+                "请改成循环 append（自动得名 buf_N）"
+            )
         buf = Buffer(name=name, dtype=dtype, elems=elems, stages=stages, callsite=callsite)
         self.kernel.buffers.append(buf)
         return buf
@@ -48,7 +54,10 @@ def current_builder() -> TraceBuilder:
 
 
 def user_callsite() -> Callsite:
-    """向上找到第一个不在 ascendc_ir 包内的栈帧，作为用户调用点。"""
+    """向上找到第一个不在 ascendc_ir 包内的栈帧，作为用户调用点。
+
+    file 优先存相对 cwd 的路径：canonical JSON 需要跨机器字节稳定（ADR 0006）。
+    """
     frame = inspect.currentframe()
     if frame is not None:
         frame = frame.f_back
@@ -56,9 +65,19 @@ def user_callsite() -> Callsite:
         path = Path(frame.f_code.co_filename).resolve()
         if not path.is_relative_to(_PACKAGE_ROOT):
             statement = linecache.getline(str(path), frame.f_lineno).strip()
-            return Callsite(file=str(path), line=frame.f_lineno, function=frame.f_code.co_name, statement=statement)
+            return Callsite(
+                file=_stable_path(path), line=frame.f_lineno, function=frame.f_code.co_name, statement=statement
+            )
         frame = frame.f_back
     return Callsite(file="<unknown>", line=0, function="<unknown>", statement="")
+
+
+def _stable_path(path: Path) -> str:
+    try:
+        rel = path.relative_to(Path.cwd().resolve())
+        return rel.as_posix()
+    except ValueError:
+        return str(path)
 
 
 def lhs_name(statement: str) -> str | None:

@@ -7,51 +7,57 @@
   "injected": [
     {
       "file": "injected/v001_wrong_pipe.py",
-      "expect_id": "V001",
+      "expect_ids": ["V001"],
       "gold_line_contains": "mte3.copy(x[i * TILE]",
-      "note": "gm->ubuf 搬运写错 PIPE"
+      "note": "gm->ubuf 搬运用错 PIPE；整核一致用 mte3，隔离 V001"
     },
     {
       "file": "injected/v002_ub_overflow.py",
-      "expect_id": "V002",
+      "expect_ids": ["V002"],
       "gold_line_contains": "x_local = ubuf(f32, 40000, stages=2)",
       "note": "UB 总占用超容量，金标为最大 buffer 声明行"
     },
     {
-      "file": "injected/v003_unproduced_buffer.py",
-      "expect_id": "V003",
-      "gold_line_contains": "sync(mte2, v, on=(x_local, z_local), stage=i)",
-      "note": "sync 携带尚未生产的 z_local"
+      "file": "injected/v003_no_consumer.py",
+      "expect_ids": ["V003"],
+      "gold_line_contains": "sync(mte2, v, on=(x_local, w_local))",
+      "note": "sync 携带已生产但无消费者的 w_local"
     },
     {
       "file": "injected/v004_flipped_direction.py",
-      "expect_id": "V004",
+      "expect_ids": ["V004"],
       "gold_line_contains": "sync(v, mte2, on=(x_local, y_local), stage=i)",
-      "note": "sync 方向颠倒"
+      "note": "多写一条方向颠倒的 sync；正确的 sync 保留以隔离 V009"
     },
     {
       "file": "injected/v005_event_pressure.py",
-      "expect_id": "V005",
+      "expect_ids": ["V005"],
       "gold_line_contains": "sync(mte2, v, on=b)",
-      "note": "9 条未决 sync 超 event_ids=8"
+      "note": "同一 PIPE 对上 9 条未决 sync，超每对 event_ids=8"
     },
     {
       "file": "injected/v006_gm_operand.py",
-      "expect_id": "V006",
+      "expect_ids": ["V006"],
       "gold_line_contains": "v.add(z_local, x_local[i % 2], y[i * TILE])",
-      "note": "v.add 直接引用 GM 参数 y"
+      "note": "第二条 v.add 直接引用 GM 参数 y"
     },
     {
       "file": "injected/v007_misaligned.py",
-      "expect_id": "V007",
+      "expect_ids": ["V007"],
       "gold_line_contains": "x_local = ubuf(f32, 100)",
       "note": "400B 不是 32B 整数倍，金标为 buffer 声明行"
     },
     {
       "file": "injected/v009_missing_sync.py",
-      "expect_id": "V009",
+      "expect_ids": ["V009"],
       "gold_line_contains": "v.add(z_local, x_local[i % 2], y_local[i % 2])",
       "note": "删除 mte2->v 的 sync，金标为未交接就读取的调用行"
+    },
+    {
+      "file": "injected/v010_never_written.py",
+      "expect_ids": ["V010"],
+      "gold_line_contains": "v.add(z_local, x_local, z_local)",
+      "note": "读取从未写入的 z_local"
     }
   ],
   "deferred": [

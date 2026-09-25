@@ -43,5 +43,5 @@ CANNBot-DSL 的 `Channel(depth=N)` 把交接和同步藏起来，服务「快速
 1. PR1：仓骨架 + 规范冻结（本文、语法、检查器规则、设备表、评估）。
 2. PR2：trace/model + 语料证据表（docs/design/vocabulary-evidence.md）+ 测试。
 3. PR3：verifier 首批规则 + M4/M5 注入集（不需要设备）。
-4. PR4：codegen + examples/vector_add + cann_bench 打包。
-5. PR5：M0 配对执行包，在 CANNBench 环境跑通后接 C1 agent 实验。
+4. PR4：codegen + examples/vector_add（golden + 手写对照）。
+5. PR5：cann_bench 打包（`pack/`）+ M0 配对执行包，在 CANNBench 环境跑通后接 C1 agent 实验。

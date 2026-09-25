@@ -6,7 +6,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 
-"""注入 V004：sync 方向与生产/消费 PIPE 不一致。基线：legal/add_legal.py。"""
+"""注入 V004：多写了一条方向颠倒的 sync（正确的 sync 保留，隔离 V004，不连带 V009）。"""
 
 from ascendc_ir import f32, gmptr, kernel, sync, ubuf
 from ascendc_ir.pipes import mte2, mte3, v
@@ -21,6 +21,7 @@ def v004_flipped_direction(x: gmptr(f32), y: gmptr(f32), z: gmptr(f32)):
     for i in range(TILES):
         mte2.copy(x[i * TILE], x_local[i % 2])
         mte2.copy(y[i * TILE], y_local[i % 2])
+        sync(mte2, v, on=(x_local, y_local), stage=i)
         sync(v, mte2, on=(x_local, y_local), stage=i)
         v.add(z_local, x_local[i % 2], y_local[i % 2])
         sync(v, mte3, on=z_local)

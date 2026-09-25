@@ -30,7 +30,7 @@ Ascend C C API（c_api/asc_simd.h，asc_* 指令级接口）
 
 ## 状态
 
-当前为 PR1：仓骨架与 v0.1 规范冻结，不含实现。路线图见 `docs/positioning.md`。
+PR1–PR4 已合入：规范、trace/model、verifier（V001–V010）、codegen（Vector 通路）。2026-09-25 评审结论与修复见 `docs/design/review-findings-2026-09-25.md` 与 `docs/design/review-response-2026-09-25.md`。路线图见 `docs/positioning.md`。
 
 ## 目录
 

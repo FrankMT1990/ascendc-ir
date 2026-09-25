@@ -21,6 +21,7 @@ from .rules import (
     v007_alignment,
     v008_device_guard,
     v009_cross_pipe_read,
+    v010_read_without_producer,
 )
 
 RULES = [
@@ -33,14 +34,26 @@ RULES = [
     v007_alignment,
     v008_device_guard,
     v009_cross_pipe_read,
+    v010_read_without_producer,
 ]
 
 
 def verify(kernel, device=None) -> list:
-    """运行全部规则，返回按 (file, line, id) 排序的诊断列表。"""
+    """运行全部规则，按 (file, line, id) 排序；同一调用点的重复诊断去重。
+
+    trace 展开后，循环体每一轮都会产生诊断；它们的 callsite 与 message 相同，
+    对 agent 只报一次。
+    """
     dev = device if device is not None else load_device(kernel.device)
     diags = []
     for rule in RULES:
         diags.extend(rule(kernel, dev))
-    diags.sort(key=lambda d: (d.callsite.file, d.callsite.line, d.id))
-    return diags
+    seen = set()
+    unique = []
+    for d in diags:
+        key = (d.id, d.callsite.file, d.callsite.line, d.message)
+        if key not in seen:
+            seen.add(key)
+            unique.append(d)
+    unique.sort(key=lambda d: (d.callsite.file, d.callsite.line, d.id))
+    return unique

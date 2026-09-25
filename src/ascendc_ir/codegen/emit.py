@@ -10,9 +10,12 @@
 
 生成规则：
 - 先跑检查器，存在 block 诊断即拒绝生成（fail closed）。
-- event 分配：每逻辑通道一个 EVENT_ID（前向 sync 一条通道；WAR 释放每 buffer 一条通道）。
+- event 分配（ADR 0010）：event id 按 (生产PIPE, 消费PIPE) 对独立分配——每对 PIPE
+  各有 event_ids 个可用 id。前向 sync 一条通道一个 id；stages>1 的 WAR 通道按槽位
+  分配连续 id 块（同一 event 上 notify/wait 必须严格交替，连续 notify 是未定义行为）。
 - WAR 释放边由 stages 推导：复用槽位前 `if (i >= N) wait(消费, 生产)`；
-  消费完成后 `if (i + N < TILES) notify(消费, 生产)`。
+  消费完成后 `if (i + N < TILES) notify(消费, 生产)`。同一语句重复读同一 buffer
+  只释放一次。
 - 计算 op 只支持已核对头文件签名的映射（当前：add）；其余拒绝生成。
 - v0.2 不生成多核切分（无 asc_get_block_idx 词汇，见 vocabulary-evidence.md gap）。
 """
@@ -26,6 +29,7 @@ from ..verify import verify
 from .reroll import reroll
 
 _REPEAT_BYTES = 256
+_REPEAT_MAX = 255  # asc_add 的 repeat 是 uint8_t
 _BLOCK_BYTES = 32
 
 _DTYPE_TO_C = {"f16": "half", "f32": "float"}
@@ -61,8 +65,9 @@ def generate(kernel, device=None) -> str:
     tiles, body, ok = reroll(kernel)
     if not ok:
         raise CodegenError(
-            f"循环重卷失败：trace 展开的 {len(kernel.statements)} 条语句不满足仿射规律（tiles={tiles}）。"
-            "请保持循环体语句一致、GM 偏移关于 i 仿射、buffer 槽位为 i % stages"
+            f"循环重卷失败：trace 展开的 {len(kernel.statements)} 条语句不满足仿射规律，"
+            "或存在无循环标记的槽位复用。循环体内的 sync 必须写 stage=迭代号；"
+            "循环体语句保持一致、GM 偏移关于 i 仿射、buffer 槽位为 i % stages"
         )
     return _Emitter(kernel, dev, tiles, body).emit()
 
@@ -75,7 +80,8 @@ class _Emitter:
         self.body = body
         self.looped = tiles > 1
         self.per = len(kernel.statements) // tiles
-        self._events = {}
+        self._pair_events = {}  # (set_pipe, wait_pipe) -> {channel_key: base_id}
+        self._pair_used = {}  # (set_pipe, wait_pipe) -> int
         self._war = self._analyze_war()
 
     # ---- 分析 ----
@@ -92,7 +98,7 @@ class _Emitter:
                     if isinstance(stmt.src, BufRef) and stmt.src.buffer is buf:
                         readers.add(stmt.pipe)
                 elif isinstance(stmt, ComputeStmt):
-                    if stmt.dst.buffer is buf:
+                    if isinstance(stmt.dst, BufRef) and stmt.dst.buffer is buf:
                         writers.add(stmt.pipe)
                     for s in stmt.srcs:
                         if isinstance(s, BufRef) and s.buffer is buf:
@@ -105,12 +111,33 @@ class _Emitter:
                 raise CodegenError(f"buffer {buf.name} 有多个生产/消费 PIPE，v0.2 不支持")
         return war
 
-    def _event(self, key) -> str:
-        if key not in self._events:
-            if len(self._events) >= self.device.event_ids:
-                raise CodegenError(f"event 通道数超过 event_ids={self.device.event_ids}")
-            self._events[key] = f"EVENT_ID{len(self._events)}"
-        return self._events[key]
+    # ---- event 分配（按 PIPE 对独立）----
+
+    def _alloc(self, pair, key, n: int = 1) -> int:
+        """在 pair 上为通道 key 分配 n 个连续 id，返回起始 id。"""
+        channels = self._pair_events.setdefault(pair, {})
+        if key in channels:
+            return channels[key]
+        used = self._pair_used.get(pair, 0)
+        if used + n > self.device.event_ids:
+            raise CodegenError(
+                f"PIPE 对 {pair[0].value}→{pair[1].value} 上 event 通道需要 {used + n} 个 id，"
+                f"超过每对 PIPE 的 event_ids={self.device.event_ids}"
+            )
+        channels[key] = used
+        self._pair_used[pair] = used + n
+        return used
+
+    def _war_event_expr(self, buf, producer: Pipe, consumer: Pipe) -> str:
+        """WAR 通道的 event 表达式：stages>1 时按槽位一个 id，保证同一 id 上 notify/wait 严格交替。"""
+        n = buf.stages
+        base = self._alloc((consumer, producer), ("war", buf.name), n)
+        if n == 1:
+            return f"EVENT_ID{base}"
+        expr = f"EVENT_ID{base + n - 1}"
+        for s in range(n - 2, -1, -1):
+            expr = f"((i % {n}) == {s} ? EVENT_ID{base + s} : {expr})"
+        return expr
 
     # ---- 引用表达式 ----
 
@@ -123,10 +150,13 @@ class _Emitter:
     def _gm_ptr(self, ref: GmRef, stmt_index: int, ref_index: int) -> str:
         if not self.looped:
             return ref.param.name if ref.offset == 0 else f"{ref.param.name} + {ref.offset}"
+        base = ref.offset  # body 是第 0 轮，offset 即基址
         stride = self._gm_stride(stmt_index, ref_index)
         if stride == 0:
-            return ref.param.name
-        return f"{ref.param.name} + i * {stride}"
+            return ref.param.name if base == 0 else f"{ref.param.name} + {base}"
+        if base == 0:
+            return f"{ref.param.name} + i * {stride}"
+        return f"{ref.param.name} + {base} + i * {stride}"
 
     def _gm_stride(self, stmt_index: int, ref_index: int) -> int:
         """同一语句在第 1 轮的 GM 偏移减第 0 轮（reroll 已验证仿射）。"""
@@ -175,7 +205,7 @@ class _Emitter:
         if buf.name not in self._war or not self.looped or self.tiles <= buf.stages:
             return []
         p, q = self._war[buf.name]
-        ev = self._event(("war", buf.name))
+        ev = self._war_event_expr(buf, p, q)
         return [f"if (i >= {buf.stages}) {{ asc_sync_wait({_PIPE_TO_C[q]}, {_PIPE_TO_C[p]}, {ev}); }}"]
 
     def _war_notify(self, buf) -> list:
@@ -183,7 +213,7 @@ class _Emitter:
         if buf.name not in self._war or not self.looped or self.tiles <= buf.stages:
             return []
         p, q = self._war[buf.name]
-        ev = self._event(("war", buf.name))
+        ev = self._war_event_expr(buf, p, q)
         return [f"if (i + {buf.stages} < {self.tiles}) {{ asc_sync_notify({_PIPE_TO_C[q]}, {_PIPE_TO_C[p]}, {ev}); }}"]
 
     def _emit_copy(self, stmt: CopyStmt, j: int) -> list:
@@ -210,15 +240,26 @@ class _Emitter:
                 f"buffer {dst.buffer.name} 单 stage {dst.buffer.stage_bytes}B 不是 {_REPEAT_BYTES}B 的整数倍，无法计算 repeat"
             )
         repeat = dst.buffer.stage_bytes // _REPEAT_BYTES
+        if repeat > _REPEAT_MAX:
+            raise CodegenError(
+                f"buffer {dst.buffer.name} 单 stage 需要 repeat={repeat}，超过 asc_add 的 uint8_t 上限 {_REPEAT_MAX}；"
+                "请减小 tile 或拆分计算"
+            )
         lines = self._war_wait(dst.buffer)
         ptrs = [self._buf_ptr(dst)] + [self._buf_ptr(s) for s in stmt.srcs]
         lines.append(f"asc_add({ptrs[0]}, {ptrs[1]}, {ptrs[2]}, {repeat}, 1, 1, 1, 8, 8, 8);")
+        released = set()
         for s in stmt.srcs:
+            if s.buffer.name in released:
+                continue  # 同一语句重复读同一 buffer，只释放一次
+            released.add(s.buffer.name)
             lines.extend(self._war_notify(s.buffer))
         return lines
 
     def _emit_sync(self, stmt: SyncStmt) -> list:
-        ev = self._event(("fwd", stmt.producer.value, stmt.consumer.value, tuple(sorted(b.name for b in stmt.on))))
+        pair = (stmt.producer, stmt.consumer)
+        base = self._alloc(pair, ("fwd", tuple(sorted(b.name for b in stmt.on))))
+        ev = f"EVENT_ID{base}"
         p, q = _PIPE_TO_C[stmt.producer], _PIPE_TO_C[stmt.consumer]
         return [f"asc_sync_notify({p}, {q}, {ev});", f"asc_sync_wait({p}, {q}, {ev});"]
 

@@ -17,8 +17,8 @@ v0.1 设计为独立文本语法（`.ascir`），理由是诊断行号、git dif
 
 ## 后果
 
-- trace 产物序列化为 canonical JSON（排序键、字节稳定），供审计/diff/缓存；agent 不直接编写。
-- `for i in range(N)` 在 trace 期展开，模型不保留循环结构；代码生成端需要时做仿射重卷（reroll），失败则展开生成并标注。
+- trace 产物序列化为 canonical JSON（排序键、字节稳定），供审计/diff/缓存；agent 不直接编写。callsite 的 file 存相对 cwd 路径，保证跨机器字节稳定。
+- `for i in range(N)` 在 trace 期展开，模型不保留循环结构；代码生成端按仿射规律重卷（reroll），**重卷失败拒绝生成**（ADR 0009 修正；早期写法「展开生成」会丢槽位下标与 WAR，产生错码，已废弃）。
 - 后期 CANNBot-DSL 降级对接变顺：同为 Python，降级 = 生成 `ascendc_ir` 调用。
 
 ## 推翻条件

@@ -43,7 +43,7 @@ python evals/m4_m5/run_injection.py   # M4/M5 注入集
 
 ## 评审记录
 
-2026-09-25 对 `10a8142`…`c37f331` 的结论在 `docs/design/review-findings-2026-09-25.md`。修代码时以那份为准；本指南里「重卷失败则展开生成」与 ADR 0009 不一致，已记在那份结论里，不要单独按本段已知限制改 codegen。
+2026-09-25 对 `10a8142`…`c37f331` 的结论在 `docs/design/review-findings-2026-09-25.md`，逐条处置在 `docs/design/review-response-2026-09-25.md`。
 
 ## PR 历史
 
@@ -52,4 +52,6 @@ python evals/m4_m5/run_injection.py   # M4/M5 注入集
 | `10a8142` | PR1 骨架与规范 | ADR 0001–0006 |
 | `ca05afd` | PR2 trace/model/devices | ADR 0002/0004；语料证据表首填 |
 | `99e0d52` | PR3 verifier + 注入集 | ADR 0007/0008；V009 补漏 |
-| 之后 | ADR 补充、PR4 codegen | ADR 0001–0009；golden diff + fail-closed |
+| `7e10e91` | ADR 补充 | ADR 0001–0008 |
+| `0f2e861` | PR4 codegen | ADR 0009；golden diff + fail-closed |
+| 评审修复 | 评审六条 + 事实源对齐 + V010 | ADR 0010；review-response-2026-09-25 |

@@ -13,6 +13,7 @@
 | [0007](0007-trace-lenient-verify-strict.md) | trace 期宽松、verify 期严格的职责划分 | 2026-09-25 |
 | [0008](0008-v009-cross-pipe-read.md) | 新增 V009：跨 PIPE 读取必须先经 sync | 2026-09-25 |
 | [0009](0009-codegen-events-war.md) | 代码生成：event 通道分配、WAR 推导、fail-closed 映射 | 2026-09-25 |
+| [0010](0010-event-semantics.md) | event 语义修正：按 PIPE 对独立 + WAR 按槽位分配（修订 0009） | 2026-09-25 |
 
 规则：
 - ADR 一旦合入不原地改写；决定被推翻时把状态改为「已废弃/已被 XXXX 替代」并新增一份 ADR。

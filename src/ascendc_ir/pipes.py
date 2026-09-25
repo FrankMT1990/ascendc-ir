@@ -49,7 +49,7 @@ class _VectorPipe(PipeFacade):
         self._record("datablock_reduce_sum", dst, (src,), ())
 
     def _record(self, op: str, dst, srcs: tuple, scalars: tuple) -> None:
-        stmt = ComputeStmt(Pipe.V, op, as_bufref(dst), tuple(_coerce(s) for s in srcs), tuple(scalars), user_callsite())
+        stmt = ComputeStmt(Pipe.V, op, _coerce(dst), tuple(_coerce(s) for s in srcs), tuple(scalars), user_callsite())
         current_builder().add_stmt(stmt)
 
 

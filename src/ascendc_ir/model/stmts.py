@@ -36,7 +36,7 @@ class CopyStmt:
 class ComputeStmt:
     pipe: Pipe
     op: str
-    dst: BufRef
+    dst: BufRef | GmRef
     srcs: tuple
     scalars: tuple
     callsite: Callsite

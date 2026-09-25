@@ -6,7 +6,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 
-"""注入 V005：单迭代内 9 条未决 sync，超过 event_ids=8。基线：legal/reduce_legal.py 的单 tile 形态。"""
+"""注入 V005：同一 PIPE 对上 9 条未决 sync，超过每对 event_ids=8。基线：legal/reduce_legal.py 的单 tile 形态。"""
 
 from ascendc_ir import f32, gmptr, kernel, sync, ubuf
 from ascendc_ir.pipes import mte2, mte3, v
@@ -14,7 +14,9 @@ from ascendc_ir.pipes import mte2, mte3, v
 
 @kernel(device="ascend950pr")
 def v005_event_pressure(x: gmptr(f32), z: gmptr(f32)):
-    bufs = [ubuf(f32, 8) for _ in range(9)]
+    bufs = []
+    for _ in range(9):
+        bufs.append(ubuf(f32, 8))
     z_local = ubuf(f32, 8)
     for b in bufs:
         mte2.copy(x[0], b[0])

@@ -32,13 +32,18 @@
 |---|---|---|---|
 | V001 | 通路合法 | copy 的源/目标地址空间组合必须存在于设备表 `pathways`，且调用前缀 PIPE 与表中一致 | C API 流水类型文档 |
 | V002 | UB 容量 | 全部 `ubuf` buffer 的 `elems × dtype 字节 × stages` 之和 ≤ 设备表 `ub_usable_bytes`；诊断指向占用最大的 buffer 声明 | cannbot-knowledge 架构卡 |
-| V003 | sync 配对 | 对 sync 的 `on` 中每个 buffer（按 stage 槽位）：生产方 = 该 sync 之前最近一次写入该槽位的调用，必须存在；消费方 = 该 sync 之后、下一次写入同一槽位之前读取该槽位的调用，必须恰好一个 | C API 同步语义 |
+| V003 | sync 配对 | 对 sync 的 `on` 中每个 buffer（按 stage 槽位）：生产方 = 该 sync 之前最近一次写入该槽位的调用，必须存在；消费方 = 该 sync 之后、下一次写入同一槽位之前读取该槽位的调用，**至少一个**。同一条语句既读又写同一槽位时，读发生在写之前：先计入消费，再结束窗口 | C API 同步语义 |
 | V004 | sync 方向 | `sync(p, q, ...)` 中 p 必须是生产调用所在 PIPE，q 必须是消费调用所在 PIPE | `asc_sync_notify` 参数语义 |
-| V005 | event 压力 | 任一程序点上未决 sync 数（已声明、消费方尚未执行）≤ 设备表 `event_ids`（8）；诊断指向超限的那条 sync | cannbot-knowledge pipeline 卡 |
-| V006 | 计算操作数空间 | `v.*` 的操作数与结果必须都是 `ubuf` buffer，不得直接引用 `gmptr` 参数 | C API 计算接口约束 |
+| V005 | event 压力 | 任一程序点上，同一 `(生产PIPE, 消费PIPE)` 对内的未决 sync 数 ≤ 设备表 `event_ids`（8）。event id 按 PIPE 对独立，不同对可复用同一 id | cannbot-knowledge pipeline 卡 + 官方样例四通道共用 EVENT_ID0 |
+| V006 | 计算操作数空间 | `v.*` 的操作数与结果必须都是 `ubuf` buffer，不得直接引用 `gmptr` 参数（结果侧同样由本规则诊断，不在 trace 期抛类型错误） | C API 计算接口约束 |
 | V007 | 对齐 | 参与 copy 的 buffer，其 `elems × dtype 字节`（单 stage）必须是设备表 `align_bytes`（32）的整数倍；诊断指向 buffer 声明 | C API 搬运接口约束 |
 | V008 | 设备守卫 | 使用了设备表不存在的 PIPE 或通路时拒绝，`suggestion` 给出该设备的合法替代 | 分层定位决定 |
 | V009 | 跨 PIPE 读取必须先经 sync | 每次读取 buffer 槽位时，若最近一次写入在另一条 PIPE，则写入之后、本次读取之前必须存在覆盖该槽位的 sync(生产PIPE, 消费PIPE)；诊断指向读取调用点 | cannbot-knowledge runbook `shared_ub_cross_pipeline_per_direction_sync` |
+| V010 | 读取必须有生产 | 读取从未写入过的槽位时拒绝（V009 要求存在最近一次写入；不存在时由本条接管） | 评审 2026-09-25 规格缺口 |
+
+## 诊断去重
+
+trace 展开后，循环体每一轮都会产生诊断；同一 `(id, file, line, message)` 只报一次。
 
 ## 接受 / 拒绝示例约定
 
@@ -68,4 +73,4 @@
 python evals/m4_m5/run_injection.py
 ```
 
-输出合法样本误拒数、注入召回数、定位命中数；全部通过时退出码为 0。当前状态（2026-09-25）：合法 3/3 零误拒，召回 8/8，定位 8/8。
+输出合法样本误拒数、注入召回数、定位命中数与诊断干净率；召回与定位全过时退出码为 0。当前状态（2026-09-25，评审修复后）：合法 3/3 零误拒，召回 9/9，定位 9/9，干净 9/9。
