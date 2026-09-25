@@ -25,10 +25,14 @@
 
 ## 已知限制（不是 bug，是有意的边界）
 
-- trace 期 `for range` 展开，模型不保留循环结构（ADR 0002）；codegen 重卷失败时展开生成。
+- trace 期 `for range` 展开，模型不保留循环结构（ADR 0002）；codegen 重卷失败时拒绝生成（ADR 0009）。
 - v0.2 无 block 级多核切分（无 `asc_get_block_idx` 词汇）——语料 gap，未排期。
 - v0.2 无 Cube/Reg/原子/缓存控制词汇（见 vocabulary-evidence.md gap 表）。
 - codegen 只支持已核对头文件签名的 C API 映射；未核对的 op 拒绝生成。
+
+## 评审中的未决问题
+
+- **守卫分支开销**（2026-09-25 评审提出）：生成的循环体内带 `if (i >= N)` / `if (i + N < TILES)` 守卫。标量分支与异步 PIPE 并行，理论上开销小；但 tile 小、指令短（如 2048 f32 = 32 repeat）时，每轮标量开销占比可能顶到 M0 的 5% 线。处理：M0 增加「守卫开销」配对类实测；超线则 codegen 改软件流水（剥 prologue/epilogue，稳态无分支）。实测前不改生成方式。
 
 ## 如何验证
 
