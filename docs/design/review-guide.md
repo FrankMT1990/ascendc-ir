@@ -44,3 +44,4 @@ python evals/m4_m5/run_injection.py   # M4/M5 注入集
 | `10a8142` | PR1 骨架与规范 | ADR 0001–0006 |
 | `ca05afd` | PR2 trace/model/devices | ADR 0002/0004；语料证据表首填 |
 | `99e0d52` | PR3 verifier + 注入集 | ADR 0007/0008；V009 补漏 |
+| 之后 | ADR 补充、PR4 codegen | ADR 0001–0009；golden diff + fail-closed |
