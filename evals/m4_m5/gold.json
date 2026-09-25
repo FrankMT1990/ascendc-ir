@@ -1,0 +1,63 @@
+{
+  "legal": [
+    "legal/add_legal.py",
+    "legal/reduce_legal.py",
+    "legal/leakyrelu_legal.py"
+  ],
+  "injected": [
+    {
+      "file": "injected/v001_wrong_pipe.py",
+      "expect_id": "V001",
+      "gold_line_contains": "mte3.copy(x[i * TILE]",
+      "note": "gm->ubuf 搬运写错 PIPE"
+    },
+    {
+      "file": "injected/v002_ub_overflow.py",
+      "expect_id": "V002",
+      "gold_line_contains": "x_local = ubuf(f32, 40000, stages=2)",
+      "note": "UB 总占用超容量，金标为最大 buffer 声明行"
+    },
+    {
+      "file": "injected/v003_unproduced_buffer.py",
+      "expect_id": "V003",
+      "gold_line_contains": "sync(mte2, v, on=(x_local, z_local), stage=i)",
+      "note": "sync 携带尚未生产的 z_local"
+    },
+    {
+      "file": "injected/v004_flipped_direction.py",
+      "expect_id": "V004",
+      "gold_line_contains": "sync(v, mte2, on=(x_local, y_local), stage=i)",
+      "note": "sync 方向颠倒"
+    },
+    {
+      "file": "injected/v005_event_pressure.py",
+      "expect_id": "V005",
+      "gold_line_contains": "sync(mte2, v, on=b)",
+      "note": "9 条未决 sync 超 event_ids=8"
+    },
+    {
+      "file": "injected/v006_gm_operand.py",
+      "expect_id": "V006",
+      "gold_line_contains": "v.add(z_local, x_local[i % 2], y[i * TILE])",
+      "note": "v.add 直接引用 GM 参数 y"
+    },
+    {
+      "file": "injected/v007_misaligned.py",
+      "expect_id": "V007",
+      "gold_line_contains": "x_local = ubuf(f32, 100)",
+      "note": "400B 不是 32B 整数倍，金标为 buffer 声明行"
+    },
+    {
+      "file": "injected/v009_missing_sync.py",
+      "expect_id": "V009",
+      "gold_line_contains": "v.add(z_local, x_local[i % 2], y_local[i % 2])",
+      "note": "删除 mte2->v 的 sync，金标为未交接就读取的调用行"
+    }
+  ],
+  "deferred": [
+    {
+      "expect_id": "V008",
+      "reason": "950 设备表包含全部 PIPE，V008 需要 2201 设备表落地后构造真实注入样本；当前由 tests/verify 的夹具设备表覆盖"
+    }
+  ]
+}

@@ -10,7 +10,7 @@
 
 from __future__ import annotations
 
-from .model.core import Pipe
+from .model.core import BufRef, Buffer, GmRef, Pipe, as_bufref
 from .model.stmts import ComputeStmt, CopyStmt
 from .trace.builder import current_builder, user_callsite
 
@@ -20,9 +20,16 @@ class PipeFacade:
         self.pipe = pipe
 
 
+def _coerce(obj):
+    """Buffer 归一为 BufRef；GmRef 透传（由检查器 V001/V006 判定）；其余类型拒绝。"""
+    if isinstance(obj, (BufRef, GmRef)):
+        return obj
+    return as_bufref(obj)
+
+
 class _CopyPipe(PipeFacade):
     def copy(self, src, dst) -> None:
-        current_builder().add_stmt(CopyStmt(self.pipe, src, dst, user_callsite()))
+        current_builder().add_stmt(CopyStmt(self.pipe, _coerce(src), _coerce(dst), user_callsite()))
 
 
 class _VectorPipe(PipeFacade):
@@ -42,7 +49,8 @@ class _VectorPipe(PipeFacade):
         self._record("datablock_reduce_sum", dst, (src,), ())
 
     def _record(self, op: str, dst, srcs: tuple, scalars: tuple) -> None:
-        current_builder().add_stmt(ComputeStmt(Pipe.V, op, dst, tuple(srcs), tuple(scalars), user_callsite()))
+        stmt = ComputeStmt(Pipe.V, op, as_bufref(dst), tuple(_coerce(s) for s in srcs), tuple(scalars), user_callsite())
+        current_builder().add_stmt(stmt)
 
 
 mte2 = _CopyPipe(Pipe.MTE2)

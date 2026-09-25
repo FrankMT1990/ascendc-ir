@@ -112,3 +112,16 @@ class BufRef:
 
     def to_dict(self) -> dict:
         return {"buffer": self.buffer.name, "stage": self.stage}
+
+
+def as_bufref(obj) -> BufRef:
+    """把裸 Buffer 归一为 BufRef；多 stage buffer 必须显式下标。"""
+    if isinstance(obj, BufRef):
+        return obj
+    if isinstance(obj, Buffer):
+        if obj.stages != 1:
+            raise TypeError(
+                f"buffer {obj.name} 有 {obj.stages} 个 stage，必须显式下标，如 {obj.name}[i % {obj.stages}]"
+            )
+        return BufRef(obj, 0)
+    raise TypeError(f"期望 Buffer/BufRef，得到 {obj!r}")

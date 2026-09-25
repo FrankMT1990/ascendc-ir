@@ -75,3 +75,22 @@ def test_ubuf_name_fallback():
 
     k = unnamed.trace()
     assert k.buffers[0].name == "buf_0"
+
+
+def test_bare_buffer_coerces_to_stage_zero():
+    k = _trace_add()
+    add0 = k.statements[3]
+    assert add0.dst.to_dict() == {"buffer": "z_local", "stage": 0}
+
+
+def test_bare_multi_stage_buffer_rejected():
+    import pytest
+
+    @kernel(device="ascend950pr")
+    def bad(x: gmptr(f32), y: gmptr(f32)):
+        a = ubuf(f32, 64, stages=2)
+        b = ubuf(f32, 64)
+        v.add(b, a, a)  # a 有两个 stage，必须显式下标
+
+    with pytest.raises(TypeError, match="显式下标"):
+        bad.trace()
