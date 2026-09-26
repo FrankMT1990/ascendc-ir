@@ -83,7 +83,13 @@ def main() -> int:
     print(f"注入召回: {recall}/{n_injected}")
     print(f"定位命中: {located}/{n_injected}")
     print(f"诊断干净: {clean}/{n_injected}")
-    ok = legal_ok == n_legal and recall == n_injected and located == n_injected
+    # 唯一通过线（与 docs/evaluation/metrics.md 一致）：误拒=0、召回≥0.9、定位≥0.8、干净率=100%
+    ok = (
+        legal_ok == n_legal
+        and recall / n_injected >= 0.9
+        and located / n_injected >= 0.8
+        and clean == n_injected
+    )
     print("M4/M5 注入集: PASS" if ok else "M4/M5 注入集: FAIL")
     return 0 if ok else 1
 
