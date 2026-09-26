@@ -46,6 +46,8 @@ python evals/m4_m5/run_injection.py   # M4/M5 注入集
 2026-09-25 对 `10a8142`…`c37f331` 的结论在 `docs/design/review-findings-2026-09-25.md`，逐条处置在 `docs/design/review-response-2026-09-25.md`。
 2026-09-26 对 `e17705b` 的复审结论在 `docs/design/review-findings-2026-09-26.md`，逐条处置在 `docs/design/review-response-2026-09-26.md`。
 
+2026-09-26 对修复提交 `e17705b` 的复审在 `docs/design/review-findings-2026-09-26.md`。原六条里五条已成立；还要改的是多消费者 WAR，以及就地写被槽位复用判定误伤。
+
 ## PR 历史
 
 | commit | 内容 | 关键上下文 |
