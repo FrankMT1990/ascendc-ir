@@ -31,11 +31,15 @@ def test_add_matches_golden():
 def test_generated_structure():
     out = generate(_add_kernel())
     assert "asc_init();" in out
-    assert "for (uint32_t i = 0; i < 8; i++)" in out
-    # WAR：x/y 双缓冲按槽位分配 event（同一 event 上 notify/wait 严格交替）
-    assert "if (i >= 2) { asc_sync_wait(PIPE_V, PIPE_MTE2, ((i % 2) == 0 ? EVENT_ID0 : EVENT_ID1)); }" in out
-    assert "if (i >= 2) { asc_sync_wait(PIPE_V, PIPE_MTE2, ((i % 2) == 0 ? EVENT_ID2 : EVENT_ID3)); }" in out
-    # WAR：z 单缓冲覆写前等待
+    # 循环按槽位展开：event id 与槽位偏移均为编译期字面量（复审核对项）
+    assert "for (uint32_t i = 0; i < 8; i += 2)" in out
+    assert "?" not in out  # 无运行时三元表达式
+    # WAR：x/y 双缓冲按槽位一个字面量 event（同一 id 上 notify/wait 严格交替）
+    assert "if (i >= 2) { asc_sync_wait(PIPE_V, PIPE_MTE2, EVENT_ID0); }" in out
+    assert "if (i + 1 >= 2) { asc_sync_wait(PIPE_V, PIPE_MTE2, EVENT_ID1); }" in out
+    assert "asc_copy_gm2ub(x_local, x + i * 2048, 1, 256, 0, 0);" in out
+    assert "asc_copy_gm2ub(x_local + 2048, x + (i + 1) * 2048, 1, 256, 0, 0);" in out
+    # WAR：z 单缓冲，槽位 0 条件等待、槽位 1 无条件等待
     assert "if (i >= 1) { asc_sync_wait(PIPE_MTE3, PIPE_V, EVENT_ID0); }" in out
     # 前向交接：event id 按 PIPE 对独立分配
     assert "asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);" in out
@@ -44,8 +48,41 @@ def test_generated_structure():
     assert "EVENT_ID8" not in out
 
 
+def test_war_release_after_last_read():
+    """两条计算读同一槽位：释放在最后一次消费之后，每轮每个 buffer 只发一次（复审第 1 条）。"""
+
+    @kernel(device="ascend950pr")
+    def two_reads(x: gmptr(f32), y: gmptr(f32), z: gmptr(f32), w: gmptr(f32)):
+        TILE, TILES = 2048, 4
+        x_local = ubuf(f32, TILE, stages=2)
+        y_local = ubuf(f32, TILE, stages=2)
+        z_local = ubuf(f32, TILE, stages=1)
+        w_local = ubuf(f32, TILE, stages=1)
+        for i in range(TILES):
+            mte2.copy(x[i * TILE], x_local[i % 2])
+            mte2.copy(y[i * TILE], y_local[i % 2])
+            sync(mte2, v, on=(x_local, y_local), stage=i)
+            v.add(z_local, x_local[i % 2], y_local[i % 2])
+            v.add(w_local, x_local[i % 2], y_local[i % 2])
+            sync(v, mte3, on=z_local)
+            mte3.copy(z_local, z[i * TILE])
+            sync(v, mte3, on=w_local)
+            mte3.copy(w_local, w[i * TILE])
+
+    out = generate(two_reads.trace())
+    lines = out.splitlines()
+    add_idx = [n for n, line in enumerate(lines) if "asc_add(" in line]
+    notify_idx = [n for n, line in enumerate(lines) if "asc_sync_notify(PIPE_V, PIPE_MTE2" in line]
+    # 每个子迭代释放 x/y 各一次（共 2×2=4 条）；每个 buffer 每轮只发一次
+    assert len(notify_idx) == 4
+    for k in range(2):
+        sub = notify_idx[2 * k : 2 * k + 2]
+        for n in sub:
+            assert sum(1 for a in add_idx if a < n) == 2 * (k + 1)  # 两条 add 都读完才释放
+
+
 def test_war_release_deduped_for_repeated_src():
-    """v.add(z, x, x)：同一 buffer 重复读，循环体里只释放一次（评审第 1 条附带）。"""
+    """v.add(z, x, x)：同一 buffer 重复读，每个子迭代只释放一次（评审第 1 条附带）。"""
 
     @kernel(device="ascend950pr")
     def ok(x: gmptr(f32), z: gmptr(f32)):
@@ -60,8 +97,8 @@ def test_war_release_deduped_for_repeated_src():
             mte3.copy(z_local, z[i * TILE])
 
     out = generate(ok.trace())
-    # tiles > stages 才有槽位复用、才有 WAR 释放；循环体只出现一次（未去重则为两次）
-    assert out.count("asc_sync_notify(PIPE_V, PIPE_MTE2") == 1
+    # 按槽位展开后两个子迭代各一次释放；未去重则为四次
+    assert out.count("asc_sync_notify(PIPE_V, PIPE_MTE2") == 2
 
 
 def test_gm_base_offset_preserved():
@@ -183,6 +220,40 @@ def test_straight_line_slot_reuse_rejected():
 
     with pytest.raises(CodegenError, match="重卷失败"):
         generate(bad.trace())
+
+
+def test_inplace_rmw_gets_clear_error():
+    """直写形态的就地改写（RMW）：检查器放行，codegen 以「生产 PIPE 唯一」拒绝（复审第 2 条）。"""
+
+    @kernel(device="ascend950pr")
+    def rmw(x: gmptr(f32), z: gmptr(f32)):
+        a = ubuf(f32, 64)
+        mte2.copy(x[0], a[0])
+        sync(mte2, v, on=a)
+        v.add(a, a, a)  # 就地改写：生产 PIPE 变成 {mte2, v}
+        sync(v, mte3, on=a)
+        mte3.copy(a, z[0])
+
+    with pytest.raises(CodegenError, match="就地改写"):
+        generate(rmw.trace())
+
+
+def test_tiles_not_divisible_by_stages_rejected():
+    """按槽位展开要求 TILES 被流水深度整除（复审衍生约束）。"""
+
+    @kernel(device="ascend950pr")
+    def odd(x: gmptr(f32), z: gmptr(f32)):
+        a = ubuf(f32, 64, stages=2)
+        b = ubuf(f32, 64)
+        for i in range(3):
+            mte2.copy(x[i * 64], a[i % 2])
+            sync(mte2, v, on=a, stage=i)
+            v.add(b, a[i % 2], a[i % 2])
+            sync(v, mte3, on=b)
+            mte3.copy(b, z[i * 64])
+
+    with pytest.raises(CodegenError, match="整除"):
+        generate(odd.trace())
 
 
 def test_repeat_uint8_guard():

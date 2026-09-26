@@ -12,7 +12,7 @@
 ## 决定
 
 1. event id 按 (生产PIPE, 消费PIPE) 对独立分配；不同对可复用同一 id。
-2. WAR 通道按槽位分配连续 id 块：`stages=N` 的 buffer 用 N 个 id，发射 `((i % N) == s ? EVENT_ID… : …)`，保证同一 id 上 notify/wait 严格交替。
+2. WAR 通道按槽位分配连续 id 块：`stages=N` 的 buffer 用 N 个 id；发射方式由 ADR 0011 改为按槽位展开循环（id 全字面量），保证同一 id 上 notify/wait 严格交替。
 3. V005 改为按 PIPE 对计未决 sync 数。
 4. 同一语句重复读同一 buffer（`v.add(z, x, x)`）只释放一次。
 

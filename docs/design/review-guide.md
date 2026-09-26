@@ -44,6 +44,7 @@ python evals/m4_m5/run_injection.py   # M4/M5 注入集
 ## 评审记录
 
 2026-09-25 对 `10a8142`…`c37f331` 的结论在 `docs/design/review-findings-2026-09-25.md`，逐条处置在 `docs/design/review-response-2026-09-25.md`。
+2026-09-26 对 `e17705b` 的复审结论在 `docs/design/review-findings-2026-09-26.md`，逐条处置在 `docs/design/review-response-2026-09-26.md`。
 
 ## PR 历史
 
@@ -55,3 +56,4 @@ python evals/m4_m5/run_injection.py   # M4/M5 注入集
 | `7e10e91` | ADR 补充 | ADR 0001–0008 |
 | `0f2e861` | PR4 codegen | ADR 0009；golden diff + fail-closed |
 | 评审修复 | 评审六条 + 事实源对齐 + V010 | ADR 0010；review-response-2026-09-25 |
+| 复审修复 | 最后读之后释放 + 按槽位展开 + RMW 明确拒绝 | ADR 0011；review-response-2026-09-26 |

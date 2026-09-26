@@ -52,13 +52,20 @@ def reroll(kernel) -> tuple:
 
 
 def _has_slot_reuse(stmts) -> bool:
+    """直写形态只允许「每个槽位至多写一次」。
+
+    既读又写同一槽位的语句（就地 RMW）不算复用证据——那不是被抹平的循环；
+    它会在发射端被「生产 PIPE 必须唯一」拒绝，并带更准确的报错。
+    """
     written = set()
     for stmt in stmts:
         refs = []
         if isinstance(stmt, CopyStmt) and isinstance(stmt.dst, BufRef):
             refs = [stmt.dst]
         elif isinstance(stmt, ComputeStmt) and isinstance(stmt.dst, BufRef):
-            refs = [stmt.dst]
+            read_slots = {(s.buffer.name, s.stage) for s in stmt.srcs if isinstance(s, BufRef)}
+            if (stmt.dst.buffer.name, stmt.dst.stage) not in read_slots:
+                refs = [stmt.dst]
         for ref in refs:
             key = (ref.buffer.name, ref.stage)
             if key in written:

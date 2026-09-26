@@ -85,3 +85,4 @@ def add_custom(x: gmptr(f32), y: gmptr(f32), z: gmptr(f32)):
 - 无符号 shape、无多 kernel、无 dispatcher。
 - 无布局转换声明（随 Cube 通路进入后续版本）。
 - 无显式 barrier 计数 / 多生产者合并（A 级抽象；出现语料证据再升级）。
+- 不支持跨 PIPE 就地改写：一个 buffer 的生产 PIPE 必须唯一；如需改写，读旧 buffer、写新 buffer（复审 2026-09-26 第 2 条）。
