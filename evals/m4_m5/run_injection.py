@@ -90,7 +90,8 @@ def main() -> int:
         and located / n_injected >= 0.8
         and clean == n_injected
     )
-    print("M4/M5 注入集: PASS" if ok else "M4/M5 注入集: FAIL")
+    # 在新纪律落地前（边界合法样本、每规则 ≥3 单点注入、独立故障集），不得宣称 M4/M5 PASS
+    print("旧集回归通过，C3 未测" if ok else "M4/M5 注入集: FAIL")
     return 0 if ok else 1
 
 
