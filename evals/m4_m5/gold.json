@@ -2,7 +2,10 @@
   "legal": [
     "legal/add_legal.py",
     "legal/reduce_legal.py",
-    "legal/leakyrelu_legal.py"
+    "legal/leakyrelu_legal.py",
+    "legal/boundary_ub.py",
+    "legal/boundary_align.py",
+    "legal/boundary_events.py"
   ],
   "injected": [
     {
@@ -55,11 +58,41 @@
     },
     {
       "file": "injected/v010_never_written.py",
+      "attr": "SAMPLE",
       "expect_ids": ["V010"],
       "gold_line_contains": "v.add(z_local, x_local, z_local)",
+      "class": "未初始化",
       "note": "读取从未写入的 z_local"
-    }
+    },
+    {"file": "injected/more_cases.py", "attr": "v001_tile_1024", "expect_ids": ["V001"], "gold_line_contains": "mte3.copy(x[i * 1024]", "class": "通路"},
+    {"file": "injected/more_cases.py", "attr": "v001_tile_512", "expect_ids": ["V001"], "gold_line_contains": "mte3.copy(x[i * 512]", "class": "通路"},
+    {"file": "injected/more_cases.py", "attr": "v002_elems_50000", "expect_ids": ["V002"], "gold_line_contains": "ubuf(f32, 50000, stages=2)", "class": "UB"},
+    {"file": "injected/more_cases.py", "attr": "v002_elems_45000", "expect_ids": ["V002"], "gold_line_contains": "ubuf(f32, 45000, stages=2)", "class": "UB"},
+    {"file": "injected/more_cases.py", "attr": "v003_spare", "expect_ids": ["V003"], "gold_line_contains": "sync(mte2, v, on=(x_local, spare))", "class": "event 配对"},
+    {"file": "injected/more_cases.py", "attr": "v003_extra", "expect_ids": ["V003"], "gold_line_contains": "sync(mte2, v, on=(extra, x_local))", "class": "event 配对"},
+    {"file": "injected/more_cases.py", "attr": "v004_flip_1024", "expect_ids": ["V004"], "gold_line_contains": "flip-1024", "class": "方向"},
+    {"file": "injected/more_cases.py", "attr": "v004_flip_512", "expect_ids": ["V004"], "gold_line_contains": "flip-512", "class": "方向"},
+    {"file": "injected/more_cases.py", "attr": "v005_ten", "expect_ids": ["V005"], "gold_line_contains": "sync(mte2, v, on=b)  # ten", "class": "event 压力"},
+    {"file": "injected/more_cases.py", "attr": "v005_twelve", "expect_ids": ["V005"], "gold_line_contains": "sync(mte2, v, on=b)  # twelve", "class": "event 压力"},
+    {"file": "injected/more_cases.py", "attr": "v006_gm_x", "expect_ids": ["V006"], "gold_line_contains": "v.add(z_local, x[i * 64], y_local[i % 2])", "class": "操作数空间"},
+    {"file": "injected/more_cases.py", "attr": "v006_gm_z", "expect_ids": ["V006"], "gold_line_contains": "v.add(z[0], x_local, y_local)", "class": "操作数空间"},
+    {"file": "injected/more_cases.py", "attr": "v007_elems_1", "expect_ids": ["V007"], "gold_line_contains": "ubuf(f32, 1)", "class": "对齐"},
+    {"file": "injected/more_cases.py", "attr": "v007_elems_7", "expect_ids": ["V007"], "gold_line_contains": "ubuf(f32, 7)", "class": "对齐"},
+    {"file": "injected/more_cases.py", "attr": "v009_drop_mte3", "expect_ids": ["V009"], "gold_line_contains": "mte3.copy(z_local, z[0])", "class": "跨 PIPE"},
+    {"file": "injected/more_cases.py", "attr": "v009_drop_one_input", "expect_ids": ["V009"], "gold_line_contains": "v.add(z_local, x_local, y_local)", "class": "跨 PIPE"},
+    {"file": "injected/more_cases.py", "attr": "v010_read_w", "expect_ids": ["V010"], "gold_line_contains": "v.add(z_local, x_local, w_local)", "class": "未初始化"},
+    {"file": "injected/more_cases.py", "attr": "v010_read_dst", "expect_ids": ["V010"], "gold_line_contains": "v.add(out_local, x_local, out_local)", "class": "未初始化"}
   ],
+  "independent": [
+    "independent/agent_double_fault.py"
+  ],
+  "classes": {
+    "UB": "V002",
+    "对齐": "V007",
+    "event 配对": "V003",
+    "跨 PIPE": "V009",
+    "未初始化": "V010"
+  },
   "deferred": [
     {
       "expect_id": "V008",

@@ -11,8 +11,9 @@
 生成规则：
 - 先跑检查器，存在 block 诊断即拒绝生成（fail closed）。
 - event 分配（ADR 0010/0011）：event id 按 (生产PIPE, 消费PIPE) 对独立分配，且全部为
-  字面量。循环按流水深度展开（`for (i = 0; i < TILES; i += N)`，每槽位一段），
-  同一 id 上 notify/wait 严格交替；TILES 不能被流水深度整除时拒绝生成。
+  字面量。循环按流水深度展开，同一 id 上 notify/wait 严格交替；TILES 不能被流水深度整除时拒绝生成。
+- 软件流水（ADR 0013，M0 的去守卫通过线）：把循环切成 prologue / 稳态 / epilogue。
+  稳态里的 WAR wait 与 notify 都是无条件指令，不再生成 `if (i >= N)`。
 - WAR 释放边由 stages 推导：复用槽位前 wait（消费, 生产），**该槽位在循环体内的
   最后一次消费之后**才 notify（复审 2026-09-26 第 1 条）；同一语句重复读同一
   buffer 只释放一次。
@@ -166,16 +167,20 @@ class _Emitter:
 
     def _buf_ptr(self, ref: BufRef, k: int) -> str:
         buf = ref.buffer
-        if not self.looped or buf.stages == 1:
+        if buf.stages == 1:
             return buf.name
-        slot = k % buf.stages
+        # 直写形态每条语句自带槽位。循环形态的 body 是第 0 轮，槽位由展开下标 k 决定。
+        slot = ref.stage if not self.looped else k % buf.stages
         return buf.name if slot == 0 else f"{buf.name} + {slot * buf.elems}"
 
-    def _gm_ptr(self, ref: GmRef, stmt_index: int, ref_index: int, k: int) -> str:
+    def _gm_ptr(self, ref: GmRef, stmt_index: int, ref_index: int, k: int, i_value) -> str:
         base = ref.offset  # body 是第 0 轮，offset 即基址
         if not self.looped:
             return ref.param.name if base == 0 else f"{ref.param.name} + {base}"
         stride = self._gm_stride(stmt_index, ref_index)
+        if i_value is not None:
+            offset = base + (i_value + k) * stride
+            return ref.param.name if offset == 0 else f"{ref.param.name} + {offset}"
         if stride == 0:
             return ref.param.name if base == 0 else f"{ref.param.name} + {base}"
         term = f"i * {stride}" if k == 0 else f"(i + {k}) * {stride}"
@@ -188,26 +193,40 @@ class _Emitter:
         second = _stmt_refs(self.kernel.statements[self.per + stmt_index])[ref_index]
         return second.offset - first.offset
 
-    # ---- 守卫条件（gi = i + k 为全局迭代号）----
+    # ---- 软件流水：同一段里 WAR 的有无必须对每个 i 都一样，才能不写 if ----
 
-    def _wait_guard(self, buf, k: int) -> str | None:
-        """复用槽位前等待：gi >= N。返回守卫文本；None 表示无条件；空串表示永不（调用方省略）。"""
-        n = buf.stages
-        if k >= n:
-            return None  # gi = i + k >= k >= N，恒真
-        if self.tiles - self._unroll + k < n:
-            return ""  # 最大 gi 也不到 N，恒假
-        cond = f"i >= {n}" if k == 0 else f"i + {k} >= {n}"
-        return f"if ({cond}) "
+    def _signature(self, group_start: int) -> tuple:
+        items = []
+        for buf in self.kernel.buffers:
+            if buf.name not in self._war or self.tiles <= buf.stages:
+                continue
+            for k in range(self._unroll):
+                gi = group_start + k
+                wait = "emit" if gi >= buf.stages else "omit"
+                notify = "emit" if gi + buf.stages < self.tiles else "omit"
+                items.append((buf.name, k, wait, notify))
+        return tuple(items)
 
-    def _notify_guard(self, buf, k: int) -> str | None:
-        """消费完成后释放：gi + N < TILES。语义同上。"""
-        n = buf.stages
-        if k + n >= self.tiles:
-            return ""  # 恒假：之后不会再写
-        if k + n < self._unroll:
-            return None  # 恒真
-        return f"if (i + {k + n} < {self.tiles}) "
+    def _regions(self) -> list:
+        starts = list(range(0, self.tiles, self._unroll))
+        regions = []
+        index = 0
+        while index < len(starts):
+            signature = self._signature(starts[index])
+            end = index + 1
+            while end < len(starts) and self._signature(starts[end]) == signature:
+                end += 1
+            lo = starts[index]
+            hi = starts[end - 1] + self._unroll
+            regions.append((lo, hi, signature))
+            index = end
+        return regions
+
+    def _war_decision(self, signature, buf, k: int, which: str) -> str:
+        for name, slot, wait, notify in signature:
+            if name == buf.name and slot == k:
+                return wait if which == "wait" else notify
+        return "omit"
 
     # ---- 发射 ----
 
@@ -221,72 +240,97 @@ class _Emitter:
         lines.append("")
         for buf in k.buffers:
             c_type = _DTYPE_TO_C[buf.dtype.value]
-            lines.append(f"    __ubuf__ {c_type} {buf.name}[{buf.stages} * {buf.elems}];")
+            count = buf.stages * buf.elems
+            lines.append(f"    __ubuf__ {c_type} {buf.name}[{count}];")
         lines.append("")
         if self.looped:
-            lines.append(f"    for (uint32_t i = 0; i < {self.tiles}; i += {self._unroll}) {{")
-            for sub in range(self._unroll):
-                if self._unroll > 1:
-                    lines.append(f"        // 槽位 {sub}")
-                for j, stmt in enumerate(self.body):
-                    lines.extend("        " + line for line in self._emit_stmt(stmt, j, sub))
-            lines.append("    }")
+            for lo, hi, signature in self._regions():
+                if hi - lo == self._unroll:
+                    if lo == 0:
+                        label = "prologue"
+                    elif hi == self.tiles:
+                        label = "epilogue"
+                    else:
+                        label = "peeled"
+                    lines.append(f"    // {label} i = {lo}")
+                    self._emit_group(lines, "    ", lo, signature)
+                else:
+                    lines.append(f"    for (uint32_t i = {lo}; i < {hi}; i += {self._unroll}) {{")
+                    self._emit_group(lines, "        ", None, signature)
+                    lines.append("    }")
         else:
             for j, stmt in enumerate(self.body):
-                lines.extend("    " + line for line in self._emit_stmt(stmt, j, 0))
+                lines.extend("    " + line for line in self._emit_stmt(stmt, j, 0, None, (), set()))
         lines.append("}")
         lines.append("")
         return "\n".join(lines)
 
-    def _emit_stmt(self, stmt, j: int, k: int) -> list:
+    def _emit_group(self, lines, indent: str, i_value, signature) -> None:
+        for sub in range(self._unroll):
+            if self._unroll > 1:
+                lines.append(f"{indent}// 槽位 {sub}")
+            waited = set()
+            for j, stmt in enumerate(self.body):
+                lines.extend(indent + line for line in self._emit_stmt(stmt, j, sub, i_value, signature, waited))
+
+    def _emit_stmt(self, stmt, j: int, k: int, i_value, signature, waited: set) -> list:
         if isinstance(stmt, CopyStmt):
-            return self._emit_copy(stmt, j, k)
+            return self._emit_copy(stmt, j, k, i_value, signature, waited)
         if isinstance(stmt, ComputeStmt):
-            return self._emit_compute(stmt, j, k)
+            return self._emit_compute(stmt, j, k, i_value, signature, waited)
         if isinstance(stmt, SyncStmt):
             return self._emit_sync(stmt)
         raise CodegenError(f"未知语句类型 {type(stmt).__name__}")
 
-    def _war_wait(self, buf, k: int) -> list:
+    def _war_wait(self, buf, k: int, signature, waited: set) -> list:
         if buf.name not in self._war or not self.looped or self.tiles <= buf.stages:
             return []
-        guard = self._wait_guard(buf, k)
-        if guard == "":
+        if self._war_decision(signature, buf, k, "wait") != "emit":
             return []
+        # 上一轮只 notify 一次。同一轮对同一槽位写多次时，只在第一次写入前 wait。
+        key = (buf.name, k % buf.stages)
+        if key in waited:
+            return []
+        waited.add(key)
         p, q = self._war[buf.name]
-        call = f"asc_sync_wait({_PIPE_TO_C[q]}, {_PIPE_TO_C[p]}, {self._war_event_id(buf, p, q, k)});"
-        return [f"{guard}{{ {call} }}"] if guard else [call]
+        return [f"asc_sync_wait({_PIPE_TO_C[q]}, {_PIPE_TO_C[p]}, {self._war_event_id(buf, p, q, k)});"]
 
-    def _war_notify(self, buf, k: int) -> list:
+    def _war_notify(self, buf, k: int, signature) -> list:
         if buf.name not in self._war or not self.looped or self.tiles <= buf.stages:
             return []
-        guard = self._notify_guard(buf, k)
-        if guard == "":
+        if self._war_decision(signature, buf, k, "notify") != "emit":
             return []
         p, q = self._war[buf.name]
-        call = f"asc_sync_notify({_PIPE_TO_C[q]}, {_PIPE_TO_C[p]}, {self._war_event_id(buf, p, q, k)});"
-        return [f"{guard}{{ {call} }}"] if guard else [call]
+        return [f"asc_sync_notify({_PIPE_TO_C[q]}, {_PIPE_TO_C[p]}, {self._war_event_id(buf, p, q, k)});"]
 
-    def _emit_copy(self, stmt: CopyStmt, j: int, k: int) -> list:
+    def _emit_copy(self, stmt: CopyStmt, j: int, k: int, i_value, signature, waited: set) -> list:
         if stmt.pipe == Pipe.MTE2 and isinstance(stmt.src, GmRef) and isinstance(stmt.dst, BufRef):
             buf = stmt.dst.buffer
-            lines = self._war_wait(buf, k)
+            lines = self._war_wait(buf, k, signature, waited)
             lines.append(
-                f"asc_copy_gm2ub({self._buf_ptr(stmt.dst, k)}, {self._gm_ptr(stmt.src, j, 0, k)}, 1, {_burst(buf)}, 0, 0);"
+                f"asc_copy_gm2ub({self._buf_ptr(stmt.dst, k)}, {self._gm_ptr(stmt.src, j, 0, k, i_value)}, 1, {_burst(buf)}, 0, 0);"
             )
             return lines
         if stmt.pipe == Pipe.MTE3 and isinstance(stmt.src, BufRef) and isinstance(stmt.dst, GmRef):
             buf = stmt.src.buffer
-            lines = [f"asc_copy_ub2gm({self._gm_ptr(stmt.dst, j, 1, k)}, {self._buf_ptr(stmt.src, k)}, 1, {_burst(buf)}, 0, 0);"]
+            lines = [
+                f"asc_copy_ub2gm({self._gm_ptr(stmt.dst, j, 1, k, i_value)}, {self._buf_ptr(stmt.src, k)}, 1, {_burst(buf)}, 0, 0);"
+            ]
             if self._last_read.get(buf.name) == j:
-                lines.extend(self._war_notify(buf, k))
+                lines.extend(self._war_notify(buf, k, signature))
             return lines
         raise CodegenError(f"v0.2 不支持的 copy 形态：pipe={stmt.pipe.value}")
 
-    def _emit_compute(self, stmt: ComputeStmt, j: int, k: int) -> list:
+    def _emit_compute(self, stmt: ComputeStmt, j: int, k: int, i_value, signature, waited: set) -> list:
         if stmt.op not in _SUPPORTED_COMPUTE:
             raise CodegenError(f"v0.2 代码生成只支持 {sorted(_SUPPORTED_COMPUTE)}，得到 {stmt.op!r}（trace/verify 可用）")
         dst = stmt.dst
+        for src in stmt.srcs:
+            if not isinstance(src, BufRef) or src.buffer.stage_bytes != dst.buffer.stage_bytes:
+                raise CodegenError(
+                    f"add 的源和目的单 stage 字节数必须相同（目的 {dst.buffer.name} 为 {dst.buffer.stage_bytes}B），"
+                    "否则 repeat 会读过较短的 buffer"
+                )
         if dst.buffer.stage_bytes % _REPEAT_BYTES != 0:
             raise CodegenError(
                 f"buffer {dst.buffer.name} 单 stage {dst.buffer.stage_bytes}B 不是 {_REPEAT_BYTES}B 的整数倍，无法计算 repeat"
@@ -297,7 +341,7 @@ class _Emitter:
                 f"buffer {dst.buffer.name} 单 stage 需要 repeat={repeat}，超过 asc_add 的 uint8_t 上限 {_REPEAT_MAX}；"
                 "请减小 tile 或拆分计算"
             )
-        lines = self._war_wait(dst.buffer, k)
+        lines = self._war_wait(dst.buffer, k, signature, waited)
         ptrs = [self._buf_ptr(dst, k)] + [self._buf_ptr(s, k) for s in stmt.srcs]
         lines.append(f"asc_add({ptrs[0]}, {ptrs[1]}, {ptrs[2]}, {repeat}, 1, 1, 1, 8, 8, 8);")
         released = set()
@@ -307,7 +351,7 @@ class _Emitter:
             released.add(s.buffer.name)
             if self._last_read.get(s.buffer.name) != j:
                 continue  # 只在该槽位的最后一次消费之后释放（复审第 1 条）
-            lines.extend(self._war_notify(s.buffer, k))
+            lines.extend(self._war_notify(s.buffer, k, signature))
         return lines
 
     def _emit_sync(self, stmt: SyncStmt) -> list:

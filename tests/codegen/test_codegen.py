@@ -31,20 +31,16 @@ def test_add_matches_golden():
 def test_generated_structure():
     out = generate(_add_kernel())
     assert "asc_init();" in out
-    # 循环按槽位展开：event id 与槽位偏移均为编译期字面量（复审核对项）
-    assert "for (uint32_t i = 0; i < 8; i += 2)" in out
-    assert "?" not in out  # 无运行时三元表达式
-    # WAR：x/y 双缓冲按槽位一个字面量 event（同一 id 上 notify/wait 严格交替）
-    assert "if (i >= 2) { asc_sync_wait(PIPE_V, PIPE_MTE2, EVENT_ID0); }" in out
-    assert "if (i + 1 >= 2) { asc_sync_wait(PIPE_V, PIPE_MTE2, EVENT_ID1); }" in out
+    assert "if (" not in out
+    # 稳态循环：WAR 无条件，event id 与槽位偏移仍是字面量
+    assert "for (uint32_t i = 2; i < 6; i += 2)" in out
+    assert "asc_sync_wait(PIPE_V, PIPE_MTE2, EVENT_ID0);" in out
     assert "asc_copy_gm2ub(x_local, x + i * 2048, 1, 256, 0, 0);" in out
     assert "asc_copy_gm2ub(x_local + 2048, x + (i + 1) * 2048, 1, 256, 0, 0);" in out
-    # WAR：z 单缓冲，槽位 0 条件等待、槽位 1 无条件等待
-    assert "if (i >= 1) { asc_sync_wait(PIPE_MTE3, PIPE_V, EVENT_ID0); }" in out
-    # 前向交接：event id 按 PIPE 对独立分配
+    # prologue 把 i=0 折成常量地址，不进稳态的 if
+    assert "asc_copy_gm2ub(x_local, x + 0, 1, 256, 0, 0);" in out or "asc_copy_gm2ub(x_local, x, 1, 256, 0, 0);" in out
     assert "asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);" in out
     assert "asc_sync_wait(PIPE_V, PIPE_MTE3, EVENT_ID0);" in out
-    # 每对 PIPE 不超 8 个 id
     assert "EVENT_ID8" not in out
 
 
@@ -116,7 +112,9 @@ def test_gm_base_offset_preserved():
             mte3.copy(b, z[i * 64])
 
     out = generate(off.trace())
-    assert "x + 8 + i * 64" in out
+    # prologue/epilogue 把 i 折成常量，基址 8 仍在
+    assert "x + 8" in out
+    assert "x + 72" in out
 
 
 def test_gm_constant_nonzero_offset_preserved():
@@ -271,6 +269,89 @@ def test_repeat_uint8_guard():
 
     with pytest.raises(CodegenError, match="255"):
         generate(big.trace())
+
+
+def test_straight_line_distinct_slots_keep_offsets():
+    """直写形态的不同槽位必须落到不同 UB 地址（评审 R1）。"""
+
+    @kernel(device="ascend950pr")
+    def two_slots(x: gmptr(f32), z: gmptr(f32)):
+        a = ubuf(f32, 64, stages=2)
+        b = ubuf(f32, 64)
+        mte2.copy(x[0], a[0])
+        mte2.copy(x[64], a[1])
+        sync(mte2, v, on=a)
+        v.add(b, a[0], a[1])
+        sync(v, mte3, on=b)
+        mte3.copy(b, z[0])
+
+    out = generate(two_slots.trace())
+    assert "asc_copy_gm2ub(a + 64, x + 64," in out
+    assert "asc_add(b, a, a + 64," in out
+
+
+def test_loop_rejects_nonzero_slot_on_first_iteration():
+    """第 0 轮槽位不是 0 时拒绝生成，避免按 k % stages 写错地址（评审 R2）。"""
+
+    @kernel(device="ascend950pr")
+    def bad(x: gmptr(f32), z: gmptr(f32)):
+        a = ubuf(f32, 64, stages=2)
+        scratch = ubuf(f32, 64, stages=2)
+        b = ubuf(f32, 64)
+        for i in range(4):
+            mte2.copy(x[i * 64], a[i % 2])
+            slot = 1 if i == 0 else i % 2
+            mte2.copy(x[i * 64], scratch[slot])
+            sync(mte2, v, on=a, stage=i)
+            sync(mte2, v, on=scratch)
+            v.add(b, a[i % 2], scratch[slot])
+            sync(v, mte3, on=b)
+            mte3.copy(b, z[i * 64])
+
+    with pytest.raises(CodegenError, match="重卷失败"):
+        generate(bad.trace())
+
+
+def _war_ops(text: str, instr: str) -> list:
+    return [line.strip() for line in text.splitlines() if instr in line]
+
+
+def test_second_write_of_same_slot_waits_once():
+    """同一轮把同一槽位写两次时，复用前只 wait 一次。上一轮只 notify 一次。"""
+
+    @kernel(device="ascend950pr")
+    def twice(x: gmptr(f32), y: gmptr(f32), z: gmptr(f32)):
+        a = ubuf(f32, 64, stages=2)
+        b = ubuf(f32, 64)
+        for i in range(4):
+            mte2.copy(x[i * 64], a[i % 2])
+            mte2.copy(y[i * 64], a[i % 2])
+            sync(mte2, v, on=a, stage=i)
+            v.add(b, a[i % 2], a[i % 2])
+            sync(v, mte3, on=b)
+            mte3.copy(b, z[i * 64])
+
+    waits = _war_ops(generate(twice.trace()), "asc_sync_wait(PIPE_V, PIPE_MTE2, EVENT_ID0)")
+    notifies = _war_ops(generate(twice.trace()), "asc_sync_notify(PIPE_V, PIPE_MTE2, EVENT_ID0)")
+    assert waits == ["asc_sync_wait(PIPE_V, PIPE_MTE2, EVENT_ID0);"]
+    assert notifies == ["asc_sync_notify(PIPE_V, PIPE_MTE2, EVENT_ID0);"]
+
+
+def test_add_rejects_shorter_source():
+    @kernel(device="ascend950pr")
+    def short_src(x: gmptr(f32), y: gmptr(f32), z: gmptr(f32)):
+        a = ubuf(f32, 64)
+        b = ubuf(f32, 64)
+        c = ubuf(f32, 256)
+        mte2.copy(x[0], a[0])
+        mte2.copy(y[0], b[0])
+        sync(mte2, v, on=(a, b))
+        v.add(c, a, b)
+        sync(v, mte3, on=c)
+        mte3.copy(c, z[0])
+
+    with pytest.raises(CodegenError, match="字节数必须相同"):
+        generate(short_src.trace())
 
 
 def test_single_tile_straight_line():

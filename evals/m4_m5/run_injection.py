@@ -19,6 +19,7 @@
 import importlib.util
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -29,11 +30,24 @@ from ascendc_ir.verify import verify  # noqa: E402
 SET_DIR = Path(__file__).resolve().parent
 
 
-def load_sample(path: Path):
-    spec = importlib.util.spec_from_file_location(path.stem, path)
+def single_point_shortfall(injected: list) -> dict:
+    """每条已测规则至少 3 个单点样本。expect_ids 必须恰好是这一条规则。
+
+    多规则样本里的出现次数不算单点。V008 在 2201 设备表落地前不计入。
+    """
+    rules = {rule for item in injected for rule in item["expect_ids"] if rule != "V008"}
+    counts = Counter(
+        item["expect_ids"][0] for item in injected if len(item.get("expect_ids") or []) == 1
+    )
+    return {rule: counts[rule] for rule in sorted(rules) if counts[rule] < 3}
+
+
+def load_sample(path: Path, attr: str = "SAMPLE"):
+    spec = importlib.util.spec_from_file_location(path.stem + "_" + attr, path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    return mod.SAMPLE.trace()
+    fn = getattr(mod, attr)
+    return fn.trace()
 
 
 def main() -> int:
@@ -52,7 +66,7 @@ def main() -> int:
     located = 0
     clean = 0
     for item in gold["injected"]:
-        diags = verify(load_sample(SET_DIR / item["file"]))
+        diags = verify(load_sample(SET_DIR / item["file"], item.get("attr", "SAMPLE")))
         actual_ids = sorted({d.id for d in diags})
         expect_ids = sorted(item["expect_ids"])
         hits = [d for d in diags if d.id in expect_ids]
@@ -90,13 +104,43 @@ def main() -> int:
         and located / n_injected >= 0.8
         and clean == n_injected
     )
-    # 退出码：1=旧集回归失败；2=旧集回归通过但 C3 未测（新纪律落地前不得为 0，
-    # 防止自动化把退出码 0 读成 C3 通过）；0=新纪律落地后的完全通过
+    class_ok = True
+    for name, rule_id in gold["classes"].items():
+        subset = [item for item in gold["injected"] if item["expect_ids"] == [rule_id]]
+        if len(subset) < 3:
+            print(f"[类不足] {name} {rule_id}: {len(subset)} < 3")
+            class_ok = False
+            continue
+        hit = 0
+        for item in subset:
+            diags = verify(load_sample(SET_DIR / item["file"], item.get("attr", "SAMPLE")))
+            actual = {d.id for d in diags}
+            if rule_id in actual:
+                hit += 1
+        ratio = hit / len(subset)
+        print(f"类召回 {name} {rule_id}: {hit}/{len(subset)}")
+        if ratio < 0.9:
+            class_ok = False
+    short = single_point_shortfall(gold["injected"])
+    measured_ok = not short
+    if not measured_ok:
+        print(f"[规则单点注入不足 3] {short}")
+    independent = gold.get("independent") or []
+    if not independent:
+        print("[缺独立故障集]")
+    else:
+        for rel in independent:
+            diags = verify(load_sample(SET_DIR / rel))
+            print(f"[独立故障] {rel}: {sorted({d.id for d in diags})}")
+    discipline = class_ok and measured_ok and bool(independent)
     if not ok:
         print("M4/M5 注入集: FAIL")
         return 1
-    print("旧集回归通过，C3 未测")
-    return 2
+    if not discipline:
+        print("旧集回归通过，C3 未测")
+        return 2
+    print("M4/M5 注入集: PASS")
+    return 0
 
 
 if __name__ == "__main__":

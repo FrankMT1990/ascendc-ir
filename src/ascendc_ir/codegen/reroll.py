@@ -11,7 +11,7 @@
 trace 期 `for i in range(TILES)` 被展开（ADR 0002），模型只保留平铺语句。
 reroll 用 sync 的 stage（迭代号，见 ir-syntax.md）推断 TILES，再验证每轮迭代
 与首轮模板一致：结构（op / PIPE / 操作数个数 / 标量）相同、GM 偏移关于 i 仿射、
-buffer 槽位等于 i % stages。
+第 i 轮 buffer 槽位等于 i % stages（第 0 轮必须是 0）。
 
 失败处理（ADR 0009）：重卷失败返回 ok=False，由 generate() 拒绝生成；
 不允许展开生成（展开会丢槽位下标与 WAR，产生错码）。
@@ -106,6 +106,8 @@ def _strides(body, group1):
                     return None
                 strides[(pos, ref_pos)] = stride
             elif isinstance(r0, BufRef):
+                if r0.stage != 0:
+                    return None
                 if not isinstance(r1, BufRef) or r0.buffer is not r1.buffer or r1.stage != 1 % r0.buffer.stages:
                     return None
         if isinstance(stmt, SyncStmt):

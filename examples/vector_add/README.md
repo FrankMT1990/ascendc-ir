@@ -1,12 +1,12 @@
 # vector_add 配对例子
 
-M0（抽象税）配对实验的最小样本。
+M0 配对的最小样本：同一份调度，比较生成出来的 C 和手写 C 的执行时间。
 
 | 文件 | 角色 |
 |---|---|
 | `add.py` | AscendC-IR 写法（agent 面） |
 | `add_golden.asc` | `codegen.generate(add_custom.trace())` 的已审定输出；`tests/codegen` 做字节级 golden diff |
-| `add_reference.asc` | 手写 C API 对照，与 IR 同一调度 |
+| `add_reference.asc` | 手写 C API 对照。与生成结果同一份软件流水：稳态循环没有 `if` |
 
 ## 与官方样例的关系
 
