@@ -30,7 +30,13 @@ Ascend C C API（c_api/asc_simd.h，asc_* 指令级接口）
 
 ## 状态
 
-PR1–PR4 已合入：规范、trace/model、verifier（V001–V010）、codegen（Vector 通路）。2026-09-25 评审结论与修复见 `docs/design/review-findings-2026-09-25.md` 与 `docs/design/review-response-2026-09-25.md`。路线图见 `docs/positioning.md`。
+PR1–PR4 已合入：规范、trace/model、verifier（V001–V010）、codegen（Vector 通路，循环按槽位展开、event id 全字面量）。
+
+**评审状态**：代码经两轮评审（2026-09-25/26，结论与逐条处置见 `docs/design/review-findings-2026-09-25.md`、`review-findings-2026-09-26.md` 及对应 response 文档）。验收协议经 grok-4.7-xhigh 对抗性评审 **25 轮、74 条挑战全部处置，已于 v2.5.18 收敛（评审明确「无更多挑战」）**；逐条处置见 `docs/design/review-response-acceptance-2026-09-26.md`。协议判词、公式与封存规则的后续修改必须重开对抗性评审，不得直接编辑。
+
+测试：`pytest tests/` 46 项全过；`evals/m4_m5/run_injection.py` 旧集回归通过（退出码 2：C3 新纪律落地前不宣称 PASS）。
+
+路线图见 `docs/positioning.md`。下一步：PR5（cann_bench 打包 + M0 执行包）、C3 注入集新纪律（边界合法样本、每规则 ≥3 单点注入、独立故障集）。
 
 ## 目录
 
@@ -41,8 +47,8 @@ PR1–PR4 已合入：规范、trace/model、verifier（V001–V010）、codegen
 - `docs/design/vocabulary-evidence.md` — 语料驱动词汇方法与证据表
 - `docs/design/decisions/` — 设计决策记录（ADR），含推翻条件
 - `docs/design/review-guide.md` — 评审指南：事实源地图、不变量、已知限制
-- `docs/evaluation/claims.md` — 有效性主张 C1–C5（冻结）
-- `docs/evaluation/metrics.md` — 指标 M0–M9 与计时口径（冻结）
-- `src/ascendc_ir/` — 工具链（trace / model / verify / codegen / pack，后续 PR）
-- `examples/` — 最小例子与手写对照
+- `docs/evaluation/claims.md` — 有效性主张 C1–C5 与判词表（v2.5.18，25 轮评审收敛）
+- `docs/evaluation/metrics.md` — 指标 M0–M9、计时口径与测量清单（v2.5 配套）
+- `src/ascendc_ir/` — 工具链（trace / model / verify / codegen 已落地，pack 归 PR5）
+- `examples/` — 最小例子（IR / 已审定生成输出 / 手写对照三件套）
 - `evals/` — M0 配对、M4/M5 注入集、C1 协议
