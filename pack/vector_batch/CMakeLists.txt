@@ -38,15 +38,27 @@ if(ALL_KERNEL_SRCS STREQUAL "" OR ALL_PLUGIN_SRCS STREQUAL "")
     message(FATAL_ERROR "no direct-launch operator sources were registered")
 endif()
 
-set(_SAVED_CMAKE_CXX_COMPILER ${CMAKE_CXX_COMPILER})
-set(CMAKE_CXX_COMPILER ${BISHENG})
-set_source_files_properties(${ALL_KERNEL_SRCS} PROPERTIES
-    LANGUAGE CXX
-    COMPILE_FLAGS "--npu-arch=${BISHENG_NPU_ARCH} -xasc")
-add_library(all_kernels_obj OBJECT ${ALL_KERNEL_SRCS})
-target_include_directories(all_kernels_obj PRIVATE ${ALL_KERNEL_INCLUDE_DIRS} ${ASCEND_INCLUDE_DIRS})
+# project() 之后再改 CMAKE_CXX_COMPILER 不会换掉已经探测好的编译器。
+# 上次上板因此用系统 c++ 去编内核，报 unrecognized option --npu-arch=dav-3510。
+set(KERNEL_INCLUDE_FLAGS "")
+foreach(_dir ${ALL_KERNEL_INCLUDE_DIRS} ${ASCEND_INCLUDE_DIRS})
+    list(APPEND KERNEL_INCLUDE_FLAGS "-I${_dir}")
+endforeach()
+set(KERNEL_OBJECTS "")
+foreach(_src ${ALL_KERNEL_SRCS})
+    get_filename_component(_name ${_src} NAME_WE)
+    set(_obj ${CMAKE_BINARY_DIR}/bisheng/${_name}.o)
+    add_custom_command(
+        OUTPUT ${_obj}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bisheng
+        COMMAND ${BISHENG} --npu-arch=${BISHENG_NPU_ARCH} -xasc -std=c++17 -c ${_src} -o ${_obj} ${KERNEL_INCLUDE_FLAGS}
+        DEPENDS ${_src}
+        COMMENT "bisheng ${_name}"
+        VERBATIM
+    )
+    list(APPEND KERNEL_OBJECTS ${_obj})
+endforeach()
 
-set(CMAKE_CXX_COMPILER ${_SAVED_CMAKE_CXX_COMPILER})
 add_library(all_plugins_obj OBJECT ${ALL_PLUGIN_SRCS})
 target_include_directories(all_plugins_obj PRIVATE
     ${ALL_PLUGIN_INCLUDE_DIRS}
@@ -58,7 +70,7 @@ target_compile_options(all_plugins_obj PRIVATE -O3 ${TORCH_CXX_FLAGS})
 set(EXTENSION_CPP ${CMAKE_SOURCE_DIR}/csrc/extension.cpp)
 add_library(_C SHARED
     ${EXTENSION_CPP}
-    $<TARGET_OBJECTS:all_kernels_obj>
+    ${KERNEL_OBJECTS}
     $<TARGET_OBJECTS:all_plugins_obj>)
 target_include_directories(_C PRIVATE
     ${TORCH_INCLUDE_DIRS}

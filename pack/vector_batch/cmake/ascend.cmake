@@ -15,6 +15,9 @@ set(_ASCEND_INCLUDE_CANDIDATES
     "${ASCEND_HOME_PATH}/aarch64-linux/include"
     "${ASCEND_HOME_PATH}/arm64-linux/include"
     "${ASCEND_HOME_PATH}/x86_64-linux/include"
+    "${ASCEND_HOME_PATH}/x86_64-linux/asc/include"
+    "${ASCEND_HOME_PATH}/aarch64-linux/asc/include"
+    "${ASCEND_HOME_PATH}/asc/include"
     "${ASCEND_HOME_PATH}/compiler/ascendc/include"
     "${ASCEND_HOME_PATH}/compiler/include"
 )

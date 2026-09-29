@@ -2,7 +2,7 @@
 
 目标：做出 Agent 写得顺、能降到 Ascend C C 接口、并在 950 上算对的 IR。
 
-当前在第 8 步和第 9 步。第 8 步等上板机器把 `vector-batch-verify` 推上来。第 9 步在本地进行，不改已经推送的 `pack/vector_batch`。
+当前在第 8 步和第 9 步。第 8 步第一次上板已返回：设备是 Ascend950PR_9589，CANN 9.1.0，编译失败。系统 `c++` 不认识 `--npu-arch=dav-3510`。构建已改为调用 bisheng，等上板机器再编一次。第 9 步在本地进行。
 
 进度有变化时，只改这张表的状态，并和对应代码一起提交到本仓库。
 
@@ -15,7 +15,7 @@
 | 5 | 评估口径 v2.8 | 判词、时间差和数值规则写进 `docs/evaluation/` | done |
 | 6 | 向量加上板：同一份调度的生成内核和手写内核 | 时间差约 −0.05%，两组输入逐位一致 | done |
 | 7 | 准备四个直调内核并推到 GitHub | `pack/vector_batch` 在提交 `11cdb81`：向量加、leakyrelu、half 转 float、256 个数求和 | done |
-| 8 | 950 上一次编译并跑这四个内核 | 结果在分支 `vector-batch-verify` 的 `pack/vector_batch/results/` | doing |
+| 8 | 950 上一次编译并跑这四个内核 | 编译通过并跑完 `check_batch.py`。第一次结果 `ed34bfe`：build_exit=1，数值未跑 | doing |
 | 9 | 让 IR 代码生成发出 leakyrelu、f16 转 f32、f32 归约 | 本地测试通过；`datablock_reduce_sum` 和 f16 leakyrelu 仍拒绝生成；尚未推送 | doing |
 | 10 | 用第 8 步的结果对齐 IR 生成的 C | 生成结果与已在 950 上跑通的写法一致；对不上才再改生成，不单为其中一个算子再上板 | todo |
 | 11 | 封存向量加的基线时间和硬件时延下界 | 同一台 950、CANNBench kernel-only；没有这两项则任务保持未分类 | todo |
