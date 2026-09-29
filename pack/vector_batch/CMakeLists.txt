@@ -51,7 +51,10 @@ foreach(_src ${ALL_KERNEL_SRCS})
     add_custom_command(
         OUTPUT ${_obj}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bisheng
-        COMMAND ${BISHENG} --npu-arch=${BISHENG_NPU_ARCH} -xasc -std=c++17 -c ${_src} -o ${_obj} ${KERNEL_INCLUDE_FLAGS}
+        # -fPIC：custom command 不经过 CMake 的 POSITION_INDEPENDENT_CODE 机制；
+        # 内核 .o 要链进共享库 _C.abi3.so，缺 -fPIC 时 ld 报
+        # R_X86_64_PC32 ... can not be used when making a shared object。
+        COMMAND ${BISHENG} --npu-arch=${BISHENG_NPU_ARCH} -xasc -std=c++17 -fPIC -c ${_src} -o ${_obj} ${KERNEL_INCLUDE_FLAGS}
         DEPENDS ${_src}
         COMMENT "bisheng ${_name}"
         VERBATIM
