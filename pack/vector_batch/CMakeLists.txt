@@ -72,7 +72,10 @@ add_library(_C SHARED
     ${EXTENSION_CPP}
     ${KERNEL_OBJECTS}
     $<TARGET_OBJECTS:all_plugins_obj>)
+# extension.cpp 经 torch/extension.h 间接包含 <Python.h>；M0 包的公共 include 列表
+# 含 ${Python3_INCLUDE_DIRS}，本包此前遗漏（内核编不过时该目标从未被编到）。
 target_include_directories(_C PRIVATE
+    ${Python3_INCLUDE_DIRS}
     ${TORCH_INCLUDE_DIRS}
     ${TORCH_NPU_INCLUDE_DIRS}
     ${ASCEND_INCLUDE_DIRS})
