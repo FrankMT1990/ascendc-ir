@@ -1,0 +1,156 @@
+=== Building cann_bench wheel package ===
+NPU_ARCH: ascend950
+running bdist_wheel
+running build
+running build_py
+creating build
+creating build/lib.linux-x86_64-3.10
+creating build/lib.linux-x86_64-3.10/cann_bench
+copying cann_bench/__init__.py -> build/lib.linux-x86_64-3.10/cann_bench
+running build_ext
+-- The CXX compiler identification is GNU 9.5.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- BISHENG: /usr/local/Ascend/cann-9.1.0/bin/bisheng
+-- ASCEND_HOME_PATH: /usr/local/Ascend/cann-9.1.0
+-- Found Python3: /usr/local/bin/python (found version "3.10.12") found components: Interpreter Development Development.Module Development.Embed 
+-- Python3: /usr/local/bin/python
+CMake Warning at /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:22 (message):
+  static library kineto_LIBRARY-NOTFOUND not found.
+Call Stack (most recent call first):
+  /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:125 (append_torchlib_if_found)
+  cmake/torch.cmake:14 (find_package)
+  CMakeLists.txt:26 (include)
+
+
+-- Found Torch: /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch.so  
+-- Torch: /usr/local/lib/python3.10/dist-packages/torch/share/cmake
+-- torch_npu: /usr/local/lib/python3.10/dist-packages/torch_npu
+-- Registered direct-launch op: add_f32_16384
+-- Registered direct-launch op: cast_half_to_float
+-- Registered direct-launch op: leakyrelu_f32
+-- Registered direct-launch op: reduce_sum_f32
+-- Configuring done
+-- Generating done
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    PYTHON_EXECUTABLE
+
+
+-- Build files have been written to: /home/w00964611/ascendc-ir-verify/pack/vector_batch/build/temp.linux-x86_64-3.10
+[ 10%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/add_f32_16384/op_plugin/add_f32_16384_plugin.cpp.o
+[ 20%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/cast_half_to_float/op_plugin/cast_half_to_float_plugin.cpp.o
+[ 30%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/leakyrelu_f32/op_plugin/leakyrelu_f32_plugin.cpp.o
+[ 40%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/reduce_sum_f32/op_plugin/reduce_sum_f32_plugin.cpp.o
+[ 40%] Built target all_plugins_obj
+[ 50%] bisheng reduce_sum_f32_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/reduce_sum_f32/op_kernel/reduce_sum_f32_kernel.cpp:48:46: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    reduce_sum_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                             ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/reduce_sum_f32/op_kernel/reduce_sum_f32_kernel.cpp:48:64: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    reduce_sum_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 60%] bisheng add_f32_16384_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/add_f32_16384/op_kernel/add_f32_16384_kernel.cpp:75:45: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    add_f32_16384_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                            ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/add_f32_16384/op_kernel/add_f32_16384_kernel.cpp:75:63: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    add_f32_16384_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/add_f32_16384/op_kernel/add_f32_16384_kernel.cpp:75:81: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    add_f32_16384_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 70%] bisheng cast_half_to_float_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:50:50: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    cast_half_to_float_kernel<<<1, 0, stream>>>((__gm__ half*)x, (__gm__ float*)y);
+                                                 ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    cast_half_to_float_kernel<<<1, 0, stream>>>((__gm__ half*)x, (__gm__ float*)y);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 80%] bisheng leakyrelu_f32_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/leakyrelu_f32/op_kernel/leakyrelu_f32_kernel.cpp:50:45: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    leakyrelu_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                            ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/leakyrelu_f32/op_kernel/leakyrelu_f32_kernel.cpp:50:63: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    leakyrelu_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 90%] Building CXX object CMakeFiles/_C.dir/csrc/extension.cpp.o
+[100%] Linking CXX shared library ../../cann_bench/_C.abi3.so
+[100%] Built target _C
+/usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/cann_bench
+copying build/lib.linux-x86_64-3.10/cann_bench/__init__.py -> build/bdist.linux-x86_64/wheel/cann_bench
+running install_egg_info
+running egg_info
+creating cann_bench.egg-info
+writing cann_bench.egg-info/PKG-INFO
+writing dependency_links to cann_bench.egg-info/dependency_links.txt
+writing top-level names to cann_bench.egg-info/top_level.txt
+writing manifest file 'cann_bench.egg-info/SOURCES.txt'
+reading manifest file 'cann_bench.egg-info/SOURCES.txt'
+writing manifest file 'cann_bench.egg-info/SOURCES.txt'
+Copying cann_bench.egg-info to build/bdist.linux-x86_64/wheel/cann_bench-1.0.0.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/cann_bench-1.0.0.dist-info/WHEEL
+creating '/home/w00964611/ascendc-ir-verify/pack/vector_batch/dist/cann_bench-1.0.0-cp38-abi3-linux_x86_64.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'cann_bench/__init__.py'
+adding 'cann_bench-1.0.0.dist-info/METADATA'
+adding 'cann_bench-1.0.0.dist-info/WHEEL'
+adding 'cann_bench-1.0.0.dist-info/top_level.txt'
+adding 'cann_bench-1.0.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+=== Installing wheel package ===
+Looking in indexes: http://nexus.turing-ci.hisilicon.com/repository/pypi/simple
+Processing ./dist/cann_bench-1.0.0-cp38-abi3-linux_x86_64.whl
+Installing collected packages: cann-bench
+  Attempting uninstall: cann-bench
+    Found existing installation: cann-bench 1.0.0
+    Can't uninstall 'cann-bench'. No files were found to uninstall.
+Successfully installed cann-bench-1.0.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+=== Build complete ===
+total 12
+drwxr-xr-x  2 root root 4096 Sep 30 03:59 .
+drwxr-xr-x 10 root root 4096 Sep 30 03:59 ..
+-rw-r--r--  1 root root 1436 Sep 30 03:59 cann_bench-1.0.0-cp38-abi3-linux_x86_64.whl

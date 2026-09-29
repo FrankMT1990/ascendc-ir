@@ -1,0 +1,425 @@
+=== Building cann_bench wheel package ===
+NPU_ARCH: ascend950
+running bdist_wheel
+running build
+running build_py
+creating build
+creating build/lib.linux-x86_64-3.10
+creating build/lib.linux-x86_64-3.10/cann_bench
+copying cann_bench/__init__.py -> build/lib.linux-x86_64-3.10/cann_bench
+running build_ext
+-- The CXX compiler identification is GNU 9.5.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- BISHENG: /usr/local/Ascend/cann-9.1.0/bin/bisheng
+-- ASCEND_HOME_PATH: /usr/local/Ascend/cann-9.1.0
+-- Found Python3: /usr/local/bin/python (found version "3.10.12") found components: Interpreter Development Development.Module Development.Embed 
+-- Python3: /usr/local/bin/python
+CMake Warning at /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:22 (message):
+  static library kineto_LIBRARY-NOTFOUND not found.
+Call Stack (most recent call first):
+  /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:125 (append_torchlib_if_found)
+  cmake/torch.cmake:14 (find_package)
+  CMakeLists.txt:26 (include)
+
+
+-- Found Torch: /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch.so  
+-- Torch: /usr/local/lib/python3.10/dist-packages/torch/share/cmake
+-- torch_npu: /usr/local/lib/python3.10/dist-packages/torch_npu
+-- Registered direct-launch op: add_f32_16384
+-- Registered direct-launch op: cast_half_to_float
+-- Registered direct-launch op: leakyrelu_f32
+-- Registered direct-launch op: reduce_sum_f32
+-- Configuring done
+-- Generating done
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    PYTHON_EXECUTABLE
+
+
+-- Build files have been written to: /home/w00964611/ascendc-ir-verify/pack/vector_batch/build/temp.linux-x86_64-3.10
+[ 10%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/add_f32_16384/op_plugin/add_f32_16384_plugin.cpp.o
+[ 20%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/cast_half_to_float/op_plugin/cast_half_to_float_plugin.cpp.o
+[ 30%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/leakyrelu_f32/op_plugin/leakyrelu_f32_plugin.cpp.o
+[ 40%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/reduce_sum_f32/op_plugin/reduce_sum_f32_plugin.cpp.o
+[ 40%] Built target all_plugins_obj
+[ 50%] bisheng reduce_sum_f32_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/reduce_sum_f32/op_kernel/reduce_sum_f32_kernel.cpp:48:46: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    reduce_sum_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                             ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/reduce_sum_f32/op_kernel/reduce_sum_f32_kernel.cpp:48:64: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    reduce_sum_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 60%] bisheng add_f32_16384_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/add_f32_16384/op_kernel/add_f32_16384_kernel.cpp:75:45: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    add_f32_16384_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                            ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/add_f32_16384/op_kernel/add_f32_16384_kernel.cpp:75:63: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    add_f32_16384_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/add_f32_16384/op_kernel/add_f32_16384_kernel.cpp:75:81: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    add_f32_16384_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 70%] bisheng cast_half_to_float_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:21:15: error: no matching function for call to 'asc_loadalign_unpack'
+        src = asc_loadalign_unpack(x_local + i * repeat_elems);
+              ^~~~~~~~~~~~~~~~~~~~
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:375:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:373:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ uint32_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:371:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ int32_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:369:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:367:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_half& dst, __ubuf__ half* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:365:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint16_t& dst, __ubuf__ uint16_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:363:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int16_t& dst, __ubuf__ int16_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:361:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:359:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:357:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:355:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:353:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int4x2_t& dst, __ubuf__ int4b_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:351:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:349:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:347:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint8_t& dst, __ubuf__ uint8_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:345:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int8_t& dst, __ubuf__ int8_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1521:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1519:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1517:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1515:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1513:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_half& dst, __ubuf__ half* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1511:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1509:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint16_t& dst, __ubuf__ uint16_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1507:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1505:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1503:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1501:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1499:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int8_t& dst, __ubuf__ int8_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1497:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint8_t& dst, __ubuf__ uint8_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1495:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1493:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1491:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:623:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:621:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ uint32_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:619:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ int32_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:617:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:615:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_half& dst, __ubuf__ half* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:613:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint16_t& dst, __ubuf__ uint16_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:611:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int16_t& dst, __ubuf__ int16_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:609:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:607:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:605:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:603:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:601:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int4x2_t& dst, __ubuf__ int4b_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:599:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:597:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:595:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint8_t& dst, __ubuf__ uint8_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:593:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int8_t& dst, __ubuf__ int8_t* src, int32_t offset);
+                            ^
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:21:15: error: assigning to 'vector_half' (aka 'vector_f16') from incompatible type 'void'
+        src = asc_loadalign_unpack(x_local + i * repeat_elems);
+              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:22:41: error: use of undeclared identifier 'ASC_POSITION_EVEN'
+        asc_half2float(dst, src, vmask, ASC_POSITION_EVEN);
+                                        ^
+3 errors generated.
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:21:15: error: no matching function for call to 'asc_loadalign_unpack'
+        src = asc_loadalign_unpack(x_local + i * repeat_elems);
+              ^~~~~~~~~~~~~~~~~~~~
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:375:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:373:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ uint32_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:371:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ int32_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:369:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:367:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_half& dst, __ubuf__ half* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:365:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint16_t& dst, __ubuf__ uint16_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:363:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int16_t& dst, __ubuf__ int16_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:361:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:359:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:357:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:355:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:353:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int4x2_t& dst, __ubuf__ int4b_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:351:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:349:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:347:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint8_t& dst, __ubuf__ uint8_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:345:29: note: candidate function not viable: requires 2 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int8_t& dst, __ubuf__ int8_t* src);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1521:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1519:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ int32_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1517:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ uint32_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1515:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1513:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_half& dst, __ubuf__ half* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1511:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int16_t& dst, __ubuf__ int16_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1509:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint16_t& dst, __ubuf__ uint16_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1507:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1505:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1503:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1501:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1499:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int8_t& dst, __ubuf__ int8_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1497:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint8_t& dst, __ubuf__ uint8_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1495:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int4x2_t& dst, __ubuf__ int4b_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1493:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:1491:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:623:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:621:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ uint32_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:619:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ int32_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:617:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:615:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_half& dst, __ubuf__ half* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:613:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint16_t& dst, __ubuf__ uint16_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:611:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int16_t& dst, __ubuf__ int16_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:609:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_hifloat8_t& dst, __ubuf__ hifloat8_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:607:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:605:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:603:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:601:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int4x2_t& dst, __ubuf__ int4b_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:599:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:597:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:595:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint8_t& dst, __ubuf__ uint8_t* src, int32_t offset);
+                            ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/reg_compute/reg_load.h:593:29: note: candidate function not viable: requires 3 arguments, but 1 was provided
+__simd_callee__ inline void asc_loadalign_unpack(vector_int8_t& dst, __ubuf__ int8_t* src, int32_t offset);
+                            ^
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:21:15: error: assigning to 'vector_half' (aka 'vector_f16') from incompatible type 'void'
+        src = asc_loadalign_unpack(x_local + i * repeat_elems);
+              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:22:41: error: use of undeclared identifier 'ASC_POSITION_EVEN'
+        asc_half2float(dst, src, vmask, ASC_POSITION_EVEN);
+                                        ^
+3 errors generated.
+gmake[2]: *** [CMakeFiles/_C.dir/build.make:80: bisheng/cast_half_to_float_kernel.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:196: CMakeFiles/_C.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2
+Traceback (most recent call last):
+  File "/home/w00964611/ascendc-ir-verify/pack/vector_batch/setup.py", line 34, in <module>
+    setup(
+  File "/usr/lib/python3/dist-packages/setuptools/__init__.py", line 153, in setup
+    return distutils.core.setup(**attrs)
+  File "/usr/lib/python3.10/distutils/core.py", line 148, in setup
+    dist.run_commands()
+  File "/usr/lib/python3.10/distutils/dist.py", line 966, in run_commands
+    self.run_command(cmd)
+  File "/usr/lib/python3.10/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/usr/lib/python3/dist-packages/wheel/bdist_wheel.py", line 299, in run
+    self.run_command('build')
+  File "/usr/lib/python3.10/distutils/cmd.py", line 313, in run_command
+    self.distribution.run_command(command)
+  File "/usr/lib/python3.10/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/usr/lib/python3.10/distutils/command/build.py", line 135, in run
+    self.run_command(cmd_name)
+  File "/usr/lib/python3.10/distutils/cmd.py", line 313, in run_command
+    self.distribution.run_command(command)
+  File "/usr/lib/python3.10/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/home/w00964611/ascendc-ir-verify/pack/vector_batch/setup.py", line 17, in run
+    self.build_extension(ext)
+  File "/home/w00964611/ascendc-ir-verify/pack/vector_batch/setup.py", line 31, in build_extension
+    subprocess.check_call(["cmake", "--build", str(build_temp), "--config", cfg], cwd=build_temp)
+  File "/usr/lib/python3.10/subprocess.py", line 369, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['cmake', '--build', '/home/w00964611/ascendc-ir-verify/pack/vector_batch/build/temp.linux-x86_64-3.10', '--config', 'Release']' returned non-zero exit status 2.

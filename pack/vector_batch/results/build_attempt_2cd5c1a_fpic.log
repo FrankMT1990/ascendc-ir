@@ -1,0 +1,150 @@
+=== Building cann_bench wheel package ===
+NPU_ARCH: ascend950
+running bdist_wheel
+running build
+running build_py
+creating build
+creating build/lib.linux-x86_64-3.10
+creating build/lib.linux-x86_64-3.10/cann_bench
+copying cann_bench/__init__.py -> build/lib.linux-x86_64-3.10/cann_bench
+running build_ext
+-- The CXX compiler identification is GNU 9.5.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- BISHENG: /usr/local/Ascend/cann-9.1.0/bin/bisheng
+-- ASCEND_HOME_PATH: /usr/local/Ascend/cann-9.1.0
+-- Found Python3: /usr/local/bin/python (found version "3.10.12") found components: Interpreter Development Development.Module Development.Embed 
+-- Python3: /usr/local/bin/python
+CMake Warning at /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:22 (message):
+  static library kineto_LIBRARY-NOTFOUND not found.
+Call Stack (most recent call first):
+  /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:125 (append_torchlib_if_found)
+  cmake/torch.cmake:14 (find_package)
+  CMakeLists.txt:26 (include)
+
+
+-- Found Torch: /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch.so  
+-- Torch: /usr/local/lib/python3.10/dist-packages/torch/share/cmake
+-- torch_npu: /usr/local/lib/python3.10/dist-packages/torch_npu
+-- Registered direct-launch op: add_f32_16384
+-- Registered direct-launch op: cast_half_to_float
+-- Registered direct-launch op: leakyrelu_f32
+-- Registered direct-launch op: reduce_sum_f32
+-- Configuring done
+-- Generating done
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    PYTHON_EXECUTABLE
+
+
+-- Build files have been written to: /home/w00964611/ascendc-ir-verify/pack/vector_batch/build/temp.linux-x86_64-3.10
+[ 10%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/add_f32_16384/op_plugin/add_f32_16384_plugin.cpp.o
+[ 20%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/cast_half_to_float/op_plugin/cast_half_to_float_plugin.cpp.o
+[ 30%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/leakyrelu_f32/op_plugin/leakyrelu_f32_plugin.cpp.o
+[ 40%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/reduce_sum_f32/op_plugin/reduce_sum_f32_plugin.cpp.o
+[ 40%] Built target all_plugins_obj
+[ 50%] bisheng reduce_sum_f32_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/reduce_sum_f32/op_kernel/reduce_sum_f32_kernel.cpp:48:46: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    reduce_sum_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                             ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/reduce_sum_f32/op_kernel/reduce_sum_f32_kernel.cpp:48:64: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    reduce_sum_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 60%] bisheng add_f32_16384_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/add_f32_16384/op_kernel/add_f32_16384_kernel.cpp:75:45: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    add_f32_16384_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                            ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/add_f32_16384/op_kernel/add_f32_16384_kernel.cpp:75:63: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    add_f32_16384_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/add_f32_16384/op_kernel/add_f32_16384_kernel.cpp:75:81: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    add_f32_16384_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 70%] bisheng cast_half_to_float_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:50:50: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    cast_half_to_float_kernel<<<1, 0, stream>>>((__gm__ half*)x, (__gm__ float*)y);
+                                                 ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/cast_half_to_float/op_kernel/cast_half_to_float_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    cast_half_to_float_kernel<<<1, 0, stream>>>((__gm__ half*)x, (__gm__ float*)y);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 80%] bisheng leakyrelu_f32_kernel
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/leakyrelu_f32/op_kernel/leakyrelu_f32_kernel.cpp:50:45: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    leakyrelu_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                            ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/ascendc-ir-verify/pack/vector_batch/csrc/ops/leakyrelu_f32/op_kernel/leakyrelu_f32_kernel.cpp:50:63: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    leakyrelu_f32_kernel<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y);
+                                                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 90%] Building CXX object CMakeFiles/_C.dir/csrc/extension.cpp.o
+[100%] Linking CXX shared library ../../cann_bench/_C.abi3.so
+/usr/bin/ld: bisheng/leakyrelu_f32_kernel.o: warning: relocation against `_Z20leakyrelu_f32_kernelPfS_' in read-only section `.text'
+/usr/bin/ld: bisheng/add_f32_16384_kernel.o: relocation R_X86_64_PC32 against symbol `_Z20add_f32_16384_kernelPfS_S_' can not be used when making a shared object; recompile with -fPIC
+/usr/bin/ld: final link failed: bad value
+collect2: error: ld returned 1 exit status
+gmake[2]: *** [CMakeFiles/_C.dir/build.make:136: ../../cann_bench/_C.abi3.so] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:197: CMakeFiles/_C.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2
+Traceback (most recent call last):
+  File "/home/w00964611/ascendc-ir-verify/pack/vector_batch/setup.py", line 34, in <module>
+    setup(
+  File "/usr/lib/python3/dist-packages/setuptools/__init__.py", line 153, in setup
+    return distutils.core.setup(**attrs)
+  File "/usr/lib/python3.10/distutils/core.py", line 148, in setup
+    dist.run_commands()
+  File "/usr/lib/python3.10/distutils/dist.py", line 966, in run_commands
+    self.run_command(cmd)
+  File "/usr/lib/python3.10/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/usr/lib/python3/dist-packages/wheel/bdist_wheel.py", line 299, in run
+    self.run_command('build')
+  File "/usr/lib/python3.10/distutils/cmd.py", line 313, in run_command
+    self.distribution.run_command(command)
+  File "/usr/lib/python3.10/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/usr/lib/python3.10/distutils/command/build.py", line 135, in run
+    self.run_command(cmd_name)
+  File "/usr/lib/python3.10/distutils/cmd.py", line 313, in run_command
+    self.distribution.run_command(command)
+  File "/usr/lib/python3.10/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/home/w00964611/ascendc-ir-verify/pack/vector_batch/setup.py", line 17, in run
+    self.build_extension(ext)
+  File "/home/w00964611/ascendc-ir-verify/pack/vector_batch/setup.py", line 31, in build_extension
+    subprocess.check_call(["cmake", "--build", str(build_temp), "--config", cfg], cwd=build_temp)
+  File "/usr/lib/python3.10/subprocess.py", line 369, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['cmake', '--build', '/home/w00964611/ascendc-ir-verify/pack/vector_batch/build/temp.linux-x86_64-3.10', '--config', 'Release']' returned non-zero exit status 2.

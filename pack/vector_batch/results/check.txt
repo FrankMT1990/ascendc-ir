@@ -1,0 +1,5 @@
+add_G1 dtype torch.float32 numel 16384 nan 0 max_abs 0.0 tol_ok True bit 16384 / 16384
+leakyrelu_G1 dtype torch.float32 numel 16384 nan 0 max_abs 0.0 tol_ok True bit 16384 / 16384
+cast_G1 dtype torch.float32 numel 1024 nan 0 max_abs 0.0 tol_ok True bit 1024 / 1024
+reduce_ones lane_sum 256.0 golden 256.0 abs_err 0.0 nan 0
+reduce_small lane_sum 1.3183293342590332 golden 1.3183294534683228 abs_err 1.1920928955078125e-07 nan 0

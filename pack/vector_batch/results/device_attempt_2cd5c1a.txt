@@ -1,0 +1,4 @@
+device=Ascend950PR_9589
+cann=/usr/local/Ascend/cann-9.1.0
+commit=2cd5c1a
+build_exit=1
