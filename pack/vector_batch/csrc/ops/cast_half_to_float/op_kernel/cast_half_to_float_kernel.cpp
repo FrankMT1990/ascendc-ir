@@ -1,6 +1,13 @@
 /**
  * cast_half_to_float: 1024 float16 -> 1024 float32, one core.
- * 3510: asc_loadalign_unpack + asc_half2float(..., ASC_POSITION_EVEN).
+ *
+ * 3510 native CANN 9.1.0 pattern (asc-devkit 的 asc_loadalign_unpack / ASC_POSITION_EVEN
+ * 不存在于原生 c_api 树；原生等价 = UNPK 装载 + PART_EVEN 转换，与 CANN 自带
+ * Cast Level-2 实现一致: asc/impl/basic_api/dav_m310/kernel_operator_vec_vconv_impl.h
+ * 的 LV2_LOAD_UPPER 用 vlds(src, i*64, UNPK_B16)，VCVT_F16_TO_F32 用 vcvt PART_EVEN):
+ *   vlds(src, x + i*64, 0, UNPK_B16)  装载 64 个 half 解包进偶位槽
+ *   asc_half2float(dst, src, vmask)   即 vcvt PART_EVEN，按序转换偶位 64 个
+ *   asc_storealign(y + i*64, dst, vmask)
  */
 #include <stdint.h>
 
@@ -18,8 +25,8 @@ __simd_vf__ inline void cast_half_to_float_vf(__ubuf__ half* x_local, __ubuf__ f
     vector_float dst;
     for (uint16_t i = 0; i < num_repeats; ++i) {
         vmask = asc_update_mask_b32(num_elems);
-        src = asc_loadalign_unpack(x_local + i * repeat_elems);
-        asc_half2float(dst, src, vmask, ASC_POSITION_EVEN);
+        vlds(src, x_local + i * repeat_elems, 0, UNPK_B16);
+        asc_half2float(dst, src, vmask);
         asc_storealign(y_local + i * repeat_elems, dst, vmask);
     }
 }
