@@ -11,7 +11,7 @@
 from pathlib import Path
 
 import pytest
-from ascendc_ir import f32, gmptr, kernel, sync, ubuf
+from ascendc_ir import f16, f32, gmptr, kernel, sync, ubuf
 from ascendc_ir.codegen import CodegenError, generate
 from ascendc_ir.pipes import mte2, mte3, v
 
@@ -35,10 +35,10 @@ def test_generated_structure():
     # 稳态循环：WAR 无条件，event id 与槽位偏移仍是字面量
     assert "for (uint32_t i = 2; i < 6; i += 2)" in out
     assert "asc_sync_wait(PIPE_V, PIPE_MTE2, EVENT_ID0);" in out
-    assert "asc_copy_gm2ub(x_local, x + i * 2048, 1, 256, 0, 0);" in out
-    assert "asc_copy_gm2ub(x_local + 2048, x + (i + 1) * 2048, 1, 256, 0, 0);" in out
+    assert "asc_copy_gm2ub(x_local, x + i * 2048, 1, 8192, 0, 0);" in out
+    assert "asc_copy_gm2ub(x_local + 2048, x + (i + 1) * 2048, 1, 8192, 0, 0);" in out
     # prologue 把 i=0 折成常量地址，不进稳态的 if
-    assert "asc_copy_gm2ub(x_local, x + 0, 1, 256, 0, 0);" in out or "asc_copy_gm2ub(x_local, x, 1, 256, 0, 0);" in out
+    assert "asc_copy_gm2ub(x_local, x + 0, 1, 8192, 0, 0);" in out or "asc_copy_gm2ub(x_local, x, 1, 8192, 0, 0);" in out
     assert "asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);" in out
     assert "asc_sync_wait(PIPE_V, PIPE_MTE3, EVENT_ID0);" in out
     assert "EVENT_ID8" not in out
@@ -67,7 +67,7 @@ def test_war_release_after_last_read():
 
     out = generate(two_reads.trace())
     lines = out.splitlines()
-    add_idx = [n for n, line in enumerate(lines) if "asc_add(" in line]
+    add_idx = [n for n, line in enumerate(lines) if line.strip().startswith("add_vf(")]
     notify_idx = [n for n, line in enumerate(lines) if "asc_sync_notify(PIPE_V, PIPE_MTE2" in line]
     # 每个子迭代释放 x/y 各一次（共 2×2=4 条）；每个 buffer 每轮只发一次
     assert len(notify_idx) == 4
@@ -254,21 +254,42 @@ def test_tiles_not_divisible_by_stages_rejected():
         generate(odd.trace())
 
 
-def test_repeat_uint8_guard():
-    """asc_add 的 repeat 是 uint8_t：单 stage 超 255×256B 拒绝（评审核对项）。"""
+def test_add_rejects_f16_compute():
+    """ADR 0014：add 的 reg 向量 lowering 只核对 f32 签名，f16 拒绝生成（fail closed）。"""
 
     @kernel(device="ascend950pr")
-    def big(x: gmptr(f32), z: gmptr(f32)):
-        a = ubuf(f32, 16448)  # 65792B → repeat 257
-        b = ubuf(f32, 16448)
+    def f16_add(x: gmptr(f16), y: gmptr(f16), z: gmptr(f16)):
+        a = ubuf(f16, 128)
+        b = ubuf(f16, 128)
+        c = ubuf(f16, 128)
         mte2.copy(x[0], a[0])
-        sync(mte2, v, on=a)
-        v.add(b, a, a)
-        sync(v, mte3, on=b)
-        mte3.copy(b, z[0])
+        mte2.copy(y[0], b[0])
+        sync(mte2, v, on=(a, b))
+        v.add(c, a[0], b[0])
+        sync(v, mte3, on=c)
+        mte3.copy(c, z[0])
 
-    with pytest.raises(CodegenError, match="255"):
-        generate(big.trace())
+    with pytest.raises(CodegenError, match="f32"):
+        generate(f16_add.trace())
+
+
+def test_stage_bytes_must_align_vf():
+    """单 stage 不是 256B（VL）整数倍时拒绝：VF 迭代无法对齐（ADR 0014）。"""
+
+    @kernel(device="ascend950pr")
+    def ragged(x: gmptr(f32), y: gmptr(f32), z: gmptr(f32)):
+        a = ubuf(f32, 72)  # 288B：32B 对齐但不是 256B（VL）的整数倍
+        b = ubuf(f32, 72)
+        c = ubuf(f32, 72)
+        mte2.copy(x[0], a[0])
+        mte2.copy(y[0], b[0])
+        sync(mte2, v, on=(a, b))
+        v.add(c, a[0], b[0])
+        sync(v, mte3, on=c)
+        mte3.copy(c, z[0])
+
+    with pytest.raises(CodegenError, match="VF 迭代"):
+        generate(ragged.trace())
 
 
 def test_straight_line_distinct_slots_keep_offsets():
@@ -287,7 +308,7 @@ def test_straight_line_distinct_slots_keep_offsets():
 
     out = generate(two_slots.trace())
     assert "asc_copy_gm2ub(a + 64, x + 64," in out
-    assert "asc_add(b, a, a + 64," in out
+    assert "add_vf(a, a + 64, b, 64);" in out
 
 
 def test_loop_rejects_nonzero_slot_on_first_iteration():
@@ -368,7 +389,7 @@ def test_single_tile_straight_line():
         mte3.copy(z_local, z[0])
 
     out = generate(add1.trace())
-    assert "for (" not in out
+    assert "for (uint32_t i =" not in out
     assert "if (i >=" not in out
     assert "asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);" in out
-    assert "asc_add(z_local, x_local, y_local, 32, 1, 1, 1, 8, 8, 8);" in out
+    assert "add_vf(x_local, y_local, z_local, 2048);" in out
