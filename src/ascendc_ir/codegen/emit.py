@@ -17,10 +17,10 @@
 - WAR 释放边由 stages 推导：复用槽位前 wait（消费, 生产），**该槽位在循环体内的
   最后一次消费之后**才 notify（复审 2026-09-26 第 1 条）；同一语句重复读同一
   buffer 只释放一次。
-- 计算 op 只支持已核对头文件签名的映射（当前：add）；其余拒绝生成。
-  add 的向量计算在 3510（950PR/950DT）上没有 UB 指针（memory-vector）版实现，
-  lowering 为 reg 向量风格（ADR 0014）：`__simd_vf__` 内 asc_load / asc_add(reg) /
-  asc_store 循环；搬运与同步边不变。当前只核对 f32 签名，f16 拒绝生成。
+- 计算 op 已在 CANN 9.1.0 的 3510 上核对：f32 add、f32 leakyrelu、f16→f32 cast、
+  f32 repeat_reduce_sum。cast 用 `vlds(..., UNPK_B16)` 和 `asc_half2float(dst, src, mask)`，
+  不用 asc-devkit 才有的 `asc_loadalign_unpack`。datablock_reduce_sum 仍拒绝生成。
+  向量计算在 3510 上没有 UB 指针版实现，lowering 为 reg 向量风格（ADR 0014）。
   搬运 burst_len 在 3510 上单位为字节（2201 为 32B 块数），搬运量直接发单 stage 字节数。
 - v0.2 不生成多核切分；不支持跨 PIPE 就地改写（一个 buffer 的生产 PIPE 必须唯一）。
 """
@@ -50,7 +50,7 @@ _PIPE_TO_C = {
     Pipe.FIX: "PIPE_FIX",
 }
 
-_SUPPORTED_COMPUTE = {"add"}
+_SUPPORTED_COMPUTE = {"add", "leakyrelu", "cast", "repeat_reduce_sum"}
 
 _LICENSE = """/* !
  * Copyright (c) 2026 Huawei Technologies Co., Ltd.
@@ -80,6 +80,67 @@ _ADD_VF_HELPER = """__simd_vf__ inline void add_vf(
         asc_store(z_local + i * one_rep_size, reg_dst);
     }
 }"""
+
+_LEAKYRELU_VF_HELPER = """__simd_vf__ inline void leakyrelu_vf(
+    __ubuf__ float* x_local, __ubuf__ float* y_local, uint32_t data_len, float alpha)
+{
+    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);
+    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;
+
+    vector_bool vmask;
+    vector_float reg_src;
+    vector_float reg_dst;
+    for (uint16_t i = 0; i < repeat_time; ++i) {
+        vmask = asc_update_mask_b32(data_len);
+        asc_load(reg_src, x_local + i * one_rep_size);
+        asc_leakyrelu(reg_dst, reg_src, alpha, vmask);
+        asc_store(y_local + i * one_rep_size, reg_dst);
+    }
+}"""
+
+_CAST_VF_HELPER = """__simd_vf__ inline void cast_half_to_float_vf(
+    __ubuf__ half* x_local, __ubuf__ float* y_local, uint32_t data_len)
+{
+    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);
+    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;
+
+    vector_bool vmask;
+    vector_half reg_src;
+    vector_float reg_dst;
+    for (uint16_t i = 0; i < repeat_time; ++i) {
+        vmask = asc_update_mask_b32(data_len);
+        vlds(reg_src, x_local + i * one_rep_size, 0, UNPK_B16);
+        asc_half2float(reg_dst, reg_src, vmask);
+        asc_storealign(y_local + i * one_rep_size, reg_dst, vmask);
+    }
+}"""
+
+_REDUCE_VF_HELPER = """__simd_vf__ inline void reduce_sum_vf(
+    __ubuf__ float* x_local, __ubuf__ float* y_local, uint32_t data_len)
+{
+    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);
+    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;
+
+    vector_bool vmask;
+    vector_float src_reg;
+    vector_float dst_reg;
+    vector_float acc_reg;
+    asc_duplicate_scalar(acc_reg, 0.0f);
+    for (uint16_t i = 0; i < repeat_time; ++i) {
+        vmask = asc_update_mask_b32(data_len);
+        asc_loadalign(src_reg, x_local + i * one_rep_size);
+        asc_reduce_sum(dst_reg, src_reg, vmask);
+        asc_add(acc_reg, acc_reg, dst_reg, vmask);
+    }
+    asc_storealign(y_local, acc_reg, vmask);
+}"""
+
+_HELPERS = {
+    "add": _ADD_VF_HELPER,
+    "leakyrelu": _LEAKYRELU_VF_HELPER,
+    "cast": _CAST_VF_HELPER,
+    "repeat_reduce_sum": _REDUCE_VF_HELPER,
+}
 
 
 class CodegenError(Exception):
@@ -260,9 +321,11 @@ class _Emitter:
     def emit(self) -> str:
         k = self.kernel
         lines = [_LICENSE, "", '#include "c_api/asc_simd.h"', ""]
-        if any(isinstance(stmt, ComputeStmt) for stmt in k.statements):
-            lines.extend(_ADD_VF_HELPER.splitlines())
-            lines.append("")
+        ops = {stmt.op for stmt in k.statements if isinstance(stmt, ComputeStmt)}
+        for op in ("add", "leakyrelu", "cast", "repeat_reduce_sum"):
+            if op in ops:
+                lines.extend(_HELPERS[op].splitlines())
+                lines.append("")
         params = ", ".join(f"__gm__ {_DTYPE_TO_C[p.dtype.value]}* {p.name}" for p in k.params)
         lines.append(f"__vector__ __global__ __aicore__ void {k.name}({params})")
         lines.append("{")
@@ -352,8 +415,19 @@ class _Emitter:
         raise CodegenError(f"v0.2 不支持的 copy 形态：pipe={stmt.pipe.value}")
 
     def _emit_compute(self, stmt: ComputeStmt, j: int, k: int, i_value, signature, waited: set) -> list:
-        if stmt.op not in _SUPPORTED_COMPUTE:
-            raise CodegenError(f"v0.2 代码生成只支持 {sorted(_SUPPORTED_COMPUTE)}，得到 {stmt.op!r}（trace/verify 可用）")
+        if stmt.op == "add":
+            return self._emit_add(stmt, j, k, signature, waited)
+        if stmt.op == "leakyrelu":
+            return self._emit_leakyrelu(stmt, j, k, signature, waited)
+        if stmt.op == "cast":
+            return self._emit_cast(stmt, j, k, signature, waited)
+        if stmt.op == "repeat_reduce_sum":
+            return self._emit_reduce(stmt, j, k, signature, waited)
+        raise CodegenError(
+            f"v0.2 代码生成只支持 {sorted(_SUPPORTED_COMPUTE)}，得到 {stmt.op!r}（trace/verify 可用）"
+        )
+
+    def _emit_add(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
         dst = stmt.dst
         for src in stmt.srcs:
             if not isinstance(src, BufRef) or src.buffer.stage_bytes != dst.buffer.stage_bytes:
@@ -361,26 +435,87 @@ class _Emitter:
                     f"add 的源和目的单 stage 字节数必须相同（目的 {dst.buffer.name} 为 {dst.buffer.stage_bytes}B），"
                     "否则会读过较短的 buffer"
                 )
-        if dst.buffer.dtype is not DType.f32 or any(s.buffer.dtype is not DType.f32 for s in stmt.srcs):
-            raise CodegenError(
-                "add 的 reg 向量 lowering（ADR 0014）当前只核对 f32 头文件签名；f16 请等待签名核对后再开放"
-            )
-        if dst.buffer.stage_bytes % _REPEAT_BYTES != 0:
-            raise CodegenError(
-                f"buffer {dst.buffer.name} 单 stage {dst.buffer.stage_bytes}B 不是 {_REPEAT_BYTES}B 的整数倍，"
-                "无法对齐 VF 迭代（VL=256B）"
-            )
+        self._require_f32(dst, "add")
+        self._require_vl(dst)
         lines = self._war_wait(dst.buffer, k, signature, waited)
         ptrs = [self._buf_ptr(dst, k)] + [self._buf_ptr(s, k) for s in stmt.srcs]
         lines.append(f"add_vf({ptrs[1]}, {ptrs[2]}, {ptrs[0]}, {dst.buffer.elems});")
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_leakyrelu(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        dst = stmt.dst
+        src = stmt.srcs[0]
+        if not isinstance(src, BufRef) or src.buffer.elems != dst.buffer.elems or src.buffer.dtype is not DType.f32:
+            raise CodegenError("leakyrelu 当前只生成 f32，且源和目的元素个数必须相同")
+        self._require_f32(dst, "leakyrelu")
+        self._require_vl(dst)
+        alpha = float(stmt.scalars[0])
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(
+            f"leakyrelu_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems}, {alpha:.9g}f);"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_cast(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        dst = stmt.dst
+        src = stmt.srcs[0]
+        if (
+            not isinstance(src, BufRef)
+            or src.buffer.dtype is not DType.f16
+            or dst.buffer.dtype is not DType.f32
+            or src.buffer.elems != dst.buffer.elems
+        ):
+            raise CodegenError("cast 当前只生成 f16 到 f32，且两边元素个数必须相同")
+        self._require_vl(dst)
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(
+            f"cast_half_to_float_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems});"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_reduce(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        dst = stmt.dst
+        src = stmt.srcs[0]
+        if not isinstance(src, BufRef) or src.buffer.dtype is not DType.f32:
+            raise CodegenError("repeat_reduce_sum 当前只生成 f32")
+        self._require_f32(dst, "repeat_reduce_sum")
+        if dst.buffer.elems != 8:
+            raise CodegenError("repeat_reduce_sum 的目的 buffer 必须是 8 个 f32，供寄存器归约的 8 个通道写回")
+        if src.buffer.elems % 64 != 0:
+            raise CodegenError("repeat_reduce_sum 的源元素个数必须是 64 的倍数，对齐 3510 的 VF 长度")
+        if src.buffer.stage_bytes > _BURST_LEN_MAX:
+            raise CodegenError(
+                f"buffer {src.buffer.name} 单 stage {src.buffer.stage_bytes}B 超过搬运上限 {_BURST_LEN_MAX}"
+            )
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(f"reduce_sum_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {src.buffer.elems});")
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _require_f32(self, ref: BufRef, op: str) -> None:
+        if ref.buffer.dtype is not DType.f32:
+            raise CodegenError(f"{op} 当前只核对了 f32 的 3510 头文件签名")
+
+    def _require_vl(self, ref: BufRef) -> None:
+        if ref.buffer.stage_bytes % _REPEAT_BYTES != 0:
+            raise CodegenError(
+                f"buffer {ref.buffer.name} 单 stage {ref.buffer.stage_bytes}B 不是 {_REPEAT_BYTES}B 的整数倍，"
+                "无法对齐 VF 迭代（VL=256B）"
+            )
+
+    def _release_reads(self, stmt: ComputeStmt, j: int, k: int, signature) -> list:
+        lines = []
         released = set()
-        for s in stmt.srcs:
-            if s.buffer.name in released:
-                continue  # 同一语句重复读同一 buffer，只释放一次
-            released.add(s.buffer.name)
-            if self._last_read.get(s.buffer.name) != j:
-                continue  # 只在该槽位的最后一次消费之后释放（复审第 1 条）
-            lines.extend(self._war_notify(s.buffer, k, signature))
+        for src in stmt.srcs:
+            if src.buffer.name in released:
+                continue
+            released.add(src.buffer.name)
+            if self._last_read.get(src.buffer.name) != j:
+                continue
+            lines.extend(self._war_notify(src.buffer, k, signature))
         return lines
 
     def _emit_sync(self, stmt: SyncStmt) -> list:

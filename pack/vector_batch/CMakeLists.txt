@@ -51,7 +51,8 @@ foreach(_src ${ALL_KERNEL_SRCS})
     add_custom_command(
         OUTPUT ${_obj}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bisheng
-        COMMAND ${BISHENG} --npu-arch=${BISHENG_NPU_ARCH} -xasc -std=c++17 -c ${_src} -o ${_obj} ${KERNEL_INCLUDE_FLAGS}
+        # -fPIC：这条命令不走 CMake 的 POSITION_INDEPENDENT_CODE，缺了就链不进共享库。
+        COMMAND ${BISHENG} --npu-arch=${BISHENG_NPU_ARCH} -xasc -std=c++17 -fPIC -c ${_src} -o ${_obj} ${KERNEL_INCLUDE_FLAGS}
         DEPENDS ${_src}
         COMMENT "bisheng ${_name}"
         VERBATIM
@@ -73,6 +74,7 @@ add_library(_C SHARED
     ${KERNEL_OBJECTS}
     $<TARGET_OBJECTS:all_plugins_obj>)
 target_include_directories(_C PRIVATE
+    ${Python3_INCLUDE_DIRS}
     ${TORCH_INCLUDE_DIRS}
     ${TORCH_NPU_INCLUDE_DIRS}
     ${ASCEND_INCLUDE_DIRS})

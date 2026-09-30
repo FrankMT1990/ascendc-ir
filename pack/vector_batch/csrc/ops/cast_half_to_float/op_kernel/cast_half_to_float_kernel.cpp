@@ -1,6 +1,6 @@
 /**
  * cast_half_to_float: 1024 float16 -> 1024 float32, one core.
- * 3510: asc_loadalign_unpack + asc_half2float(..., ASC_POSITION_EVEN).
+ * CANN 9.1.0 原生：vlds UNPK_B16 装载 half，再 asc_half2float(dst, src, mask)。
  */
 #include <stdint.h>
 
@@ -18,8 +18,8 @@ __simd_vf__ inline void cast_half_to_float_vf(__ubuf__ half* x_local, __ubuf__ f
     vector_float dst;
     for (uint16_t i = 0; i < num_repeats; ++i) {
         vmask = asc_update_mask_b32(num_elems);
-        src = asc_loadalign_unpack(x_local + i * repeat_elems);
-        asc_half2float(dst, src, vmask, ASC_POSITION_EVEN);
+        vlds(src, x_local + i * repeat_elems, 0, UNPK_B16);
+        asc_half2float(dst, src, vmask);
         asc_storealign(y_local + i * repeat_elems, dst, vmask);
     }
 }

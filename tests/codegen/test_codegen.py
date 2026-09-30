@@ -157,12 +157,60 @@ def test_unsupported_compute_op_fails_closed():
         y_local = ubuf(f32, 8)
         mte2.copy(x[0], x_local[0])
         sync(mte2, v, on=x_local)
-        v.repeat_reduce_sum(y_local[0], x_local[0])
+        v.datablock_reduce_sum(y_local[0], x_local[0])
         sync(v, mte3, on=y_local)
         mte3.copy(y_local[0], y[0])
 
-    with pytest.raises(CodegenError, match="repeat_reduce_sum"):
+    with pytest.raises(CodegenError, match="datablock_reduce_sum"):
         generate(reduce_kernel.trace())
+
+
+def test_leakyrelu_cast_and_reduce_emit_reg_helpers():
+    @kernel(device="ascend950pr")
+    def leaky(x: gmptr(f32), y: gmptr(f32)):
+        src = ubuf(f32, 64)
+        dst = ubuf(f32, 64)
+        mte2.copy(x[0], src[0])
+        sync(mte2, v, on=src)
+        v.leakyrelu(dst, src, 0.1)
+        sync(v, mte3, on=dst)
+        mte3.copy(dst, y[0])
+
+    @kernel(device="ascend950pr")
+    def casted(x: gmptr(f16), y: gmptr(f32)):
+        src = ubuf(f16, 64)
+        dst = ubuf(f32, 64)
+        mte2.copy(x[0], src[0])
+        sync(mte2, v, on=src)
+        v.cast(dst, src)
+        sync(v, mte3, on=dst)
+        mte3.copy(dst, y[0])
+
+    @kernel(device="ascend950pr")
+    def reduced(x: gmptr(f32), y: gmptr(f32)):
+        src = ubuf(f32, 64)
+        dst = ubuf(f32, 8)
+        mte2.copy(x[0], src[0])
+        sync(mte2, v, on=src)
+        v.repeat_reduce_sum(dst, src)
+        sync(v, mte3, on=dst)
+        mte3.copy(dst, y[0])
+
+    leaky_out = generate(leaky.trace())
+    assert "leakyrelu_vf(" in leaky_out
+    assert "asc_leakyrelu(" in leaky_out
+    assert "add_vf(" not in leaky_out
+
+    cast_out = generate(casted.trace())
+    assert "cast_half_to_float_vf(" in cast_out
+    assert "vlds(" in cast_out
+    assert "asc_half2float(" in cast_out
+    assert "asc_loadalign_unpack" not in cast_out
+    assert "ASC_POSITION_EVEN" not in cast_out
+
+    reduce_out = generate(reduced.trace())
+    assert "reduce_sum_vf(" in reduce_out
+    assert "asc_reduce_sum(" in reduce_out
 
 
 def test_reroll_failure_fails_closed():
