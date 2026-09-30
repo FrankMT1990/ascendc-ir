@@ -1,0 +1,21 @@
+PROBE_OP: m0
+device: Ascend950PR_9589
+ASCEND_TOOLKIT_HOME: /home/w00964611/cann-9.1.0-fullops
+loaded _C.abi3.so sha256: 854a1318b1b58e41
+vs_add_golden bit_exact: 0 /16384
+vs_or_golden  bit_exact: 16384 /16384
+[2026-09-30 14:46:21] [WARNING] [78446] profiler.py: Please use level1 or level2 if you want to collect aic metrics, reset aic metrics to None!
+[2026-09-30 14:46:21] [WARNING] [78446] profiler.py: Please use level1 or level2 if you want to collect aic metrics, reset aic metrics to None!
+[2026-09-30 14:46:21] [INFO] [78585] profiler.py: Start parsing profiling data in sync mode at: /home/w00964611/probe_out_floorm0_fullops/7bb1ff762bb3_78446_20260930144621069_ascend_pt
+|/[2026-09-30 14:46:23] [ERROR] [78585] profiler.py: Failed to get acl to npu flow events. For details, please check the logs at: /home/w00964611/probe_out_floorm0_fullops/7bb1ff762bb3_78446_20260930144621069_ascend_pt/logs
+-[2026-09-30 14:46:24] [INFO] [78594] profiler.py: CANN profiling data parsed in a total time of 0:00:02.028241
+\[2026-09-30 14:46:25] [INFO] [78585] profiler.py: All profiling data parsed in a total time of 0:00:03.194007
+csv: /home/w00964611/probe_out_floorm0_fullops/7bb1ff762bb3_78446_20260930144621069_ascend_pt/ASCEND_PROFILER_OUTPUT/kernel_details.csv
+kernel rows: {'_Z19CannBenchCacheCleanIDhEvPhS0_llj': 20, '_Z10add_customPfS_S_': 20}
+target_rows: 20
+per_step_us: [4.39, 4.389, 4.395, 4.321, 4.266, 4.275, 4.272, 4.273, 4.319, 4.26, 4.255, 4.407, 4.398, 4.36, 4.449, 4.551, 4.384, 4.393, 4.407, 4.321]
+MEDIAN_us: 4.372
+sample: {'Name': '_Z19CannBenchCacheCleanIDhEvPhS0_llj', 'Type': 'N/A', 'Duration(us)': '120.019', 'Block Num': '64'}
+sample: {'Name': '_Z10add_customPfS_S_', 'Type': 'N/A', 'Duration(us)': '4.390', 'Block Num': '1'}
+sample: {'Name': '_Z19CannBenchCacheCleanIDhEvPhS0_llj', 'Type': 'N/A', 'Duration(us)': '120.286', 'Block Num': '64'}
+sample: {'Name': '_Z10add_customPfS_S_', 'Type': 'N/A', 'Duration(us)': '4.389', 'Block Num': '1'}
