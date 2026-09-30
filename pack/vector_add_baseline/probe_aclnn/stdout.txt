@@ -1,0 +1,20 @@
+PROBE_OP: aclnn
+device: Ascend950PR_9589
+ASCEND_TOOLKIT_HOME: /home/w00964611/cann-9.1.0-fullops
+loaded _C.abi3.so sha256: 854a1318b1b58e41
+vs_add_golden bit_exact: 16384 /16384
+vs_or_golden  bit_exact: 0 /16384
+[2026-09-30 14:46:01] [WARNING] [78071] profiler.py: Please use level1 or level2 if you want to collect aic metrics, reset aic metrics to None!
+[2026-09-30 14:46:01] [WARNING] [78071] profiler.py: Please use level1 or level2 if you want to collect aic metrics, reset aic metrics to None!
+[2026-09-30 14:46:02] [INFO] [78210] profiler.py: Start parsing profiling data in sync mode at: /home/w00964611/probe_out_aclnn/7bb1ff762bb3_78071_20260930144601630_ascend_pt
+|/-[2026-09-30 14:46:04] [INFO] [78219] profiler.py: CANN profiling data parsed in a total time of 0:00:02.028397
+\[2026-09-30 14:46:05] [INFO] [78210] profiler.py: All profiling data parsed in a total time of 0:00:03.179992
+csv: /home/w00964611/probe_out_aclnn/7bb1ff762bb3_78071_20260930144601630_ascend_pt/ASCEND_PROFILER_OUTPUT/kernel_details.csv
+kernel rows: {'_Z19CannBenchCacheCleanIDhEvPhS0_llj': 20, 'aclnnAdd_AddAiCore_Add': 20}
+target_rows: 20
+per_step_us: [2.146, 2.216, 2.302, 2.089, 1.931, 1.995, 2.016, 1.558, 1.73, 1.773, 1.895, 1.822, 2.055, 1.923, 1.908, 1.535, 2.304, 2.233, 2.018, 2.287]
+MEDIAN_us: 2.006
+sample: {'Name': '_Z19CannBenchCacheCleanIDhEvPhS0_llj', 'Type': 'N/A', 'Duration(us)': '121.959', 'Block Num': '64'}
+sample: {'Name': 'aclnnAdd_AddAiCore_Add', 'Type': 'N/A', 'Duration(us)': '2.146', 'Block Num': '32'}
+sample: {'Name': '_Z19CannBenchCacheCleanIDhEvPhS0_llj', 'Type': 'N/A', 'Duration(us)': '120.515', 'Block Num': '64'}
+sample: {'Name': 'aclnnAdd_AddAiCore_Add', 'Type': 'N/A', 'Duration(us)': '2.216', 'Block Num': '32'}

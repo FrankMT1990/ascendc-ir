@@ -2,7 +2,7 @@
 
 目标：做出 Agent 写得顺、能降到 Ascend C C 接口、并在 950 上算对的 IR。
 
-当前在第 11 步。第 8 步已完成。第 9、10 步已把 leakyrelu、cast、归约接进代码生成，cast 使用 950 上跑通的 `vlds` 和 `asc_half2float`。下一步是在同一台 950 上封存向量加的基线时间和硬件时延下界。
+当前在第 11 步。`vector-add-baseline` 的 `9be68d6` 已记下两个实测时间：T_baseline = 2.006 微秒（aclnnAdd，32 核），T_HW = 4.370 微秒（单核搬运下界）。核数不同，h 为负，任务仍是未分类。先决定基线用单核还是和标准算子一样用多核，再进入试点。
 
 进度有变化时，只改这张表的状态，并和对应代码一起提交到本仓库。
 
@@ -18,7 +18,7 @@
 | 8 | 950 上一次编译并跑这四个内核 | `a884886`：build_exit=0，check_exit=0。加、leakyrelu、cast 逐位一致；归约全 1 精确，随机输入绝对误差 1.19e-7 | done |
 | 9 | 让 IR 代码生成发出 leakyrelu、f16 转 f32、f32 归约 | 已接入。`datablock_reduce_sum` 和 f16 leakyrelu 仍拒绝生成 | done |
 | 10 | 用第 8 步的结果对齐 IR 生成的 C | cast 改为 `vlds(..., UNPK_B16)` 和 `asc_half2float(dst, src, mask)`；直调构建补了 Python 头和 `-fPIC` | done |
-| 11 | 封存向量加的基线时间和硬件时延下界 | 同一台 950、CANNBench kernel-only；没有这两项则任务保持未分类 | doing |
+| 11 | 封存向量加的基线时间和硬件时延下界 | `9be68d6` 有实测，但 32 核基线对不上单核下界，分类仍未定 | doing |
 | 12 | 试点，定 token 预算 | 前两次成功的首次正确 token 的最大值乘 3，写回仓库后才能发正式任务 | todo |
 | 13 | Agent 对照：同一向量加，一边写 IR，一边直接写 C，各 5 次 | 只测向量通路。Cube 没有词汇，本轮最多到「部分成立」 | todo |
 | 14 | 按 Agent 实际失败改 IR | 改的是写不出、检查器没拦住、或生成的 C 编不过的地方 | todo |
