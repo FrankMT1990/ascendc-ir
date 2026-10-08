@@ -8,8 +8,22 @@
 
 """AscendC-IR：CANNBot 友好的显式物理 schedule 表示（Python 嵌入式）。"""
 
-from .model.core import DType, f16, f32
-from .trace.api import gmptr, sync, ubuf
+from .model.core import DType, f16, f32, i32, u8
+from .trace.api import gmptr, l0a, l0b, l0c, l1buf, sync, ubuf
 from .trace.decorators import kernel
 
-__all__ = ["DType", "f16", "f32", "gmptr", "kernel", "sync", "ubuf"]
+__all__ = [
+    "DType",
+    "f16",
+    "f32",
+    "i32",
+    "u8",
+    "gmptr",
+    "kernel",
+    "l0a",
+    "l0b",
+    "l0c",
+    "l1buf",
+    "sync",
+    "ubuf",
+]

@@ -22,6 +22,9 @@ from .rules import (
     v008_device_guard,
     v009_cross_pipe_read,
     v010_read_without_producer,
+    v011_onchip_capacity,
+    v012_cube_contract,
+    v013_catalog_lowering,
 )
 
 RULES = [
@@ -35,6 +38,9 @@ RULES = [
     v008_device_guard,
     v009_cross_pipe_read,
     v010_read_without_producer,
+    v011_onchip_capacity,
+    v012_cube_contract,
+    v013_catalog_lowering,
 ]
 
 

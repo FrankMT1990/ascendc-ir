@@ -33,6 +33,7 @@ class Kernel:
                     "dtype": b.dtype.value,
                     "elems": b.elems,
                     "stages": b.stages,
+                    "space": b.space.value,
                     "callsite": b.callsite.to_dict(),
                 }
                 for b in self.buffers

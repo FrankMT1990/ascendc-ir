@@ -10,7 +10,7 @@
 
 from __future__ import annotations
 
-from ..model.core import BufRef, Buffer, DType, Pipe
+from ..model.core import BufRef, Buffer, DType, Pipe, Space
 from ..model.stmts import SyncStmt
 from .builder import current_builder, lhs_name, user_callsite
 
@@ -30,9 +30,30 @@ def gmptr(dtype: DType) -> GmParamSpec:
 
 def ubuf(dtype: DType, elems: int, stages: int = 1) -> Buffer:
     """创建 UB buffer；默认名取赋值左侧变量名。"""
+    return _buf(dtype, elems, stages, Space.UB)
+
+
+def l1buf(dtype: DType, elems: int, stages: int = 1) -> Buffer:
+    """创建立方体用的 L1（cbuf）buffer。"""
+    return _buf(dtype, elems, stages, Space.L1)
+
+
+def l0a(dtype: DType, elems: int, stages: int = 1) -> Buffer:
+    return _buf(dtype, elems, stages, Space.L0A)
+
+
+def l0b(dtype: DType, elems: int, stages: int = 1) -> Buffer:
+    return _buf(dtype, elems, stages, Space.L0B)
+
+
+def l0c(dtype: DType, elems: int, stages: int = 1) -> Buffer:
+    return _buf(dtype, elems, stages, Space.L0C)
+
+
+def _buf(dtype: DType, elems: int, stages: int, space: Space) -> Buffer:
     callsite = user_callsite()
     name = lhs_name(callsite.statement)
-    return current_builder().add_buffer(dtype, elems, stages, callsite, name)
+    return current_builder().add_buffer(dtype, elems, stages, callsite, name, space)
 
 
 def sync(producer, consumer, on, stage: int | None = None) -> None:

@@ -1,0 +1,310 @@
+{
+  "rule": "基础 API 大驼峰与 C API 的 asc_ 下划线名是同一条指令。带 s 的标量接口对应 *_scalar。搬运接口按通路别名对应。",
+  "pairs": [
+    {
+      "basic_api": "Abs",
+      "c_api": "abs",
+      "lowered": true
+    },
+    {
+      "basic_api": "AbsSub",
+      "c_api": "abs_sub",
+      "lowered": false
+    },
+    {
+      "basic_api": "AbsSub_ISASI",
+      "c_api": "abs_sub",
+      "lowered": false
+    },
+    {
+      "basic_api": "Add",
+      "c_api": "add",
+      "lowered": true
+    },
+    {
+      "basic_api": "AddC",
+      "c_api": "addc",
+      "lowered": false
+    },
+    {
+      "basic_api": "Adds",
+      "c_api": "add_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "Adds_flexible_scalar",
+      "c_api": "add_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "And",
+      "c_api": "and",
+      "lowered": true
+    },
+    {
+      "basic_api": "Arange",
+      "c_api": "arange",
+      "lowered": true
+    },
+    {
+      "basic_api": "Axpy",
+      "c_api": "axpy",
+      "lowered": false
+    },
+    {
+      "basic_api": "Cast",
+      "c_api": "cast",
+      "lowered": false
+    },
+    {
+      "basic_api": "Compare",
+      "c_api": "gt",
+      "lowered": true
+    },
+    {
+      "basic_api": "Compares",
+      "c_api": "gt_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "Compares_flexible_scalar",
+      "c_api": "gt_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "DataCopy_GMToL1_DN2NZ",
+      "c_api": "copy_gm2l1_dn2nz",
+      "lowered": true
+    },
+    {
+      "basic_api": "DataCopy_GMToL1_ND2NZ",
+      "c_api": "copy_gm2l1_nd2nz",
+      "lowered": true
+    },
+    {
+      "basic_api": "DataCopy_L0CToGM",
+      "c_api": "copy_l0c2gm",
+      "lowered": true
+    },
+    {
+      "basic_api": "Div",
+      "c_api": "div",
+      "lowered": true
+    },
+    {
+      "basic_api": "Duplicate",
+      "c_api": "duplicate",
+      "lowered": true
+    },
+    {
+      "basic_api": "Exp",
+      "c_api": "exp",
+      "lowered": true
+    },
+    {
+      "basic_api": "ExpSub",
+      "c_api": "exp_sub",
+      "lowered": false
+    },
+    {
+      "basic_api": "ExpSub_ISASI",
+      "c_api": "exp_sub",
+      "lowered": false
+    },
+    {
+      "basic_api": "Fixpipe_L0CToGM",
+      "c_api": "copy_l0c2gm",
+      "lowered": true
+    },
+    {
+      "basic_api": "Gather",
+      "c_api": "gather",
+      "lowered": false
+    },
+    {
+      "basic_api": "LeakyRelu",
+      "c_api": "leakyrelu",
+      "lowered": true
+    },
+    {
+      "basic_api": "Ln",
+      "c_api": "ln",
+      "lowered": true
+    },
+    {
+      "basic_api": "LoadDataWithTranspose",
+      "c_api": "copy_l12l0a_transpose",
+      "lowered": false
+    },
+    {
+      "basic_api": "LoadData_2D",
+      "c_api": "copy_l12l0a",
+      "lowered": true
+    },
+    {
+      "basic_api": "Log",
+      "c_api": "log",
+      "lowered": true
+    },
+    {
+      "basic_api": "Max",
+      "c_api": "max",
+      "lowered": true
+    },
+    {
+      "basic_api": "Maxs",
+      "c_api": "max_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "Maxs_flexible_scalar",
+      "c_api": "max_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "Min",
+      "c_api": "min",
+      "lowered": true
+    },
+    {
+      "basic_api": "Mins",
+      "c_api": "min_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "Mins_flexible_scalar",
+      "c_api": "min_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "Mmad",
+      "c_api": "mmad",
+      "lowered": true
+    },
+    {
+      "basic_api": "MmadMx",
+      "c_api": "mmad_mx",
+      "lowered": false
+    },
+    {
+      "basic_api": "Mul",
+      "c_api": "mul",
+      "lowered": true
+    },
+    {
+      "basic_api": "Mull",
+      "c_api": "mull",
+      "lowered": false
+    },
+    {
+      "basic_api": "Mull_ISASI",
+      "c_api": "mull",
+      "lowered": false
+    },
+    {
+      "basic_api": "Muls",
+      "c_api": "mul_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "Muls_flexible_scalar",
+      "c_api": "mul_scalar",
+      "lowered": true
+    },
+    {
+      "basic_api": "Neg",
+      "c_api": "neg",
+      "lowered": true
+    },
+    {
+      "basic_api": "Neg_ISASI",
+      "c_api": "neg",
+      "lowered": true
+    },
+    {
+      "basic_api": "Not",
+      "c_api": "not",
+      "lowered": true
+    },
+    {
+      "basic_api": "Or",
+      "c_api": "or",
+      "lowered": true
+    },
+    {
+      "basic_api": "Pack",
+      "c_api": "pack",
+      "lowered": false
+    },
+    {
+      "basic_api": "Prelu",
+      "c_api": "prelu",
+      "lowered": true
+    },
+    {
+      "basic_api": "Prelu_ISASI",
+      "c_api": "prelu",
+      "lowered": true
+    },
+    {
+      "basic_api": "ReduceMax",
+      "c_api": "reduce_max",
+      "lowered": false
+    },
+    {
+      "basic_api": "ReduceMin",
+      "c_api": "reduce_min",
+      "lowered": false
+    },
+    {
+      "basic_api": "ReduceSum",
+      "c_api": "reduce_sum",
+      "lowered": false
+    },
+    {
+      "basic_api": "Relu",
+      "c_api": "relu",
+      "lowered": true
+    },
+    {
+      "basic_api": "Scatter_ISASI",
+      "c_api": "scatter",
+      "lowered": false
+    },
+    {
+      "basic_api": "Select",
+      "c_api": "select",
+      "lowered": true
+    },
+    {
+      "basic_api": "Select_flexible_scalar",
+      "c_api": "select",
+      "lowered": true
+    },
+    {
+      "basic_api": "Sqrt",
+      "c_api": "sqrt",
+      "lowered": true
+    },
+    {
+      "basic_api": "Squeeze",
+      "c_api": "squeeze",
+      "lowered": false
+    },
+    {
+      "basic_api": "Sub",
+      "c_api": "sub",
+      "lowered": true
+    },
+    {
+      "basic_api": "Unsqueeze",
+      "c_api": "unsqueeze",
+      "lowered": false
+    },
+    {
+      "basic_api": "Xor",
+      "c_api": "xor",
+      "lowered": true
+    }
+  ]
+}

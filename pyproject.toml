@@ -21,4 +21,4 @@ readme = "README.md"
 where = ["src"]
 
 [tool.setuptools.package-data]
-ascendc_ir = ["devices/*.toml"]
+ascendc_ir = ["devices/*.toml", "catalog/*.json"]

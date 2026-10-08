@@ -24,31 +24,63 @@ from ..model.stmts import ComputeStmt, CopyStmt, SyncStmt
 
 
 def reroll(kernel) -> tuple:
-    """返回 (tiles, body, ok)。
+    """返回 (tiles, body, epilogue, ok, mmad_init_first)。
 
-    tiles == 1 且 ok：无循环的直写形态（每个槽位至多写一次）。
-    tiles > 1 且 ok：body 为单迭代模板（第 0 轮）。
+    tiles == 1 且 ok：无循环的直写形态（每个槽位至多写一次；mmad 累加不算第二次初写）。
+    tiles > 1 且 ok：body 为单迭代模板（第 0 轮）。循环之后可以有一段只执行一次的收尾。
+    mmad_init_first：第 0 轮 mmad 清 L0C，其后各轮改为累加。
     非 ok：无法安全生成，调用方必须拒绝。
     """
     stmts = list(kernel.statements)
-    stages = [s.stage for s in stmts if isinstance(s, SyncStmt) and s.stage is not None]
-    tiles = max(stages) + 1 if stages else 1
-    if tiles <= 1:
-        # 直写形态只允许「每个槽位至多写一次」；否则是被抹平了 stage 的循环
+    split = _split_loop(stmts)
+    if split is None:
         if _has_slot_reuse(stmts):
-            return 1, [], False
-        return 1, stmts, True
-    if not stmts or len(stmts) % tiles != 0:
-        return tiles, [], False
-    per = len(stmts) // tiles
+            return 1, [], [], False, False
+        return 1, stmts, [], True, False
+    tiles, per, epilogue = split
     body = stmts[:per]
+    init_first = False
     strides = _strides(body, stmts[per : 2 * per])
     if strides is None:
-        return tiles, [], False
+        return tiles, [], [], False, False
+    init_first = _uses_init_first(body, stmts[per : 2 * per])
     for i in range(2, tiles):
-        if not _group_matches(body, stmts[i * per : (i + 1) * per], i, strides):
-            return tiles, [], False
-    return tiles, body, True
+        group = stmts[i * per : (i + 1) * per]
+        if not _group_matches(body, group, i, strides):
+            return tiles, [], [], False, False
+        init_first = init_first or _uses_init_first(body, group)
+    return tiles, body, epilogue, True, init_first
+
+
+def _split_loop(stmts):
+    """用带 stage 的 sync 把重复的循环体和其后的收尾切开。没有这种 sync 时返回 None。"""
+    staged = [(i, s.stage) for i, s in enumerate(stmts) if isinstance(s, SyncStmt) and s.stage is not None]
+    if not staged:
+        return None
+    tiles = max(stage for _, stage in staged) + 1
+    if tiles <= 1:
+        return None
+    groups = []
+    for stage in range(tiles):
+        hits = [i for i, got in staged if got == stage]
+        if not hits:
+            return None
+        groups.append(hits)
+    if len({len(hits) for hits in groups}) != 1:
+        return None
+    per = groups[1][0] - groups[0][0]
+    if per <= 0 or groups[0][0] >= per:
+        return None
+    for stage in range(tiles):
+        for nth, index in enumerate(groups[stage]):
+            if index != groups[0][nth] + stage * per:
+                return None
+    if tiles * per > len(stmts):
+        return None
+    epilogue = stmts[tiles * per :]
+    if any(isinstance(s, SyncStmt) and s.stage is not None for s in epilogue):
+        return None
+    return tiles, per, epilogue
 
 
 def _has_slot_reuse(stmts) -> bool:
@@ -64,6 +96,8 @@ def _has_slot_reuse(stmts) -> bool:
             refs = [stmt.dst]
         elif isinstance(stmt, ComputeStmt) and isinstance(stmt.dst, BufRef):
             read_slots = {(s.buffer.name, s.stage) for s in stmt.srcs if isinstance(s, BufRef)}
+            if _mmad_accumulates(stmt):
+                read_slots.add((stmt.dst.buffer.name, stmt.dst.stage))
             if (stmt.dst.buffer.name, stmt.dst.stage) not in read_slots:
                 refs = [stmt.dst]
         for ref in refs:
@@ -79,9 +113,13 @@ def _same_structure(a, b) -> bool:
     if type(a) is not type(b):
         return False
     if isinstance(a, CopyStmt):
-        return a.pipe is b.pipe
+        return a.pipe is b.pipe and a.form == b.form and a.scalars == b.scalars
     if isinstance(a, ComputeStmt):
-        return a.op == b.op and a.pipe is b.pipe and len(a.srcs) == len(b.srcs) and a.scalars == b.scalars
+        if not (a.op == b.op and a.pipe is b.pipe and len(a.srcs) == len(b.srcs)):
+            return False
+        if a.scalars == b.scalars:
+            return True
+        return _mmad_init_follows(a, b)
     if isinstance(a, SyncStmt):
         return (
             a.producer is b.producer
@@ -140,6 +178,21 @@ def _group_matches(body, group, i, strides) -> bool:
             elif stmt.stage != i:
                 return False
     return True
+
+
+def _mmad_accumulates(stmt) -> bool:
+    return isinstance(stmt, ComputeStmt) and stmt.op == "mmad" and len(stmt.scalars) == 4 and stmt.scalars[-1] == 0
+
+
+def _mmad_init_follows(first, later) -> bool:
+    """第 0 轮清 L0C，后面的轮次只改 init 标志、其余标量不变。"""
+    if first.op != "mmad" or len(first.scalars) != 4 or len(later.scalars) != 4:
+        return False
+    return first.scalars[:-1] == later.scalars[:-1] and first.scalars[-1] == 1 and later.scalars[-1] == 0
+
+
+def _uses_init_first(body, group) -> bool:
+    return any(_mmad_init_follows(a, b) for a, b in zip(body, group) if isinstance(a, ComputeStmt))
 
 
 def _ref_pairs(tmpl, stmt):

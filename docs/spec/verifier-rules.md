@@ -35,11 +35,14 @@
 | V003 | sync 配对 | 对 sync 的 `on` 中每个 buffer（按 stage 槽位）：生产方 = 该 sync 之前最近一次写入该槽位的调用，必须存在；消费方 = 该 sync 之后、下一次写入同一槽位之前读取该槽位的调用，**至少一个**。同一条语句既读又写同一槽位时，读发生在写之前：先计入消费，再结束窗口 | C API 同步语义 |
 | V004 | sync 方向 | `sync(p, q, ...)` 中 p 必须是生产调用所在 PIPE，q 必须是消费调用所在 PIPE | `asc_sync_notify` 参数语义 |
 | V005 | event 压力 | 任一程序点上，同一 `(生产PIPE, 消费PIPE)` 对内的未决 sync 数 ≤ 设备表 `event_ids`（8）。event id 按 PIPE 对独立，不同对可复用同一 id | cannbot-knowledge pipeline 卡 + 官方样例四通道共用 EVENT_ID0 |
-| V006 | 计算操作数空间 | `v.*` 的操作数与结果必须都是 `ubuf` buffer，不得直接引用 `gmptr` 参数（结果侧同样由本规则诊断，不在 trace 期抛类型错误） | C API 计算接口约束 |
+| V006 | 计算操作数空间 | 向量计算的操作数与结果必须都是 `ubuf`；不得直接引用 `gmptr` 参数 | C API 计算接口约束 |
 | V007 | 对齐 | 参与 copy 的 buffer，其 `elems × dtype 字节`（单 stage）必须是设备表 `align_bytes`（32）的整数倍；诊断指向 buffer 声明 | C API 搬运接口约束 |
 | V008 | 设备守卫 | 使用了设备表不存在的 PIPE 或通路时拒绝，`suggestion` 给出该设备的合法替代 | 分层定位决定 |
 | V009 | 跨 PIPE 读取必须先经 sync | 每次读取 buffer 槽位时，若最近一次写入在另一条 PIPE，则写入之后、本次读取之前必须存在覆盖该槽位的 sync(生产PIPE, 消费PIPE)；诊断指向读取调用点 | cannbot-knowledge runbook `shared_ub_cross_pipeline_per_direction_sync` |
 | V010 | 读取必须有生产 | 读取从未写入过的槽位时拒绝（V009 要求存在最近一次写入；不存在时由本条接管） | 评审 2026-09-25 规格缺口 |
+| V011 | 片上容量 | L1、L0A、L0B、L0C 各自的占用不超过设备表对应容量，不和 UB 混算 | 950 内存层次 |
+| V012 | 矩阵契约 | 只接受 f16 的 `nd2nz` / `l12l0*` / `mmad`。搬运行列必须和同一次 `mmad` 的 m、k、n 一致。`init` 为假时 L0C 必须已有前一次 mmad。同一个核不能同时放 ubuf 和 Cube 缓冲 | 3510 `mmad` 的 f16 样例；f32 样例 C0=8 且要转置 |
+| V013 | 目录降级 | 计算名不在 3510 向量/矩阵目录里，或在目录里但没有这一批的降级模板时拒绝，并给出头文件签名 | asc-devkit `579cf014` |
 
 ## 诊断去重
 

@@ -15,7 +15,7 @@ import inspect
 import linecache
 from pathlib import Path
 
-from ..model.core import Buffer, Callsite, DType
+from ..model.core import Buffer, Callsite, DType, Space
 from ..model.kernel import Kernel
 
 _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -28,7 +28,15 @@ class TraceBuilder:
         self.kernel = Kernel(name=name, device=device)
         self._buffer_seq = 0
 
-    def add_buffer(self, dtype: DType, elems: int, stages: int, callsite: Callsite, name: str | None = None) -> Buffer:
+    def add_buffer(
+        self,
+        dtype: DType,
+        elems: int,
+        stages: int,
+        callsite: Callsite,
+        name: str | None = None,
+        space: Space = Space.UB,
+    ) -> Buffer:
         if name is None:
             name = f"buf_{self._buffer_seq}"
             self._buffer_seq += 1
@@ -38,7 +46,7 @@ class TraceBuilder:
                 "请为每个 buffer 使用不同的变量名；列表推导里的 ubuf 会因共享左侧变量名而重名，"
                 "请改成循环 append（自动得名 buf_N）"
             )
-        buf = Buffer(name=name, dtype=dtype, elems=elems, stages=stages, callsite=callsite)
+        buf = Buffer(name=name, dtype=dtype, elems=elems, stages=stages, callsite=callsite, space=space)
         self.kernel.buffers.append(buf)
         return buf
 

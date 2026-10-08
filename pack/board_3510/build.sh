@@ -1,0 +1,57 @@
+#!/bin/bash
+set -e
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "${SCRIPT_DIR}"
+
+detect_soc_version() {
+    local torch_soc=$(python3 -c "import torch, torch_npu; print(torch.npu.get_device_name(0))" 2>/dev/null)
+    if [ -n "${torch_soc}" ]; then
+        case "${torch_soc}" in
+            Ascend910B*)     echo "ascend910b" ; return ;;
+            Ascend910_93*)   echo "ascend910_93" ; return ;;
+            Ascend950*)      echo "ascend950" ; return ;;
+        esac
+    fi
+    local npu_name=$(npu-smi info 2>/dev/null | grep -oP 'Ascend\S+' | head -1)
+    case "${npu_name}" in
+        Ascend910B1|Ascend910B2|Ascend910B3|Ascend910B4) echo "ascend910b" ;;
+        Ascend910_93*)  echo "ascend910_93" ;;
+        Ascend950*)     echo "ascend950" ;;
+        *)              echo "" ;;
+    esac
+}
+
+SOC_VERSION=""
+INSTALL=false
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --soc=*) SOC_VERSION="${1#*=}"; shift ;;
+        --install) INSTALL=true; shift ;;
+        *) shift ;;
+    esac
+done
+
+if [ -z "${SOC_VERSION}" ]; then
+    SOC_VERSION=$(detect_soc_version)
+    if [ -z "${SOC_VERSION}" ]; then
+        echo "[ERROR] Cannot detect SoC version. Use --soc=<soc_version>."
+        echo "Supported: ascend910b, ascend910_93, ascend950"
+        exit 1
+    fi
+    echo "[INFO] Auto-detected SoC: ${SOC_VERSION}"
+fi
+export NPU_ARCH="${SOC_VERSION}"
+
+echo "=== Building ir_board wheel package ==="
+echo "NPU_ARCH: ${NPU_ARCH}"
+rm -rf "${SCRIPT_DIR}/build" "${SCRIPT_DIR}/dist" "${SCRIPT_DIR}/ir_board/_C.abi3.so"
+DIST_DIR="${SCRIPT_DIR}/dist"
+rm -rf "${DIST_DIR}"
+mkdir -p "${DIST_DIR}"
+bash "${SCRIPT_DIR}/scripts/build_wheel.sh"
+if [[ "${INSTALL}" == "true" ]]; then
+    echo "=== Installing wheel package ==="
+    pip install ${DIST_DIR}/ir_board*.whl --force-reinstall --no-deps
+fi
+echo "=== Build complete ==="
+ls -la "${DIST_DIR}"

@@ -14,7 +14,19 @@ import enum
 from dataclasses import dataclass
 
 
+class Space(enum.Enum):
+    """片上地址空间。UB 保持历史值 ubuf，和设备表里的通路键一致。"""
+
+    UB = "ubuf"
+    L1 = "l1"
+    L0A = "l0a"
+    L0B = "l0b"
+    L0C = "l0c"
+
+
 class DType(enum.Enum):
+    u8 = "u8"
+    i32 = "i32"
     f16 = "f16"
     f32 = "f32"
 
@@ -23,8 +35,10 @@ class DType(enum.Enum):
         return _DTYPE_NBYTES[self]
 
 
-_DTYPE_NBYTES = {DType.f16: 2, DType.f32: 4}
+_DTYPE_NBYTES = {DType.u8: 1, DType.i32: 4, DType.f16: 2, DType.f32: 4}
 
+u8 = DType.u8
+i32 = DType.i32
 f16 = DType.f16
 f32 = DType.f32
 
@@ -84,6 +98,7 @@ class Buffer:
     elems: int
     stages: int
     callsite: Callsite
+    space: Space = Space.UB
 
     def __post_init__(self) -> None:
         if self.elems <= 0:

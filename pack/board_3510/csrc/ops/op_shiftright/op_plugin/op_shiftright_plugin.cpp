@@ -1,0 +1,46 @@
+#include <torch/all.h>
+#include <torch/library.h>
+
+#include "torch_npu/csrc/core/npu/NPUStream.h"
+#include "torch_npu/csrc/framework/OpCommand.h"
+#include "../op_kernel/op_shiftright_launch.h"
+
+namespace ir_board {
+
+TORCH_LIBRARY_FRAGMENT(ir_board, m)
+{
+    m.def("op_shiftright(Tensor x, Tensor y) -> Tensor");
+}
+
+torch::Tensor op_shiftright_meta(const torch::Tensor& x, const torch::Tensor& y)
+{
+
+    TORCH_CHECK(x.scalar_type() == torch::kInt32 && y.scalar_type() == torch::kInt32, "dtype");
+    TORCH_CHECK(x.numel() == 64 && y.numel() == 64, "numel");
+    return torch::empty({64}, x.options());
+}
+
+TORCH_LIBRARY_IMPL(ir_board, Meta, m)
+{
+    m.impl("op_shiftright", op_shiftright_meta);
+}
+
+torch::Tensor op_shiftright_npu(const torch::Tensor& x, const torch::Tensor& y)
+{
+    const c10::OptionalDeviceGuard guard(x.device());
+    auto z = op_shiftright_meta(x, y);
+    auto stream = c10_npu::getCurrentNPUStream().stream(false);
+    auto acl_call = [=]() -> int {
+        launch_op_shiftright((GM_ADDR)x.data_ptr(), (GM_ADDR)y.data_ptr(), (GM_ADDR)z.data_ptr(), stream);
+        return 0;
+    };
+    at_npu::native::OpCommand::RunOpApi("op_shiftright", acl_call);
+    return z;
+}
+
+TORCH_LIBRARY_IMPL(ir_board, PrivateUse1, m)
+{
+    m.impl("op_shiftright", op_shiftright_npu);
+}
+
+}  // namespace ir_board

@@ -21,6 +21,8 @@ class CopyStmt:
     src: GmRef | BufRef
     dst: GmRef | BufRef
     callsite: Callsite
+    form: str = "linear"
+    scalars: tuple = ()
 
     def to_dict(self) -> dict:
         return {
@@ -29,6 +31,8 @@ class CopyStmt:
             "src": self.src.to_dict(),
             "dst": self.dst.to_dict(),
             "callsite": self.callsite.to_dict(),
+            "form": self.form,
+            "scalars": list(self.scalars),
         }
 
 

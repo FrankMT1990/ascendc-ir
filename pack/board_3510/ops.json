@@ -1,0 +1,352 @@
+[
+  {
+    "name": "op_add",
+    "op": "add",
+    "kind": "bin",
+    "token": "asc_add(",
+    "literal": null
+  },
+  {
+    "name": "op_sub",
+    "op": "sub",
+    "kind": "bin",
+    "token": "asc_sub(",
+    "literal": null
+  },
+  {
+    "name": "op_mul",
+    "op": "mul",
+    "kind": "bin",
+    "token": "asc_mul(",
+    "literal": null
+  },
+  {
+    "name": "op_div",
+    "op": "div",
+    "kind": "bin",
+    "token": "asc_div(",
+    "literal": null
+  },
+  {
+    "name": "op_max",
+    "op": "max",
+    "kind": "bin",
+    "token": "asc_max(",
+    "literal": null
+  },
+  {
+    "name": "op_min",
+    "op": "min",
+    "kind": "bin",
+    "token": "asc_min(",
+    "literal": null
+  },
+  {
+    "name": "op_and",
+    "op": "and",
+    "kind": "bin",
+    "token": "asc_and(",
+    "literal": null
+  },
+  {
+    "name": "op_or",
+    "op": "or",
+    "kind": "bin",
+    "token": "asc_or(",
+    "literal": null
+  },
+  {
+    "name": "op_prelu",
+    "op": "prelu",
+    "kind": "bin",
+    "token": "asc_prelu(",
+    "literal": null
+  },
+  {
+    "name": "op_abs",
+    "op": "abs",
+    "kind": "unary",
+    "token": "asc_abs(",
+    "literal": null
+  },
+  {
+    "name": "op_ceil",
+    "op": "ceil",
+    "kind": "unary",
+    "token": "asc_ceil(",
+    "literal": null
+  },
+  {
+    "name": "op_exp",
+    "op": "exp",
+    "kind": "unary",
+    "token": "asc_exp(",
+    "literal": null
+  },
+  {
+    "name": "op_floor",
+    "op": "floor",
+    "kind": "unary",
+    "token": "asc_floor(",
+    "literal": null
+  },
+  {
+    "name": "op_ln",
+    "op": "ln",
+    "kind": "unary",
+    "token": "asc_ln(",
+    "literal": null
+  },
+  {
+    "name": "op_log",
+    "op": "log",
+    "kind": "unary",
+    "token": "asc_log(",
+    "literal": null
+  },
+  {
+    "name": "op_neg",
+    "op": "neg",
+    "kind": "unary",
+    "token": "asc_neg(",
+    "literal": null
+  },
+  {
+    "name": "op_not",
+    "op": "not",
+    "kind": "unary",
+    "token": "asc_not(",
+    "literal": null
+  },
+  {
+    "name": "op_relu",
+    "op": "relu",
+    "kind": "unary",
+    "token": "asc_relu(",
+    "literal": null
+  },
+  {
+    "name": "op_rint",
+    "op": "rint",
+    "kind": "unary",
+    "token": "asc_rint(",
+    "literal": null
+  },
+  {
+    "name": "op_round",
+    "op": "round",
+    "kind": "unary",
+    "token": "asc_round(",
+    "literal": null
+  },
+  {
+    "name": "op_sqrt",
+    "op": "sqrt",
+    "kind": "unary",
+    "token": "asc_sqrt(",
+    "literal": null
+  },
+  {
+    "name": "op_trunc",
+    "op": "trunc",
+    "kind": "unary",
+    "token": "asc_trunc(",
+    "literal": null
+  },
+  {
+    "name": "op_add_scalar",
+    "op": "add_scalar",
+    "kind": "unary",
+    "token": "asc_add_scalar(",
+    "literal": "1.5"
+  },
+  {
+    "name": "op_max_scalar",
+    "op": "max_scalar",
+    "kind": "unary",
+    "token": "asc_max_scalar(",
+    "literal": "1.0"
+  },
+  {
+    "name": "op_min_scalar",
+    "op": "min_scalar",
+    "kind": "unary",
+    "token": "asc_min_scalar(",
+    "literal": "1.0"
+  },
+  {
+    "name": "op_mul_scalar",
+    "op": "mul_scalar",
+    "kind": "unary",
+    "token": "asc_mul_scalar(",
+    "literal": "2.0"
+  },
+  {
+    "name": "op_leakyrelu",
+    "op": "leakyrelu",
+    "kind": "unary",
+    "token": "asc_leakyrelu(",
+    "literal": "0.1"
+  },
+  {
+    "name": "op_select",
+    "op": "select",
+    "kind": "select",
+    "token": "asc_select(",
+    "literal": null
+  },
+  {
+    "name": "op_select_gt",
+    "op": "select_gt",
+    "kind": "bin",
+    "token": "asc_gt(",
+    "literal": null
+  },
+  {
+    "name": "op_select_lt",
+    "op": "select_lt",
+    "kind": "bin",
+    "token": "asc_lt(",
+    "literal": null
+  },
+  {
+    "name": "op_select_ne",
+    "op": "select_ne",
+    "kind": "bin",
+    "token": "asc_ne(",
+    "literal": null
+  },
+  {
+    "name": "op_select_eq",
+    "op": "select_eq",
+    "kind": "bin",
+    "token": "asc_eq(",
+    "literal": null
+  },
+  {
+    "name": "op_select_ge",
+    "op": "select_ge",
+    "kind": "bin",
+    "token": "asc_ge(",
+    "literal": null
+  },
+  {
+    "name": "op_select_le",
+    "op": "select_le",
+    "kind": "bin",
+    "token": "asc_le(",
+    "literal": null
+  },
+  {
+    "name": "op_select_gt_scalar",
+    "op": "select_gt_scalar",
+    "kind": "bin",
+    "token": "asc_gt_scalar(",
+    "literal": "1.0"
+  },
+  {
+    "name": "op_select_lt_scalar",
+    "op": "select_lt_scalar",
+    "kind": "bin",
+    "token": "asc_lt_scalar(",
+    "literal": "1.0"
+  },
+  {
+    "name": "op_select_ne_scalar",
+    "op": "select_ne_scalar",
+    "kind": "bin",
+    "token": "asc_ne_scalar(",
+    "literal": "1.0"
+  },
+  {
+    "name": "op_select_eq_scalar",
+    "op": "select_eq_scalar",
+    "kind": "bin",
+    "token": "asc_eq_scalar(",
+    "literal": "1.0"
+  },
+  {
+    "name": "op_select_ge_scalar",
+    "op": "select_ge_scalar",
+    "kind": "bin",
+    "token": "asc_ge_scalar(",
+    "literal": "1.0"
+  },
+  {
+    "name": "op_select_le_scalar",
+    "op": "select_le_scalar",
+    "kind": "bin",
+    "token": "asc_le_scalar(",
+    "literal": "1.0"
+  },
+  {
+    "name": "op_duplicate",
+    "op": "duplicate",
+    "kind": "fill",
+    "token": "asc_duplicate_scalar(",
+    "literal": "3.0"
+  },
+  {
+    "name": "op_arange",
+    "op": "arange",
+    "kind": "fill",
+    "token": "asc_arange(",
+    "literal": "0.0"
+  },
+  {
+    "name": "op_xor",
+    "op": "xor",
+    "kind": "i32_bin",
+    "token": "asc_xor(",
+    "literal": null
+  },
+  {
+    "name": "op_shiftleft",
+    "op": "shiftleft",
+    "kind": "i32_bin",
+    "token": "asc_shiftleft(",
+    "literal": null
+  },
+  {
+    "name": "op_shiftright",
+    "op": "shiftright",
+    "kind": "i32_bin",
+    "token": "asc_shiftright(",
+    "literal": null
+  },
+  {
+    "name": "op_shiftleft_scalar",
+    "op": "shiftleft_scalar",
+    "kind": "i32_unary",
+    "token": "asc_shiftleft_scalar(",
+    "literal": "3"
+  },
+  {
+    "name": "op_shiftright_scalar",
+    "op": "shiftright_scalar",
+    "kind": "i32_unary",
+    "token": "asc_shiftright_scalar(",
+    "literal": "3"
+  },
+  {
+    "name": "op_cast",
+    "op": "cast",
+    "kind": "cast",
+    "token": "asc_half2float(",
+    "literal": null
+  },
+  {
+    "name": "op_repeat_reduce_sum",
+    "op": "repeat_reduce_sum",
+    "kind": "reduce",
+    "token": "asc_reduce_sum(",
+    "literal": null
+  },
+  {
+    "name": "op_mmad",
+    "op": "mmad",
+    "kind": "mmad",
+    "token": "asc_mmad(",
+    "literal": null
+  }
+]

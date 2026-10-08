@@ -25,6 +25,10 @@ class DeviceSpec:
     pipes: tuple
     event_ids: int
     pathways: dict
+    l0a_bytes: int = 65536
+    l0b_bytes: int = 65536
+    l0c_bytes: int = 262144
+    l0_align_bytes: int = 512
 
 
 def load_device(device_id: str) -> DeviceSpec:
@@ -46,4 +50,8 @@ def load_device(device_id: str) -> DeviceSpec:
         pipes=tuple(pipes["available"]),
         event_ids=pipes["event_ids"],
         pathways={tuple(k.split("->")): v for k, v in pathways.items()},
+        l0a_bytes=mem.get("l0a_bytes", 65536),
+        l0b_bytes=mem.get("l0b_bytes", 65536),
+        l0c_bytes=mem.get("l0c_bytes", 262144),
+        l0_align_bytes=mem.get("l0_align_bytes", 512),
     )

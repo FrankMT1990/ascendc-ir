@@ -30,7 +30,8 @@ from __future__ import annotations
 import math
 
 from ..devices import load_device
-from ..model.core import BufRef, DType, GmRef, Pipe
+from ..catalog import BINARY_I32, SCALAR_I32, lowering_kind, reg_c_dtype
+from ..model.core import BufRef, DType, GmRef, Pipe, Space
 from ..model.stmts import ComputeStmt, CopyStmt, SyncStmt
 from ..verify import verify
 from .reroll import reroll
@@ -39,7 +40,7 @@ _REPEAT_BYTES = 256  # VL=256B；b32 模式每个 VF 迭代处理 64 个 f32
 _BLOCK_BYTES = 32
 _BURST_LEN_MAX = 65535  # 3510 的 asc_copy_gm2ub/ub2gm burst_len 是 uint16_t（单位：字节）
 
-_DTYPE_TO_C = {"f16": "half", "f32": "float"}
+_DTYPE_TO_C = {"u8": "uint8_t", "i32": "int32_t", "f16": "half", "f32": "float"}
 _PIPE_TO_C = {
     Pipe.S: "PIPE_S",
     Pipe.V: "PIPE_V",
@@ -49,8 +50,21 @@ _PIPE_TO_C = {
     Pipe.MTE3: "PIPE_MTE3",
     Pipe.FIX: "PIPE_FIX",
 }
+_SPACE_QUAL = {
+    Space.UB: "__ubuf__",
+    Space.L1: "__cbuf__",
+    Space.L0A: "__ca__",
+    Space.L0B: "__cb__",
+    Space.L0C: "__cc__",
+}
 
-_SUPPORTED_COMPUTE = {"add", "leakyrelu", "cast", "repeat_reduce_sum"}
+_SUPPORTED_COMPUTE = {
+    "add", "leakyrelu", "cast", "repeat_reduce_sum", "select",
+    "select_gt", "select_gt_scalar", "select_lt", "select_lt_scalar",
+    "select_ne", "select_ne_scalar", "select_eq", "select_eq_scalar",
+    "select_ge", "select_ge_scalar", "select_le", "select_le_scalar",
+    "duplicate", "arange", "mmad",
+}
 
 _LICENSE = """/* !
  * Copyright (c) 2026 Huawei Technologies Co., Ltd.
@@ -135,11 +149,118 @@ _REDUCE_VF_HELPER = """__simd_vf__ inline void reduce_sum_vf(
     asc_storealign(y_local, acc_reg, vmask);
 }"""
 
+_SELECT_VF_HELPER = """__simd_vf__ inline void select_vf(
+    __ubuf__ float* src0, __ubuf__ float* src1, __ubuf__ uint32_t* mask_local, __ubuf__ float* dst,
+    uint32_t data_len)
+{
+    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);
+    uint16_t mask_rep_size = asc_get_vf_len() / 8;
+    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;
+
+    vector_bool vmask;
+    vector_float reg_src0;
+    vector_float reg_src1;
+    vector_float reg_dst;
+    vector_bool store_mask = asc_create_mask_b32(PAT_ALL);
+    for (uint16_t i = 0; i < repeat_time; ++i) {
+        asc_loadalign(reg_src0, src0 + i * one_rep_size);
+        asc_loadalign(reg_src1, src1 + i * one_rep_size);
+        asc_loadalign_postupdate(vmask, mask_local, mask_rep_size);
+        asc_select(reg_dst, reg_src0, reg_src1, vmask);
+        asc_storealign(dst + i * one_rep_size, reg_dst, store_mask);
+    }
+}"""
+
+def _compare_select_helper(name: str, compare: str, scalar: bool) -> str:
+    value = ", float value" if scalar else ""
+    cmp_args = "reg_src0, value, vmask" if scalar else "reg_src0, reg_src1, vmask"
+    return (
+        f"__simd_vf__ inline void {name}_vf(\n"
+        f"    __ubuf__ float* src0, __ubuf__ float* src1, __ubuf__ float* dst, uint32_t data_len{value})\n"
+        "{\n"
+        "    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);\n"
+        "    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;\n"
+        "\n"
+        "    vector_bool vmask;\n"
+        "    vector_bool cmp_mask;\n"
+        "    vector_float reg_src0;\n"
+        "    vector_float reg_src1;\n"
+        "    vector_float reg_dst;\n"
+        "    for (uint16_t i = 0; i < repeat_time; ++i) {\n"
+        "        vmask = asc_update_mask_b32(data_len);\n"
+        "        asc_loadalign(reg_src0, src0 + i * one_rep_size);\n"
+        "        asc_loadalign(reg_src1, src1 + i * one_rep_size);\n"
+        f"        {compare}(cmp_mask, {cmp_args});\n"
+        "        asc_select(reg_dst, reg_src0, reg_src1, cmp_mask);\n"
+        "        asc_storealign(dst + i * one_rep_size, reg_dst, vmask);\n"
+        "    }\n"
+        "}"
+    )
+
+
+_SELECT_GT_VF_HELPER = _compare_select_helper("select_gt", "asc_gt", scalar=False)
+_SELECT_GT_SCALAR_VF_HELPER = _compare_select_helper("select_gt_scalar", "asc_gt_scalar", scalar=True)
+_SELECT_LT_VF_HELPER = _compare_select_helper("select_lt", "asc_lt", scalar=False)
+_SELECT_LT_SCALAR_VF_HELPER = _compare_select_helper("select_lt_scalar", "asc_lt_scalar", scalar=True)
+_SELECT_NE_VF_HELPER = _compare_select_helper("select_ne", "asc_ne", scalar=False)
+_SELECT_NE_SCALAR_VF_HELPER = _compare_select_helper("select_ne_scalar", "asc_ne_scalar", scalar=True)
+_SELECT_EQ_VF_HELPER = _compare_select_helper("select_eq", "asc_eq", scalar=False)
+_SELECT_EQ_SCALAR_VF_HELPER = _compare_select_helper("select_eq_scalar", "asc_eq_scalar", scalar=True)
+_SELECT_GE_VF_HELPER = _compare_select_helper("select_ge", "asc_ge", scalar=False)
+_SELECT_GE_SCALAR_VF_HELPER = _compare_select_helper("select_ge_scalar", "asc_ge_scalar", scalar=True)
+_SELECT_LE_VF_HELPER = _compare_select_helper("select_le", "asc_le", scalar=False)
+_SELECT_LE_SCALAR_VF_HELPER = _compare_select_helper("select_le_scalar", "asc_le_scalar", scalar=True)
+
+_DUPLICATE_VF_HELPER = """__simd_vf__ inline void duplicate_vf(
+    __ubuf__ float* dst, uint32_t data_len, float value)
+{
+    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);
+    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;
+
+    vector_bool vmask;
+    vector_float reg_dst;
+    for (uint16_t i = 0; i < repeat_time; ++i) {
+        vmask = asc_update_mask_b32(data_len);
+        asc_duplicate_scalar(reg_dst, value, vmask);
+        asc_storealign(dst + i * one_rep_size, reg_dst, vmask);
+    }
+}"""
+
+_ARANGE_VF_HELPER = """__simd_vf__ inline void arange_vf(
+    __ubuf__ float* dst, uint32_t data_len, float start_value)
+{
+    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);
+    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;
+
+    vector_bool vmask = asc_create_mask_b32(PAT_ALL);
+    vector_float reg_dst;
+    for (uint16_t i = 0; i < repeat_time; ++i) {
+        asc_arange(reg_dst, start_value);
+        asc_storealign(dst + i * one_rep_size, reg_dst, vmask);
+        start_value += static_cast<float>(one_rep_size);
+    }
+}"""
+
 _HELPERS = {
     "add": _ADD_VF_HELPER,
     "leakyrelu": _LEAKYRELU_VF_HELPER,
     "cast": _CAST_VF_HELPER,
     "repeat_reduce_sum": _REDUCE_VF_HELPER,
+    "select": _SELECT_VF_HELPER,
+    "select_gt": _SELECT_GT_VF_HELPER,
+    "select_gt_scalar": _SELECT_GT_SCALAR_VF_HELPER,
+    "select_lt": _SELECT_LT_VF_HELPER,
+    "select_lt_scalar": _SELECT_LT_SCALAR_VF_HELPER,
+    "select_ne": _SELECT_NE_VF_HELPER,
+    "select_ne_scalar": _SELECT_NE_SCALAR_VF_HELPER,
+    "select_eq": _SELECT_EQ_VF_HELPER,
+    "select_eq_scalar": _SELECT_EQ_SCALAR_VF_HELPER,
+    "select_ge": _SELECT_GE_VF_HELPER,
+    "select_ge_scalar": _SELECT_GE_SCALAR_VF_HELPER,
+    "select_le": _SELECT_LE_VF_HELPER,
+    "select_le_scalar": _SELECT_LE_SCALAR_VF_HELPER,
+    "duplicate": _DUPLICATE_VF_HELPER,
+    "arange": _ARANGE_VF_HELPER,
 }
 
 
@@ -153,24 +274,27 @@ def generate(kernel, device=None) -> str:
     if blocks:
         detail = "; ".join(f"{d.id}@{d.callsite.line}: {d.message}" for d in blocks)
         raise CodegenError(f"检查器拒绝生成：{detail}")
-    tiles, body, ok = reroll(kernel)
+    tiles, body, epilogue, ok, mmad_init_first = reroll(kernel)
     if not ok:
         raise CodegenError(
             f"循环重卷失败：trace 展开的 {len(kernel.statements)} 条语句不满足仿射规律，"
             "或存在无循环标记的槽位复用。循环体内的 sync 必须写 stage=迭代号；"
             "循环体语句保持一致、GM 偏移关于 i 仿射、buffer 槽位为 i % stages"
         )
-    return _Emitter(kernel, dev, tiles, body).emit()
+    return _Emitter(kernel, dev, tiles, body, epilogue, mmad_init_first).emit()
 
 
 class _Emitter:
-    def __init__(self, kernel, device, tiles, body):
+    def __init__(self, kernel, device, tiles, body, epilogue, mmad_init_first):
         self.kernel = kernel
         self.device = device
         self.tiles = tiles
         self.body = body
+        self.epilogue = epilogue
+        self.mmad_init_first = mmad_init_first
         self.looped = tiles > 1
-        self.per = len(kernel.statements) // tiles
+        self._slot_from_ref = False
+        self.per = len(body) if tiles > 1 else len(kernel.statements)
         self._pair_events = {}  # (set_pipe, wait_pipe) -> {channel_key: base_id}
         self._pair_used = {}  # (set_pipe, wait_pipe) -> int
         self._war = self._analyze_war()
@@ -182,9 +306,10 @@ class _Emitter:
     def _analyze_war(self):
         """每 buffer 的生产/消费 PIPE；跨 PIPE 的 buffer 需要 WAR 通道。"""
         war = {}
+        scope = self.body if self.looped else self.kernel.statements
         for buf in self.kernel.buffers:
             writers, readers = set(), set()
-            for stmt in self.kernel.statements:
+            for stmt in scope:
                 if isinstance(stmt, CopyStmt):
                     if isinstance(stmt.dst, BufRef) and stmt.dst.buffer is buf:
                         writers.add(stmt.pipe)
@@ -196,10 +321,13 @@ class _Emitter:
                     for s in stmt.srcs:
                         if isinstance(s, BufRef) and s.buffer is buf:
                             readers.add(stmt.pipe)
-            if len(writers) == 1 and len(readers) == 1:
-                p, q = next(iter(writers)), next(iter(readers))
+            cross = readers - writers
+            if len(writers) == 1 and len(cross) == 1:
+                p, q = next(iter(writers)), next(iter(cross))
                 if p != q:
                     war[buf.name] = (p, q)
+            elif len(writers) == 1 and not cross:
+                continue
             elif writers or readers:
                 raise CodegenError(
                     f"buffer {buf.name} 有多个生产/消费 PIPE（{sorted(p.value for p in writers)} / "
@@ -257,13 +385,13 @@ class _Emitter:
         buf = ref.buffer
         if buf.stages == 1:
             return buf.name
-        # 直写形态每条语句自带槽位。循环形态的 body 是第 0 轮，槽位由展开下标 k 决定。
-        slot = ref.stage if not self.looped else k % buf.stages
+        # 直写形态和循环收尾每条语句自带槽位。循环体的槽位由展开下标 k 决定。
+        slot = ref.stage if self._slot_from_ref or not self.looped else k % buf.stages
         return buf.name if slot == 0 else f"{buf.name} + {slot * buf.elems}"
 
     def _gm_ptr(self, ref: GmRef, stmt_index: int, ref_index: int, k: int, i_value) -> str:
-        base = ref.offset  # body 是第 0 轮，offset 即基址
-        if not self.looped:
+        base = ref.offset  # body 是第 0 轮，offset 即基址。收尾不在循环里，用它自己的偏移。
+        if not self.looped or self._slot_from_ref:
             return ref.param.name if base == 0 else f"{ref.param.name} + {base}"
         stride = self._gm_stride(stmt_index, ref_index)
         if i_value is not None:
@@ -310,6 +438,20 @@ class _Emitter:
             index = end
         return regions
 
+    def _emit_regions(self) -> list:
+        """第一轮 mmad 负责清零时，把它从后续累加循环里剥出来，稳态里就不必再写 if。"""
+        regions = self._regions()
+        if not self.mmad_init_first:
+            return regions
+        peeled = []
+        for lo, hi, signature in regions:
+            if lo == 0 and hi - lo > self._unroll:
+                peeled.append((0, self._unroll, signature))
+                peeled.append((self._unroll, hi, signature))
+            else:
+                peeled.append((lo, hi, signature))
+        return peeled
+
     def _war_decision(self, signature, buf, k: int, which: str) -> str:
         for name, slot, wait, notify in signature:
             if name == buf.name and slot == k:
@@ -322,26 +464,58 @@ class _Emitter:
         k = self.kernel
         lines = [_LICENSE, "", '#include "c_api/asc_simd.h"', ""]
         ops = {stmt.op for stmt in k.statements if isinstance(stmt, ComputeStmt)}
-        for op in ("add", "leakyrelu", "cast", "repeat_reduce_sum"):
+        for op in (
+            "add",
+            "leakyrelu",
+            "cast",
+            "repeat_reduce_sum",
+            "select",
+            "select_gt",
+            "select_gt_scalar",
+            "select_lt",
+            "select_lt_scalar",
+            "select_ne",
+            "select_ne_scalar",
+            "select_eq",
+            "select_eq_scalar",
+            "select_ge",
+            "select_ge_scalar",
+            "select_le",
+            "select_le_scalar",
+            "duplicate",
+            "arange",
+        ):
             if op in ops:
                 lines.extend(_HELPERS[op].splitlines())
                 lines.append("")
+        emitted = set()
+        for op in sorted(ops):
+            kind = lowering_kind(op)
+            if kind not in {"reg_binary", "reg_unary", "reg_scalar"} or op in emitted:
+                continue
+            emitted.add(op)
+            lines.extend(_reg_helper(op, kind, reg_c_dtype(op) or "f32").splitlines())
+            lines.append("")
         params = ", ".join(f"__gm__ {_DTYPE_TO_C[p.dtype.value]}* {p.name}" for p in k.params)
-        lines.append(f"__vector__ __global__ __aicore__ void {k.name}({params})")
+        cube = any(buf.space is not Space.UB for buf in k.buffers)
+        if cube and any(buf.space is Space.UB for buf in k.buffers):
+            raise CodegenError("这一批不能在同一个核里同时放 UB 向量缓冲和 Cube 缓冲")
+        prefix = "__global__ __cube__" if cube else "__vector__ __global__ __aicore__"
+        lines.append(f"{prefix} void {k.name}({params})")
         lines.append("{")
         lines.append("    asc_init();")
         lines.append("")
         for buf in k.buffers:
             c_type = _DTYPE_TO_C[buf.dtype.value]
             count = buf.stages * buf.elems
-            lines.append(f"    __ubuf__ {c_type} {buf.name}[{count}];")
+            lines.append(f"    {_SPACE_QUAL[buf.space]} {c_type} {buf.name}[{count}];")
         lines.append("")
         if self.looped:
-            for lo, hi, signature in self._regions():
+            for lo, hi, signature in self._emit_regions():
                 if hi - lo == self._unroll:
                     if lo == 0:
                         label = "prologue"
-                    elif hi == self.tiles:
+                    elif hi == self.tiles and not self.epilogue:
                         label = "epilogue"
                     else:
                         label = "peeled"
@@ -351,6 +525,14 @@ class _Emitter:
                     lines.append(f"    for (uint32_t i = {lo}; i < {hi}; i += {self._unroll}) {{")
                     self._emit_group(lines, "        ", None, signature)
                     lines.append("    }")
+            if self.epilogue:
+                lines.append("    // 循环之后")
+                self._slot_from_ref = True
+                try:
+                    for j, stmt in enumerate(self.epilogue):
+                        lines.extend("    " + line for line in self._emit_stmt(stmt, j, 0, None, (), set()))
+                finally:
+                    self._slot_from_ref = False
         else:
             for j, stmt in enumerate(self.body):
                 lines.extend("    " + line for line in self._emit_stmt(stmt, j, 0, None, (), set()))
@@ -397,7 +579,11 @@ class _Emitter:
         return [f"asc_sync_notify({_PIPE_TO_C[q]}, {_PIPE_TO_C[p]}, {self._war_event_id(buf, p, q, k)});"]
 
     def _emit_copy(self, stmt: CopyStmt, j: int, k: int, i_value, signature, waited: set) -> list:
+        if stmt.form != "linear":
+            return self._emit_cube_copy(stmt, j, k, i_value, signature, waited)
         if stmt.pipe == Pipe.MTE2 and isinstance(stmt.src, GmRef) and isinstance(stmt.dst, BufRef):
+            if stmt.dst.buffer.space is not Space.UB:
+                raise CodegenError(f"linear 搬运的目的 {stmt.dst.buffer.name} 不在 ubuf")
             buf = stmt.dst.buffer
             lines = self._war_wait(buf, k, signature, waited)
             lines.append(
@@ -423,9 +609,255 @@ class _Emitter:
             return self._emit_cast(stmt, j, k, signature, waited)
         if stmt.op == "repeat_reduce_sum":
             return self._emit_reduce(stmt, j, k, signature, waited)
+        if stmt.op == "select":
+            return self._emit_select(stmt, j, k, signature, waited)
+        if stmt.op in {"select_gt", "select_lt", "select_ne", "select_eq", "select_ge", "select_le"}:
+            return self._emit_select_gt(stmt, j, k, signature, waited)
+        if stmt.op in {
+            "select_gt_scalar", "select_lt_scalar", "select_ne_scalar",
+            "select_eq_scalar", "select_ge_scalar", "select_le_scalar",
+        }:
+            return self._emit_select_gt_scalar(stmt, j, k, signature, waited)
+        if stmt.op == "duplicate":
+            return self._emit_duplicate(stmt, j, k, signature, waited)
+        if stmt.op == "arange":
+            return self._emit_arange(stmt, j, k, signature, waited)
+        if stmt.op == "mmad":
+            return self._emit_mmad(stmt, j, k, i_value, signature)
+        kind = lowering_kind(stmt.op)
+        if kind == "reg_binary":
+            return self._emit_reg_binary(stmt, j, k, signature, waited)
+        if kind == "reg_unary":
+            return self._emit_reg_unary(stmt, j, k, signature, waited)
+        if kind == "reg_scalar":
+            return self._emit_reg_scalar(stmt, j, k, signature, waited)
         raise CodegenError(
             f"v0.2 代码生成只支持 {sorted(_SUPPORTED_COMPUTE)}，得到 {stmt.op!r}（trace/verify 可用）"
         )
+
+    def _emit_cube_copy(self, stmt: CopyStmt, j: int, k: int, i_value, signature, waited: set) -> list:
+        rows, cols = (int(stmt.scalars[0]), int(stmt.scalars[1]))
+        row_stride = int(stmt.scalars[2]) if len(stmt.scalars) > 2 else cols
+        if stmt.form in {"nd2nz", "dn2nz", "l12l0a", "l12l0b"} and stmt.dst.buffer.dtype is not DType.f16:
+            raise CodegenError(f"{stmt.form} 这一批只生成 f16；f32 的 K 方向粒度不同，不能套用")
+        if stmt.form in {"nd2nz", "dn2nz"}:
+            lines = self._war_wait(stmt.dst.buffer, k, signature, waited)
+            dst = self._buf_ptr(stmt.dst, k)
+            src = self._gm_ptr(stmt.src, j, 0, k, i_value)
+            aligned = (rows + 15) // 16 * 16
+            config = (aligned << 32) | (1 << 16) | 1
+            stride = row_stride * stmt.dst.buffer.dtype.nbytes
+            fn = "asc_copy_gm2l1_nd2nz" if stmt.form == "nd2nz" else "asc_copy_gm2l1_dn2nz"
+            lines.extend(
+                [
+                    f"asc_set_gm2l1_nz_para({config}ULL);",
+                    f"{fn}("
+                    f"{dst}, {src}, {stride}ULL, asc_load_l2_cache_mode::NORMAL_FIRST_VICTIM, "
+                    f"{rows}, {cols}, 0, false);",
+                ]
+            )
+            return lines
+        if stmt.form in {"l12l0a", "l12l0b"}:
+            m_step = (rows + 15) // 16
+            k_step = (cols + 15) // 16
+            if m_step > 255 or k_step > 255:
+                raise CodegenError(f"{stmt.form} 的 step 超过 uint8：m_step={m_step} k_step={k_step}")
+            fn = "asc_copy_l12l0a" if stmt.form == "l12l0a" else "asc_copy_l12l0b"
+            lines = self._war_wait(stmt.dst.buffer, k, signature, waited)
+            lines.append(
+                f"{fn}({self._buf_ptr(stmt.dst, k)}, {self._buf_ptr(stmt.src, k)}, "
+                f"0, 0, {m_step}, {k_step}, {m_step}, {m_step});"
+            )
+            if isinstance(stmt.src, BufRef) and self._last_read.get(stmt.src.buffer.name) == j:
+                lines.extend(self._war_notify(stmt.src.buffer, k, signature))
+            return lines
+        if stmt.form == "l0c2gm":
+            src_stride = (rows + 15) // 16 * 16
+            return [
+                "asc_set_l0c_copy_nz_para(1, 0, 0);",
+                "asc_copy_l0c2gm("
+                f"{self._gm_ptr(stmt.dst, j, 1, k, i_value)}, {self._buf_ptr(stmt.src, k)}, "
+                f"{cols}, {rows}, {cols}, {src_stride}, asc_store_l2_cache_mode::NORMAL_FIRST_VICTIM, "
+                "asc_unit_flag_mode::DISABLE, QuantMode_t::NoQuant, asc_relu_pre_mode::NONE, "
+                "false, true, false, false);",
+            ]
+        raise CodegenError(f"没有 {stmt.form} 的降级")
+
+    def _emit_mmad(self, stmt: ComputeStmt, j: int, k: int, i_value, signature) -> list:
+        m_dim, k_dim, n_dim, init = (int(x) for x in stmt.scalars)
+        if self.mmad_init_first and self.looped:
+            clears = i_value == 0 and k == 0
+        else:
+            clears = bool(init)
+        init_c = "true" if clears else "false"
+        lines = []
+        if not clears:
+            lines.append("asc_sync_pipe(PIPE_M);")
+        lines.append(
+            "asc_mmad("
+            f"{self._buf_ptr(stmt.dst, k)}, {self._buf_ptr(stmt.srcs[0], k)}, {self._buf_ptr(stmt.srcs[1], k)}, "
+            f"{m_dim}, {k_dim}, {n_dim}, asc_unit_flag_mode::DISABLE, true, false, {init_c});"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_reg_binary(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        dst = stmt.dst
+        want = DType.i32 if stmt.op in BINARY_I32 else DType.f32
+        self._require_ub(dst, stmt.op, want)
+        for src in stmt.srcs:
+            self._require_ub(src, stmt.op, want)
+            if src.buffer.elems != dst.buffer.elems:
+                raise CodegenError(f"{stmt.op} 的源和目的元素个数必须相同")
+        self._require_vl(dst)
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(
+            f"{stmt.op}_vf({self._buf_ptr(stmt.srcs[0], k)}, {self._buf_ptr(stmt.srcs[1], k)}, "
+            f"{self._buf_ptr(dst, k)}, {dst.buffer.elems});"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_reg_unary(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        dst = stmt.dst
+        src = stmt.srcs[0]
+        self._require_f32_ub(dst, stmt.op)
+        self._require_f32_ub(src, stmt.op)
+        if src.buffer.elems != dst.buffer.elems:
+            raise CodegenError(f"{stmt.op} 的源和目的元素个数必须相同")
+        self._require_vl(dst)
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(
+            f"{stmt.op}_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems});"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_reg_scalar(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        dst = stmt.dst
+        src = stmt.srcs[0]
+        integer = stmt.op in SCALAR_I32
+        want = DType.i32 if integer else DType.f32
+        self._require_ub(dst, stmt.op, want)
+        self._require_ub(src, stmt.op, want)
+        if src.buffer.elems != dst.buffer.elems:
+            raise CodegenError(f"{stmt.op} 的源和目的元素个数必须相同")
+        self._require_vl(dst)
+        if integer:
+            literal = str(int(stmt.scalars[0]))
+        else:
+            literal = f"{float(stmt.scalars[0]):.9g}f"
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(
+            f"{stmt.op}_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems}, {literal});"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+
+    def _emit_select(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        # 对照 select.asc：mask 在 UB 按 packed bits，字节数 = f32 个数 * 4 / 8。
+        if len(stmt.srcs) != 3:
+            raise CodegenError("select 需要三个源：src0、src1 和 packed mask 缓冲")
+        dst = stmt.dst
+        src0, src1, mask = stmt.srcs
+        self._require_f32_ub(dst, stmt.op)
+        self._require_f32_ub(src0, stmt.op)
+        self._require_f32_ub(src1, stmt.op)
+        if not isinstance(mask, BufRef) or mask.buffer.space is not Space.UB or mask.buffer.dtype is not DType.u8:
+            raise CodegenError("select 的 mask 必须是 ubuf 上的 u8 packed bits")
+        if src0.buffer.elems != dst.buffer.elems or src1.buffer.elems != dst.buffer.elems:
+            raise CodegenError("select 的浮点源和目的元素个数必须相同")
+        if dst.buffer.elems % 2 != 0:
+            raise CodegenError("select 的 f32 元素个数必须为偶数，才能对齐 packed mask 字节数")
+        expected_mask = dst.buffer.elems * dst.buffer.dtype.nbytes // 8
+        if mask.buffer.elems != expected_mask:
+            raise CodegenError(
+                f"select 的 mask 需要 {expected_mask} 个 u8（= f32 个数 * 4 / 8），得到 {mask.buffer.elems}"
+            )
+        self._require_vl(dst)
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(
+            f"select_vf({self._buf_ptr(src0, k)}, {self._buf_ptr(src1, k)}, "
+            f"(__ubuf__ uint32_t*){self._buf_ptr(mask, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems});"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_select_gt(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        if len(stmt.srcs) != 2:
+            raise CodegenError("select_gt 需要两个浮点源")
+        dst = stmt.dst
+        src0, src1 = stmt.srcs
+        self._require_f32_ub(dst, stmt.op)
+        self._require_f32_ub(src0, stmt.op)
+        self._require_f32_ub(src1, stmt.op)
+        if src0.buffer.elems != dst.buffer.elems or src1.buffer.elems != dst.buffer.elems:
+            raise CodegenError("select_gt 的源和目的元素个数必须相同")
+        self._require_vl(dst)
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(
+            f"{stmt.op}_vf({self._buf_ptr(src0, k)}, {self._buf_ptr(src1, k)}, "
+            f"{self._buf_ptr(dst, k)}, {dst.buffer.elems});"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_select_gt_scalar(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        if len(stmt.srcs) != 2 or not stmt.scalars:
+            raise CodegenError("select_gt_scalar 需要两个浮点源和一个标量")
+        dst = stmt.dst
+        src0, src1 = stmt.srcs
+        self._require_f32_ub(dst, stmt.op)
+        self._require_f32_ub(src0, stmt.op)
+        self._require_f32_ub(src1, stmt.op)
+        if src0.buffer.elems != dst.buffer.elems or src1.buffer.elems != dst.buffer.elems:
+            raise CodegenError("select_gt_scalar 的源和目的元素个数必须相同")
+        self._require_vl(dst)
+        value = float(stmt.scalars[0])
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(
+            f"{stmt.op}_vf({self._buf_ptr(src0, k)}, {self._buf_ptr(src1, k)}, "
+            f"{self._buf_ptr(dst, k)}, {dst.buffer.elems}, {value:.9g}f);"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_duplicate(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        if stmt.srcs:
+            raise CodegenError("duplicate 没有源向量，只有目的和标量")
+        if not stmt.scalars:
+            raise CodegenError("duplicate 需要一个标量")
+        dst = stmt.dst
+        self._require_f32_ub(dst, stmt.op)
+        self._require_vl(dst)
+        value = float(stmt.scalars[0])
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(f"duplicate_vf({self._buf_ptr(dst, k)}, {dst.buffer.elems}, {value:.9g}f);")
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_arange(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        # 对照 arange.asc：无源；asc_arange + PAT_ALL store；每 VL 块递增 start。
+        if stmt.srcs:
+            raise CodegenError("arange 没有源向量，只有目的和起始标量")
+        if not stmt.scalars:
+            raise CodegenError("arange 需要起始标量")
+        dst = stmt.dst
+        self._require_f32_ub(dst, stmt.op)
+        self._require_vl(dst)
+        start = float(stmt.scalars[0])
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(f"arange_vf({self._buf_ptr(dst, k)}, {dst.buffer.elems}, {start:.9g}f);")
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _require_f32_ub(self, ref: BufRef, op: str) -> None:
+        self._require_ub(ref, op, DType.f32)
+
+    def _require_ub(self, ref: BufRef, op: str, dtype: DType) -> None:
+        if not isinstance(ref, BufRef) or ref.buffer.dtype is not dtype or ref.buffer.space is not Space.UB:
+            raise CodegenError(f"{op} 这一批只生成 ubuf 上的 {dtype.value}")
 
     def _emit_add(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
         dst = stmt.dst
@@ -524,6 +956,71 @@ class _Emitter:
         ev = f"EVENT_ID{base}"
         p, q = _PIPE_TO_C[stmt.producer], _PIPE_TO_C[stmt.consumer]
         return [f"asc_sync_notify({p}, {q}, {ev});", f"asc_sync_wait({p}, {q}, {ev});"]
+
+
+def _reg_helper(op: str, kind: str, c_dtype: str = "f32") -> str:
+    ctype, vtype = {
+        "f32": ("float", "vector_float"),
+        "i32": ("int32_t", "vector_int32_t"),
+    }[c_dtype]
+    if kind == "reg_binary":
+        return (
+            f"__simd_vf__ inline void {op}_vf(\n"
+            f"    __ubuf__ {ctype}* src0, __ubuf__ {ctype}* src1, __ubuf__ {ctype}* dst, uint32_t data_len)\n"
+            "{\n"
+            f"    uint16_t one_rep_size = asc_get_vf_len() / sizeof({ctype});\n"
+            "    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;\n"
+            "\n"
+            "    vector_bool vmask;\n"
+            f"    {vtype} reg_src0;\n"
+            f"    {vtype} reg_src1;\n"
+            f"    {vtype} reg_dst;\n"
+            "    for (uint16_t i = 0; i < repeat_time; ++i) {\n"
+            "        vmask = asc_update_mask_b32(data_len);\n"
+            "        asc_load(reg_src0, src0 + i * one_rep_size);\n"
+            "        asc_load(reg_src1, src1 + i * one_rep_size);\n"
+            f"        asc_{op}(reg_dst, reg_src0, reg_src1, vmask);\n"
+            "        asc_store(dst + i * one_rep_size, reg_dst);\n"
+            "    }\n"
+            "}"
+        )
+    if kind == "reg_unary":
+        return (
+            f"__simd_vf__ inline void {op}_vf(\n"
+            f"    __ubuf__ {ctype}* src, __ubuf__ {ctype}* dst, uint32_t data_len)\n"
+            "{\n"
+            f"    uint16_t one_rep_size = asc_get_vf_len() / sizeof({ctype});\n"
+            "    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;\n"
+            "\n"
+            "    vector_bool vmask;\n"
+            f"    {vtype} reg_src;\n"
+            f"    {vtype} reg_dst;\n"
+            "    for (uint16_t i = 0; i < repeat_time; ++i) {\n"
+            "        vmask = asc_update_mask_b32(data_len);\n"
+            "        asc_load(reg_src, src + i * one_rep_size);\n"
+            f"        asc_{op}(reg_dst, reg_src, vmask);\n"
+            "        asc_store(dst + i * one_rep_size, reg_dst);\n"
+            "    }\n"
+            "}"
+        )
+    return (
+        f"__simd_vf__ inline void {op}_vf(\n"
+        f"    __ubuf__ {ctype}* src, __ubuf__ {ctype}* dst, uint32_t data_len, {ctype} value)\n"
+        "{\n"
+        f"    uint16_t one_rep_size = asc_get_vf_len() / sizeof({ctype});\n"
+        "    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;\n"
+        "\n"
+        "    vector_bool vmask;\n"
+        f"    {vtype} reg_src;\n"
+        f"    {vtype} reg_dst;\n"
+        "    for (uint16_t i = 0; i < repeat_time; ++i) {\n"
+        "        vmask = asc_update_mask_b32(data_len);\n"
+        "        asc_load(reg_src, src + i * one_rep_size);\n"
+        f"        asc_{op}(reg_dst, reg_src, value, vmask);\n"
+        "        asc_store(dst + i * one_rep_size, reg_dst);\n"
+        "    }\n"
+        "}"
+    )
 
 
 def _burst(buf) -> int:
