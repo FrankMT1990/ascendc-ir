@@ -1,0 +1,267 @@
+=== Building ir_board wheel package ===
+NPU_ARCH: ascend950
+running bdist_wheel
+running build
+running build_py
+creating build
+creating build/lib.linux-x86_64-3.10
+creating build/lib.linux-x86_64-3.10/ir_board
+copying ir_board/__init__.py -> build/lib.linux-x86_64-3.10/ir_board
+running build_ext
+-- The CXX compiler identification is GNU 9.5.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- BISHENG: /usr/local/Ascend/cann-9.1.0/bin/bisheng
+-- ASCEND_HOME_PATH: /usr/local/Ascend/cann-9.1.0
+-- Found Python3: /usr/local/bin/python (found version "3.10.12") found components: Interpreter Development Development.Module Development.Embed 
+-- Python3: /usr/local/bin/python
+CMake Warning at /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:22 (message):
+  static library kineto_LIBRARY-NOTFOUND not found.
+Call Stack (most recent call first):
+  /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:125 (append_torchlib_if_found)
+  cmake/torch.cmake:14 (find_package)
+  CMakeLists.txt:26 (include)
+
+
+-- Found Torch: /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch.so  
+-- Torch: /usr/local/lib/python3.10/dist-packages/torch/share/cmake
+-- torch_npu: /usr/local/lib/python3.10/dist-packages/torch_npu
+-- Registered direct-launch op: op_abs
+-- Registered direct-launch op: op_add
+-- Registered direct-launch op: op_add_scalar
+-- Registered direct-launch op: op_and
+-- Registered direct-launch op: op_arange
+-- Registered direct-launch op: op_cast
+-- Registered direct-launch op: op_ceil
+-- Registered direct-launch op: op_div
+-- Registered direct-launch op: op_duplicate
+-- Registered direct-launch op: op_exp
+-- Registered direct-launch op: op_floor
+-- Registered direct-launch op: op_leakyrelu
+-- Registered direct-launch op: op_ln
+-- Registered direct-launch op: op_log
+-- Registered direct-launch op: op_max
+-- Registered direct-launch op: op_max_scalar
+-- Registered direct-launch op: op_min
+-- Registered direct-launch op: op_min_scalar
+-- Registered direct-launch op: op_mmad
+-- Registered direct-launch op: op_mul
+-- Registered direct-launch op: op_mul_scalar
+-- Registered direct-launch op: op_neg
+-- Registered direct-launch op: op_not
+-- Registered direct-launch op: op_or
+-- Registered direct-launch op: op_prelu
+-- Registered direct-launch op: op_relu
+-- Registered direct-launch op: op_repeat_reduce_sum
+-- Registered direct-launch op: op_rint
+-- Registered direct-launch op: op_round
+-- Registered direct-launch op: op_select
+-- Registered direct-launch op: op_select_eq
+-- Registered direct-launch op: op_select_eq_scalar
+-- Registered direct-launch op: op_select_ge
+-- Registered direct-launch op: op_select_ge_scalar
+-- Registered direct-launch op: op_select_gt
+-- Registered direct-launch op: op_select_gt_scalar
+-- Registered direct-launch op: op_select_le
+-- Registered direct-launch op: op_select_le_scalar
+-- Registered direct-launch op: op_select_lt
+-- Registered direct-launch op: op_select_lt_scalar
+-- Registered direct-launch op: op_select_ne
+-- Registered direct-launch op: op_select_ne_scalar
+-- Registered direct-launch op: op_shiftleft
+-- Registered direct-launch op: op_shiftleft_scalar
+-- Registered direct-launch op: op_shiftright
+-- Registered direct-launch op: op_shiftright_scalar
+-- Registered direct-launch op: op_sqrt
+-- Registered direct-launch op: op_sub
+-- Registered direct-launch op: op_trunc
+-- Registered direct-launch op: op_xor
+-- Configuring done
+-- Generating done
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    PYTHON_EXECUTABLE
+
+
+-- Build files have been written to: /home/w00964611/board_3510/build/temp.linux-x86_64-3.10
+[  1%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_abs/op_plugin/op_abs_plugin.cpp.o
+[  2%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_add/op_plugin/op_add_plugin.cpp.o
+[  3%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_add_scalar/op_plugin/op_add_scalar_plugin.cpp.o
+[  4%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_and/op_plugin/op_and_plugin.cpp.o
+[  5%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_arange/op_plugin/op_arange_plugin.cpp.o
+[  6%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_cast/op_plugin/op_cast_plugin.cpp.o
+[  7%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_ceil/op_plugin/op_ceil_plugin.cpp.o
+[  8%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_div/op_plugin/op_div_plugin.cpp.o
+[  9%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_duplicate/op_plugin/op_duplicate_plugin.cpp.o
+[ 10%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_exp/op_plugin/op_exp_plugin.cpp.o
+[ 11%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_floor/op_plugin/op_floor_plugin.cpp.o
+[ 12%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_leakyrelu/op_plugin/op_leakyrelu_plugin.cpp.o
+[ 13%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_ln/op_plugin/op_ln_plugin.cpp.o
+[ 14%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_log/op_plugin/op_log_plugin.cpp.o
+[ 15%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_max/op_plugin/op_max_plugin.cpp.o
+[ 16%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_max_scalar/op_plugin/op_max_scalar_plugin.cpp.o
+[ 17%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_min/op_plugin/op_min_plugin.cpp.o
+[ 18%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_min_scalar/op_plugin/op_min_scalar_plugin.cpp.o
+[ 19%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_mmad/op_plugin/op_mmad_plugin.cpp.o
+[ 20%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_mul/op_plugin/op_mul_plugin.cpp.o
+[ 21%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_mul_scalar/op_plugin/op_mul_scalar_plugin.cpp.o
+[ 22%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_neg/op_plugin/op_neg_plugin.cpp.o
+[ 23%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_not/op_plugin/op_not_plugin.cpp.o
+[ 24%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_or/op_plugin/op_or_plugin.cpp.o
+[ 25%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_prelu/op_plugin/op_prelu_plugin.cpp.o
+[ 26%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_relu/op_plugin/op_relu_plugin.cpp.o
+[ 27%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_repeat_reduce_sum/op_plugin/op_repeat_reduce_sum_plugin.cpp.o
+[ 28%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_rint/op_plugin/op_rint_plugin.cpp.o
+[ 29%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_round/op_plugin/op_round_plugin.cpp.o
+[ 30%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select/op_plugin/op_select_plugin.cpp.o
+[ 31%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_eq/op_plugin/op_select_eq_plugin.cpp.o
+[ 32%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_eq_scalar/op_plugin/op_select_eq_scalar_plugin.cpp.o
+[ 33%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_ge/op_plugin/op_select_ge_plugin.cpp.o
+[ 34%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_ge_scalar/op_plugin/op_select_ge_scalar_plugin.cpp.o
+[ 35%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_gt/op_plugin/op_select_gt_plugin.cpp.o
+[ 36%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_gt_scalar/op_plugin/op_select_gt_scalar_plugin.cpp.o
+[ 37%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_le/op_plugin/op_select_le_plugin.cpp.o
+[ 38%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_le_scalar/op_plugin/op_select_le_scalar_plugin.cpp.o
+[ 39%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_lt/op_plugin/op_select_lt_plugin.cpp.o
+[ 40%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_lt_scalar/op_plugin/op_select_lt_scalar_plugin.cpp.o
+[ 41%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_ne/op_plugin/op_select_ne_plugin.cpp.o
+[ 42%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_ne_scalar/op_plugin/op_select_ne_scalar_plugin.cpp.o
+[ 43%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_shiftleft/op_plugin/op_shiftleft_plugin.cpp.o
+[ 44%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_shiftleft_scalar/op_plugin/op_shiftleft_scalar_plugin.cpp.o
+[ 45%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_shiftright/op_plugin/op_shiftright_plugin.cpp.o
+[ 46%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_shiftright_scalar/op_plugin/op_shiftright_scalar_plugin.cpp.o
+[ 47%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_sqrt/op_plugin/op_sqrt_plugin.cpp.o
+[ 48%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_sub/op_plugin/op_sub_plugin.cpp.o
+[ 49%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_trunc/op_plugin/op_trunc_plugin.cpp.o
+[ 50%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_xor/op_plugin/op_xor_plugin.cpp.o
+[ 50%] Built target all_plugins_obj
+[ 51%] bisheng op_xor_kernel
+/home/w00964611/board_3510/csrc/ops/op_xor/op_kernel/op_xor_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_xor<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_xor/op_kernel/op_xor_kernel.cpp:50:51: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_xor<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_xor/op_kernel/op_xor_kernel.cpp:50:71: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_xor<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                                                      ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 51%] bisheng op_abs_kernel
+/home/w00964611/board_3510/csrc/ops/op_abs/op_kernel/op_abs_kernel.cpp:46:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_abs<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_abs/op_kernel/op_abs_kernel.cpp:46:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_abs<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 52%] bisheng op_add_kernel
+/home/w00964611/board_3510/csrc/ops/op_add/op_kernel/op_add_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_add/op_kernel/op_add_kernel.cpp:50:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_add/op_kernel/op_add_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 53%] bisheng op_add_scalar_kernel
+/home/w00964611/board_3510/csrc/ops/op_add_scalar/op_kernel/op_add_scalar_kernel.cpp:46:38: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add_scalar<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                     ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_add_scalar/op_kernel/op_add_scalar_kernel.cpp:46:56: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add_scalar<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                       ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 54%] bisheng op_and_kernel
+/home/w00964611/board_3510/csrc/ops/op_and/op_kernel/op_and_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_and<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_and/op_kernel/op_and_kernel.cpp:50:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_and<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_and/op_kernel/op_and_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_and<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 55%] bisheng op_arange_kernel
+/home/w00964611/board_3510/csrc/ops/op_arange/op_kernel/op_arange_kernel.cpp:30:27: error: invalid digit 'f' in octal constant
+    arange_vf(buf_0, 64, 0f);
+                          ^
+1 error generated.
+gmake[2]: *** [CMakeFiles/_C.dir/build.make:95: bisheng/op_arange_kernel.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:1024: CMakeFiles/_C.dir/all] Error 2
+gmake: *** [Makefile:91: all] Error 2
+Traceback (most recent call last):
+  File "/home/w00964611/board_3510/setup.py", line 34, in <module>
+    setup(
+  File "/usr/lib/python3/dist-packages/setuptools/__init__.py", line 153, in setup
+    return distutils.core.setup(**attrs)
+  File "/usr/lib/python3.10/distutils/core.py", line 148, in setup
+    dist.run_commands()
+  File "/usr/lib/python3.10/distutils/dist.py", line 966, in run_commands
+    self.run_command(cmd)
+  File "/usr/lib/python3.10/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/usr/lib/python3/dist-packages/wheel/bdist_wheel.py", line 299, in run
+    self.run_command('build')
+  File "/usr/lib/python3.10/distutils/cmd.py", line 313, in run_command
+    self.distribution.run_command(command)
+  File "/usr/lib/python3.10/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/usr/lib/python3.10/distutils/command/build.py", line 135, in run
+    self.run_command(cmd_name)
+  File "/usr/lib/python3.10/distutils/cmd.py", line 313, in run_command
+    self.distribution.run_command(command)
+  File "/usr/lib/python3.10/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/home/w00964611/board_3510/setup.py", line 17, in run
+    self.build_extension(ext)
+  File "/home/w00964611/board_3510/setup.py", line 31, in build_extension
+    subprocess.check_call(["cmake", "--build", str(build_temp), "--config", cfg], cwd=build_temp)
+  File "/usr/lib/python3.10/subprocess.py", line 369, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['cmake', '--build', '/home/w00964611/board_3510/build/temp.linux-x86_64-3.10', '--config', 'Release']' returned non-zero exit status 2.

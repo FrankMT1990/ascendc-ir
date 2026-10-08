@@ -1,0 +1,52 @@
+op_add ok True bit 64 / 64 max_abs 0.0 nan 0
+op_sub ok True bit 64 / 64 max_abs 0.0 nan 0
+op_mul ok True bit 64 / 64 max_abs 0.0 nan 0
+op_div ok True bit 60 / 64 max_abs 5.960464477539063e-08 nan 0
+op_max ok True bit 64 / 64 max_abs 0.0 nan 0
+op_min ok True bit 64 / 64 max_abs 0.0 nan 0
+op_and ok True bit 64 / 64 max_abs 0.0 nan 0
+op_or ok True bit 64 / 64 max_abs nan nan 23
+op_prelu ok True bit 64 / 64 max_abs 0.0 nan 0
+op_abs ok True bit 64 / 64 max_abs 0.0 nan 0
+op_ceil ok False bit 55 / 64 max_abs 0.0 nan 0
+op_exp ok True bit 64 / 64 max_abs 0.0 nan 0
+op_floor ok True bit 64 / 64 max_abs 0.0 nan 0
+op_ln ok True bit 45 / 64 max_abs 1.1920928955078125e-07 nan 0
+op_log EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_log'
+op_neg ok True bit 64 / 64 max_abs 0.0 nan 0
+op_not ok True bit 64 / 64 max_abs 0.0 nan 0
+op_relu ok True bit 64 / 64 max_abs 0.0 nan 0
+op_rint ok True bit 64 / 64 max_abs 0.0 nan 0
+op_round ok True bit 64 / 64 max_abs 0.0 nan 0
+op_sqrt ok True bit 55 / 64 max_abs 1.1920928955078125e-07 nan 0
+op_trunc ok False bit 55 / 64 max_abs 0.0 nan 0
+op_add_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_max_scalar EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_max_scalar'
+op_min_scalar EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_min_scalar'
+op_mul_scalar EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_mul_scalar'
+op_leakyrelu ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_gt ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_lt ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_ne ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_eq ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_ge ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_le ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_gt_scalar EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_select_gt_scalar'
+op_select_lt_scalar EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_select_lt_scalar'
+op_select_ne_scalar EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_select_ne_scalar'
+op_select_eq_scalar EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_select_eq_scalar'
+op_select_ge_scalar EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_select_ge_scalar'
+op_select_le_scalar EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_select_le_scalar'
+op_duplicate EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_duplicate'
+op_arange EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_arange'
+op_xor ok True bit 64 / 64 max_abs 0.0 nan 0
+op_shiftleft ok True bit 64 / 64 max_abs 0.0 nan 0
+op_shiftright ok True bit 64 / 64 max_abs 0.0 nan 0
+op_shiftleft_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_shiftright_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_cast ok True bit 64 / 64 max_abs 0.0 nan 0
+op_repeat_reduce_sum ok True lane_sum 64.0 golden 64.0 abs_err 0.0
+op_mmad EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_mmad'
+failed 15 of 50
+op_ceil op_log op_trunc op_max_scalar op_min_scalar op_mul_scalar op_select_gt_scalar op_select_lt_scalar op_select_ne_scalar op_select_eq_scalar op_select_ge_scalar op_select_le_scalar op_duplicate op_arange op_mmad

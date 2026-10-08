@@ -1,0 +1,8 @@
+# SKIP: bisheng compile error (board_3510, CANN 9.1.0, dav-3510, attempt 1 keep-going enumeration)
+# 原文如下（含 make 进度行与源码行引用）：
+[ 55%] bisheng op_duplicate_kernel
+/home/w00964611/board_3510/csrc/ops/op_duplicate/op_kernel/op_duplicate_kernel.cpp:30:30: error: invalid digit 'f' in decimal constant
+    duplicate_vf(buf_0, 64, 3f);
+                             ^
+1 error generated.
+gmake[2]: *** [CMakeFiles/_C.dir/build.make:115: bisheng/op_duplicate_kernel.o] Error 1

@@ -1,0 +1,29 @@
+== op_ceil ==
+lane   2 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane   9 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  16 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  23 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  30 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  37 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  44 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  51 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  58 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+mismatched_lanes=9/64
+== op_trunc ==
+lane   2 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane   9 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  16 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  23 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  30 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  37 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  44 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  51 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+lane  58 x=-0.875 got=0x00000000(+0.0) golden=0x80000000(-0.0)
+mismatched_lanes=9/64
+== op_or (NaN 位型说明) ==
+golden 含 NaN lane 数=23（按位或构造所致，非内核缺陷）
+got 与 golden 位相等 lane 数=64/64
+  示例 lane 1: x=0xbff00000 y=0x40000000 or=0xfff00000
+  示例 lane 4: x=0x3f900000 y=0x40a00000 or=0x7fb00000
+  示例 lane 5: x=0x40080000 y=0x3f800000 or=0x7f880000
+PROBE_DONE

@@ -1,0 +1,8 @@
+# SKIP: bisheng compile error (board_3510, CANN 9.1.0, dav-3510, attempt 1 keep-going enumeration)
+# 原文如下（含 make 进度行与源码行引用）：
+[ 62%] bisheng op_max_scalar_kernel
+/home/w00964611/board_3510/csrc/ops/op_max_scalar/op_kernel/op_max_scalar_kernel.cpp:36:38: error: invalid digit 'f' in decimal constant
+    max_scalar_vf(buf_0, buf_1, 64, 1f);
+                                     ^
+1 error generated.
+gmake[2]: *** [CMakeFiles/_C.dir/build.make:150: bisheng/op_max_scalar_kernel.o] Error 1

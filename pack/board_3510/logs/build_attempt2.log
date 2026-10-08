@@ -1,0 +1,811 @@
+=== Building ir_board wheel package ===
+NPU_ARCH: ascend950
+running bdist_wheel
+running build
+running build_py
+creating build
+creating build/lib.linux-x86_64-3.10
+creating build/lib.linux-x86_64-3.10/ir_board
+copying ir_board/__init__.py -> build/lib.linux-x86_64-3.10/ir_board
+running build_ext
+-- The CXX compiler identification is GNU 9.5.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- BISHENG: /usr/local/Ascend/cann-9.1.0/bin/bisheng
+-- ASCEND_HOME_PATH: /usr/local/Ascend/cann-9.1.0
+-- Found Python3: /usr/local/bin/python (found version "3.10.12") found components: Interpreter Development Development.Module Development.Embed 
+-- Python3: /usr/local/bin/python
+CMake Warning at /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:22 (message):
+  static library kineto_LIBRARY-NOTFOUND not found.
+Call Stack (most recent call first):
+  /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:125 (append_torchlib_if_found)
+  cmake/torch.cmake:14 (find_package)
+  CMakeLists.txt:26 (include)
+
+
+-- Found Torch: /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch.so  
+-- Torch: /usr/local/lib/python3.10/dist-packages/torch/share/cmake
+-- torch_npu: /usr/local/lib/python3.10/dist-packages/torch_npu
+-- Registered direct-launch op: op_abs
+-- Registered direct-launch op: op_add
+-- Registered direct-launch op: op_add_scalar
+-- Registered direct-launch op: op_and
+-- Skip op_arange
+-- Registered direct-launch op: op_cast
+-- Registered direct-launch op: op_ceil
+-- Registered direct-launch op: op_div
+-- Skip op_duplicate
+-- Registered direct-launch op: op_exp
+-- Registered direct-launch op: op_floor
+-- Registered direct-launch op: op_leakyrelu
+-- Registered direct-launch op: op_ln
+-- Skip op_log
+-- Registered direct-launch op: op_max
+-- Skip op_max_scalar
+-- Registered direct-launch op: op_min
+-- Skip op_min_scalar
+-- Skip op_mmad
+-- Registered direct-launch op: op_mul
+-- Skip op_mul_scalar
+-- Registered direct-launch op: op_neg
+-- Registered direct-launch op: op_not
+-- Registered direct-launch op: op_or
+-- Registered direct-launch op: op_prelu
+-- Registered direct-launch op: op_relu
+-- Registered direct-launch op: op_repeat_reduce_sum
+-- Registered direct-launch op: op_rint
+-- Registered direct-launch op: op_round
+-- Registered direct-launch op: op_select
+-- Registered direct-launch op: op_select_eq
+-- Skip op_select_eq_scalar
+-- Registered direct-launch op: op_select_ge
+-- Skip op_select_ge_scalar
+-- Registered direct-launch op: op_select_gt
+-- Skip op_select_gt_scalar
+-- Registered direct-launch op: op_select_le
+-- Skip op_select_le_scalar
+-- Registered direct-launch op: op_select_lt
+-- Skip op_select_lt_scalar
+-- Registered direct-launch op: op_select_ne
+-- Skip op_select_ne_scalar
+-- Registered direct-launch op: op_shiftleft
+-- Registered direct-launch op: op_shiftleft_scalar
+-- Registered direct-launch op: op_shiftright
+-- Registered direct-launch op: op_shiftright_scalar
+-- Registered direct-launch op: op_sqrt
+-- Registered direct-launch op: op_sub
+-- Registered direct-launch op: op_trunc
+-- Registered direct-launch op: op_xor
+-- Configuring done
+-- Generating done
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    PYTHON_EXECUTABLE
+
+
+-- Build files have been written to: /home/w00964611/board_3510/build/temp.linux-x86_64-3.10
+[  1%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_abs/op_plugin/op_abs_plugin.cpp.o
+[  2%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_add/op_plugin/op_add_plugin.cpp.o
+[  3%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_add_scalar/op_plugin/op_add_scalar_plugin.cpp.o
+[  5%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_and/op_plugin/op_and_plugin.cpp.o
+[  6%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_cast/op_plugin/op_cast_plugin.cpp.o
+[  7%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_ceil/op_plugin/op_ceil_plugin.cpp.o
+[  9%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_div/op_plugin/op_div_plugin.cpp.o
+[ 10%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_exp/op_plugin/op_exp_plugin.cpp.o
+[ 11%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_floor/op_plugin/op_floor_plugin.cpp.o
+[ 13%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_leakyrelu/op_plugin/op_leakyrelu_plugin.cpp.o
+[ 14%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_ln/op_plugin/op_ln_plugin.cpp.o
+[ 15%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_max/op_plugin/op_max_plugin.cpp.o
+[ 17%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_min/op_plugin/op_min_plugin.cpp.o
+[ 18%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_mul/op_plugin/op_mul_plugin.cpp.o
+[ 19%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_neg/op_plugin/op_neg_plugin.cpp.o
+[ 21%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_not/op_plugin/op_not_plugin.cpp.o
+[ 22%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_or/op_plugin/op_or_plugin.cpp.o
+[ 23%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_prelu/op_plugin/op_prelu_plugin.cpp.o
+[ 25%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_relu/op_plugin/op_relu_plugin.cpp.o
+[ 26%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_repeat_reduce_sum/op_plugin/op_repeat_reduce_sum_plugin.cpp.o
+[ 27%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_rint/op_plugin/op_rint_plugin.cpp.o
+[ 28%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_round/op_plugin/op_round_plugin.cpp.o
+[ 30%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select/op_plugin/op_select_plugin.cpp.o
+[ 31%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_eq/op_plugin/op_select_eq_plugin.cpp.o
+[ 32%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_ge/op_plugin/op_select_ge_plugin.cpp.o
+[ 34%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_gt/op_plugin/op_select_gt_plugin.cpp.o
+[ 35%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_le/op_plugin/op_select_le_plugin.cpp.o
+[ 36%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_lt/op_plugin/op_select_lt_plugin.cpp.o
+[ 38%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_select_ne/op_plugin/op_select_ne_plugin.cpp.o
+[ 39%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_shiftleft/op_plugin/op_shiftleft_plugin.cpp.o
+[ 40%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_shiftleft_scalar/op_plugin/op_shiftleft_scalar_plugin.cpp.o
+[ 42%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_shiftright/op_plugin/op_shiftright_plugin.cpp.o
+[ 43%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_shiftright_scalar/op_plugin/op_shiftright_scalar_plugin.cpp.o
+[ 44%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_sqrt/op_plugin/op_sqrt_plugin.cpp.o
+[ 46%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_sub/op_plugin/op_sub_plugin.cpp.o
+[ 47%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_trunc/op_plugin/op_trunc_plugin.cpp.o
+[ 48%] Building CXX object CMakeFiles/all_plugins_obj.dir/csrc/ops/op_xor/op_plugin/op_xor_plugin.cpp.o
+[ 48%] Built target all_plugins_obj
+[ 50%] bisheng op_xor_kernel
+/home/w00964611/board_3510/csrc/ops/op_xor/op_kernel/op_xor_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_xor<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_xor/op_kernel/op_xor_kernel.cpp:50:51: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_xor<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_xor/op_kernel/op_xor_kernel.cpp:50:71: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_xor<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                                                      ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 51%] bisheng op_abs_kernel
+/home/w00964611/board_3510/csrc/ops/op_abs/op_kernel/op_abs_kernel.cpp:46:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_abs<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_abs/op_kernel/op_abs_kernel.cpp:46:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_abs<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 52%] bisheng op_add_kernel
+/home/w00964611/board_3510/csrc/ops/op_add/op_kernel/op_add_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_add/op_kernel/op_add_kernel.cpp:50:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_add/op_kernel/op_add_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 53%] bisheng op_add_scalar_kernel
+/home/w00964611/board_3510/csrc/ops/op_add_scalar/op_kernel/op_add_scalar_kernel.cpp:46:38: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add_scalar<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                     ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_add_scalar/op_kernel/op_add_scalar_kernel.cpp:46:56: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_add_scalar<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                       ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 55%] bisheng op_and_kernel
+/home/w00964611/board_3510/csrc/ops/op_and/op_kernel/op_and_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_and<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_and/op_kernel/op_and_kernel.cpp:50:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_and<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_and/op_kernel/op_and_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_and<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 56%] bisheng op_cast_kernel
+/home/w00964611/board_3510/csrc/ops/op_cast/op_kernel/op_cast_kernel.cpp:46:32: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_cast<<<1, 0, stream>>>((__gm__ half*)x, (__gm__ float*)z);
+                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_cast/op_kernel/op_cast_kernel.cpp:46:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_cast<<<1, 0, stream>>>((__gm__ half*)x, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 57%] bisheng op_ceil_kernel
+/home/w00964611/board_3510/csrc/ops/op_ceil/op_kernel/op_ceil_kernel.cpp:46:32: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_ceil<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_ceil/op_kernel/op_ceil_kernel.cpp:46:50: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_ceil<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                 ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 59%] bisheng op_div_kernel
+/home/w00964611/board_3510/csrc/ops/op_div/op_kernel/op_div_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_div<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_div/op_kernel/op_div_kernel.cpp:50:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_div<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_div/op_kernel/op_div_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_div<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 60%] bisheng op_exp_kernel
+/home/w00964611/board_3510/csrc/ops/op_exp/op_kernel/op_exp_kernel.cpp:46:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_exp<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_exp/op_kernel/op_exp_kernel.cpp:46:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_exp<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 61%] bisheng op_floor_kernel
+/home/w00964611/board_3510/csrc/ops/op_floor/op_kernel/op_floor_kernel.cpp:46:33: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_floor<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_floor/op_kernel/op_floor_kernel.cpp:46:51: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_floor<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 63%] bisheng op_leakyrelu_kernel
+/home/w00964611/board_3510/csrc/ops/op_leakyrelu/op_kernel/op_leakyrelu_kernel.cpp:46:37: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_leakyrelu<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                    ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_leakyrelu/op_kernel/op_leakyrelu_kernel.cpp:46:55: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_leakyrelu<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                      ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 64%] bisheng op_ln_kernel
+/home/w00964611/board_3510/csrc/ops/op_ln/op_kernel/op_ln_kernel.cpp:46:30: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_ln<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                             ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_ln/op_kernel/op_ln_kernel.cpp:46:48: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_ln<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 65%] bisheng op_max_kernel
+/home/w00964611/board_3510/csrc/ops/op_max/op_kernel/op_max_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_max<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_max/op_kernel/op_max_kernel.cpp:50:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_max<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_max/op_kernel/op_max_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_max<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 67%] bisheng op_min_kernel
+/home/w00964611/board_3510/csrc/ops/op_min/op_kernel/op_min_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_min<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_min/op_kernel/op_min_kernel.cpp:50:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_min<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_min/op_kernel/op_min_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_min<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 68%] bisheng op_mul_kernel
+/home/w00964611/board_3510/csrc/ops/op_mul/op_kernel/op_mul_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_mul<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_mul/op_kernel/op_mul_kernel.cpp:50:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_mul<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_mul/op_kernel/op_mul_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_mul<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 69%] bisheng op_neg_kernel
+/home/w00964611/board_3510/csrc/ops/op_neg/op_kernel/op_neg_kernel.cpp:46:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_neg<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_neg/op_kernel/op_neg_kernel.cpp:46:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_neg<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 71%] bisheng op_not_kernel
+/home/w00964611/board_3510/csrc/ops/op_not/op_kernel/op_not_kernel.cpp:46:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_not<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_not/op_kernel/op_not_kernel.cpp:46:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_not<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 72%] bisheng op_or_kernel
+/home/w00964611/board_3510/csrc/ops/op_or/op_kernel/op_or_kernel.cpp:50:30: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_or<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                             ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_or/op_kernel/op_or_kernel.cpp:50:48: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_or<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_or/op_kernel/op_or_kernel.cpp:50:66: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_or<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                 ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 73%] bisheng op_prelu_kernel
+/home/w00964611/board_3510/csrc/ops/op_prelu/op_kernel/op_prelu_kernel.cpp:50:33: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_prelu<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_prelu/op_kernel/op_prelu_kernel.cpp:50:51: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_prelu<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_prelu/op_kernel/op_prelu_kernel.cpp:50:69: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_prelu<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                    ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 75%] bisheng op_relu_kernel
+/home/w00964611/board_3510/csrc/ops/op_relu/op_kernel/op_relu_kernel.cpp:46:32: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_relu<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_relu/op_kernel/op_relu_kernel.cpp:46:50: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_relu<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                 ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 76%] bisheng op_repeat_reduce_sum_kernel
+/home/w00964611/board_3510/csrc/ops/op_repeat_reduce_sum/op_kernel/op_repeat_reduce_sum_kernel.cpp:49:45: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_repeat_reduce_sum<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                            ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_repeat_reduce_sum/op_kernel/op_repeat_reduce_sum_kernel.cpp:49:63: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_repeat_reduce_sum<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 77%] bisheng op_rint_kernel
+/home/w00964611/board_3510/csrc/ops/op_rint/op_kernel/op_rint_kernel.cpp:46:32: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_rint<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_rint/op_kernel/op_rint_kernel.cpp:46:50: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_rint<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                 ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 78%] bisheng op_round_kernel
+/home/w00964611/board_3510/csrc/ops/op_round/op_kernel/op_round_kernel.cpp:46:33: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_round<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_round/op_kernel/op_round_kernel.cpp:46:51: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_round<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 80%] bisheng op_select_eq_kernel
+/home/w00964611/board_3510/csrc/ops/op_select_eq/op_kernel/op_select_eq_kernel.cpp:52:37: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_eq<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                    ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_eq/op_kernel/op_select_eq_kernel.cpp:52:55: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_eq<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                      ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_eq/op_kernel/op_select_eq_kernel.cpp:52:73: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_eq<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                        ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 81%] bisheng op_select_ge_kernel
+/home/w00964611/board_3510/csrc/ops/op_select_ge/op_kernel/op_select_ge_kernel.cpp:52:37: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_ge<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                    ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_ge/op_kernel/op_select_ge_kernel.cpp:52:55: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_ge<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                      ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_ge/op_kernel/op_select_ge_kernel.cpp:52:73: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_ge<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                        ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 82%] bisheng op_select_gt_kernel
+/home/w00964611/board_3510/csrc/ops/op_select_gt/op_kernel/op_select_gt_kernel.cpp:52:37: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_gt<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                    ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_gt/op_kernel/op_select_gt_kernel.cpp:52:55: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_gt<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                      ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_gt/op_kernel/op_select_gt_kernel.cpp:52:73: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_gt<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                        ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 84%] bisheng op_select_kernel
+/home/w00964611/board_3510/csrc/ops/op_select/op_kernel/op_select_kernel.cpp:55:34: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ uint8_t*)mask, (__gm__ float*)z);
+                                 ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select/op_kernel/op_select_kernel.cpp:55:52: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ uint8_t*)mask, (__gm__ float*)z);
+                                                   ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select/op_kernel/op_select_kernel.cpp:55:70: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ uint8_t*)mask, (__gm__ float*)z);
+                                                                     ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select/op_kernel/op_select_kernel.cpp:55:93: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ uint8_t*)mask, (__gm__ float*)z);
+                                                                                            ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+4 warnings generated.
+[ 85%] bisheng op_select_le_kernel
+/home/w00964611/board_3510/csrc/ops/op_select_le/op_kernel/op_select_le_kernel.cpp:52:37: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_le<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                    ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_le/op_kernel/op_select_le_kernel.cpp:52:55: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_le<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                      ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_le/op_kernel/op_select_le_kernel.cpp:52:73: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_le<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                        ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 86%] bisheng op_select_lt_kernel
+/home/w00964611/board_3510/csrc/ops/op_select_lt/op_kernel/op_select_lt_kernel.cpp:52:37: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_lt<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                    ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_lt/op_kernel/op_select_lt_kernel.cpp:52:55: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_lt<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                      ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_lt/op_kernel/op_select_lt_kernel.cpp:52:73: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_lt<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                        ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 88%] bisheng op_select_ne_kernel
+/home/w00964611/board_3510/csrc/ops/op_select_ne/op_kernel/op_select_ne_kernel.cpp:52:37: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_ne<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                    ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_ne/op_kernel/op_select_ne_kernel.cpp:52:55: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_ne<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                      ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_select_ne/op_kernel/op_select_ne_kernel.cpp:52:73: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_select_ne<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                        ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 89%] bisheng op_shiftleft_kernel
+/home/w00964611/board_3510/csrc/ops/op_shiftleft/op_kernel/op_shiftleft_kernel.cpp:50:37: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftleft<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                    ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_shiftleft/op_kernel/op_shiftleft_kernel.cpp:50:57: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftleft<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                                        ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_shiftleft/op_kernel/op_shiftleft_kernel.cpp:50:77: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftleft<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                                                            ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 90%] bisheng op_shiftleft_scalar_kernel
+/home/w00964611/board_3510/csrc/ops/op_shiftleft_scalar/op_kernel/op_shiftleft_scalar_kernel.cpp:46:44: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftleft_scalar<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)z);
+                                           ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_shiftleft_scalar/op_kernel/op_shiftleft_scalar_kernel.cpp:46:64: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftleft_scalar<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)z);
+                                                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 92%] bisheng op_shiftright_kernel
+/home/w00964611/board_3510/csrc/ops/op_shiftright/op_kernel/op_shiftright_kernel.cpp:50:38: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftright<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                     ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_shiftright/op_kernel/op_shiftright_kernel.cpp:50:58: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftright<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                                         ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_shiftright/op_kernel/op_shiftright_kernel.cpp:50:78: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftright<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)y, (__gm__ int32_t*)z);
+                                                                             ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 93%] bisheng op_shiftright_scalar_kernel
+/home/w00964611/board_3510/csrc/ops/op_shiftright_scalar/op_kernel/op_shiftright_scalar_kernel.cpp:46:45: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftright_scalar<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)z);
+                                            ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_shiftright_scalar/op_kernel/op_shiftright_scalar_kernel.cpp:46:65: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_shiftright_scalar<<<1, 0, stream>>>((__gm__ int32_t*)x, (__gm__ int32_t*)z);
+                                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 94%] bisheng op_sqrt_kernel
+/home/w00964611/board_3510/csrc/ops/op_sqrt/op_kernel/op_sqrt_kernel.cpp:46:32: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_sqrt<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                               ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_sqrt/op_kernel/op_sqrt_kernel.cpp:46:50: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_sqrt<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                 ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 96%] bisheng op_sub_kernel
+/home/w00964611/board_3510/csrc/ops/op_sub/op_kernel/op_sub_kernel.cpp:50:31: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_sub<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                              ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_sub/op_kernel/op_sub_kernel.cpp:50:49: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_sub<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_sub/op_kernel/op_sub_kernel.cpp:50:67: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_sub<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)y, (__gm__ float*)z);
+                                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 97%] bisheng op_trunc_kernel
+/home/w00964611/board_3510/csrc/ops/op_trunc/op_kernel/op_trunc_kernel.cpp:46:33: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_trunc<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/board_3510/csrc/ops/op_trunc/op_kernel/op_trunc_kernel.cpp:46:51: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    op_trunc<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                  ^~~~~~
+/usr/local/Ascend/cann-9.1.0/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 98%] Building CXX object CMakeFiles/_C.dir/csrc/extension.cpp.o
+[100%] Linking CXX shared library ../../ir_board/_C.abi3.so
+[100%] Built target _C
+/usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/ir_board
+copying build/lib.linux-x86_64-3.10/ir_board/__init__.py -> build/bdist.linux-x86_64/wheel/ir_board
+running install_egg_info
+running egg_info
+creating ir_board.egg-info
+writing ir_board.egg-info/PKG-INFO
+writing dependency_links to ir_board.egg-info/dependency_links.txt
+writing top-level names to ir_board.egg-info/top_level.txt
+writing manifest file 'ir_board.egg-info/SOURCES.txt'
+reading manifest file 'ir_board.egg-info/SOURCES.txt'
+writing manifest file 'ir_board.egg-info/SOURCES.txt'
+Copying ir_board.egg-info to build/bdist.linux-x86_64/wheel/ir_board-1.0.0.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/ir_board-1.0.0.dist-info/WHEEL
+creating '/home/w00964611/board_3510/dist/ir_board-1.0.0-cp38-abi3-linux_x86_64.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'ir_board/__init__.py'
+adding 'ir_board-1.0.0.dist-info/METADATA'
+adding 'ir_board-1.0.0.dist-info/WHEEL'
+adding 'ir_board-1.0.0.dist-info/top_level.txt'
+adding 'ir_board-1.0.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+=== Installing wheel package ===
+Looking in indexes: http://nexus.turing-ci.hisilicon.com/repository/pypi/simple
+Processing ./dist/ir_board-1.0.0-cp38-abi3-linux_x86_64.whl
+Installing collected packages: ir-board
+  Attempting uninstall: ir-board
+    Found existing installation: ir-board 1.0.0
+    Can't uninstall 'ir-board'. No files were found to uninstall.
+Successfully installed ir-board-1.0.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+=== Build complete ===
+total 12
+drwxr-xr-x  2 root    root    4096 Oct  8 14:29 .
+drwxr-xr-x 10 6447636 1049089 4096 Oct  8 14:29 ..
+-rw-r--r--  1 root    root    1695 Oct  8 14:29 ir_board-1.0.0-cp38-abi3-linux_x86_64.whl

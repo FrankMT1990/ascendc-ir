@@ -1,0 +1,35 @@
+# SKIP: bisheng compile error (board_3510, CANN 9.1.0, dav-3510, attempt 1 keep-going enumeration)
+# 原文如下（含 make 进度行与源码行引用）：
+[ 65%] bisheng op_mmad_kernel
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:21:42: error: use of undeclared identifier 'asc_load_l2_cache_mode'
+    asc_copy_gm2l1_nd2nz(a_l1, a, 64ULL, asc_load_l2_cache_mode::NORMAL_FIRST_VICTIM, 32, 16, 0, false);
+                                         ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:23:42: error: use of undeclared identifier 'asc_load_l2_cache_mode'
+    asc_copy_gm2l1_nd2nz(b_l1, b, 64ULL, asc_load_l2_cache_mode::NORMAL_FIRST_VICTIM, 32, 16, 0, false);
+                                         ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:32:44: error: use of undeclared identifier 'asc_unit_flag_mode'
+    asc_mmad(c_l0, a_l0, b_l0, 32, 16, 32, asc_unit_flag_mode::DISABLE, true, false, true);
+                                           ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:38:47: error: use of undeclared identifier 'asc_load_l2_cache_mode'
+    asc_copy_gm2l1_nd2nz(a_l1, a + 16, 64ULL, asc_load_l2_cache_mode::NORMAL_FIRST_VICTIM, 32, 16, 0, false);
+                                              ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:41:47: error: use of undeclared identifier 'asc_load_l2_cache_mode'
+    asc_copy_gm2l1_nd2nz(b_l1, b + 16, 64ULL, asc_load_l2_cache_mode::NORMAL_FIRST_VICTIM, 32, 16, 0, false);
+                                              ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:51:44: error: use of undeclared identifier 'asc_unit_flag_mode'
+    asc_mmad(c_l0, a_l0, b_l0, 32, 16, 32, asc_unit_flag_mode::DISABLE, true, false, false);
+                                           ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:55:5: error: use of undeclared identifier 'asc_set_l0c_copy_nz_para'
+    asc_set_l0c_copy_nz_para(1, 0, 0);
+    ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:56:46: error: use of undeclared identifier 'asc_store_l2_cache_mode'
+    asc_copy_l0c2gm(c, c_l0, 32, 32, 32, 32, asc_store_l2_cache_mode::NORMAL_FIRST_VICTIM, asc_unit_flag_mode::DISABLE, QuantMode_t::NoQuant, asc_relu_pre_mode::NONE, false, true, false, false);
+                                             ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:56:92: error: use of undeclared identifier 'asc_unit_flag_mode'
+    asc_copy_l0c2gm(c, c_l0, 32, 32, 32, 32, asc_store_l2_cache_mode::NORMAL_FIRST_VICTIM, asc_unit_flag_mode::DISABLE, QuantMode_t::NoQuant, asc_relu_pre_mode::NONE, false, true, false, false);
+                                                                                           ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:56:143: error: use of undeclared identifier 'asc_relu_pre_mode'
+    asc_copy_l0c2gm(c, c_l0, 32, 32, 32, 32, asc_store_l2_cache_mode::NORMAL_FIRST_VICTIM, asc_unit_flag_mode::DISABLE, QuantMode_t::NoQuant, asc_relu_pre_mode::NONE, false, true, false, false);
+                                                                                                                                              ^
+10 errors generated.
+gmake[2]: *** [CMakeFiles/_C.dir/build.make:165: bisheng/op_mmad_kernel.o] Error 1

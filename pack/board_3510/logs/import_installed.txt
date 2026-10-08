@@ -1,0 +1,1 @@
+installed_at /home/w00964611/board_3510/ir_board/__init__.py
