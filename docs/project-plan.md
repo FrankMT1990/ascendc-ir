@@ -29,3 +29,9 @@
 | 17 | 把矩阵搬运改成 3510 的参数个数 | `nd2nz` 为 8 参，行距是字节，L2 模式为 0；`l0c2gm` 为 21 参。`asc_mmad` 与 `asc_set_l0c2gm_nz2nd` 不变 | done |
 | 18 | 上板只核对 op_mmad | `ac1ba1a`：编译通过，A @ B.T 逐位一致 1024/1024；50 个核全部通过 | done |
 | 19 | 让安装包带上编译出的扩展 | `build_ext` 结束后把 `_C.abi3.so` 复制进 setuptools 的 build lib，wheel 不再只有 1695 字节 | done |
+| 20 | 冻结 C1 任务清单（支持集 ∩ level1） | `evals/c1/task_manifest.md` 与 `evals/c1/freeze.json`：7 个 f32 任务入清单（exp/sigmoid/gelu-tanh/mish/masked_scale/swi_glu/foreach_addcdiv），foreach_norm 全归约出局、f16/bf16 变体全部出局、W2 未测（level1 无 Cube 任务） | done |
+| 21 | 封存每任务 T_baseline 与 T_HW | 950PR、CANN 9.1.0、CANNBench kernel-only、与计时输入同 shape；两项写进 freeze.json 并记输入哈希；缺项保持 unclassified，收包后不得补 | todo |
+| 22 | 封存数值门与两类扫描 | 容差文件（逐元素 `abs(a−b) ≤ atol + rtol×abs(b)`，golden dtype 上比较）、每组必测输入与 golden 哈希、唯一计时输入组、IR 臂逃逸扫描与对照臂越面扫描及反例，第一份试点前入仓 | todo |
+| 23 | 核对 C3 五类注入 | UB/对齐/event 配对/跨 PIPE/未初始化每类有封存注入，召回 ≥0.9、误拒 0、定位命中 ≥0.8；任一类缺则 C3 未测并停止 | todo |
+| 24 | 试点定预算 B | 前两次成功试点首次正确 `completion_tokens` 最大值 ×3 写回 freeze.json；试点不计入 R=5，期间不改任务书/容差/扫描 | todo |
+| 25 | 正式 C1 对比 | B 写回后发正式包，每臂 5 次，结果推独立分支并附 csv 哈希 | todo |
