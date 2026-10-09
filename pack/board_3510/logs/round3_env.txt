@@ -1,0 +1,7 @@
+date_start=2026-10-09T16:35:52+08:00
+round3=mmad adapted to 3510 c_api forms (8-arg nd2nz + nz para, 21-arg l0c2gm)
+round3_build_exit=0
+date_build_end=2026-10-09T17:05:23+08:00
+round3_check_exit=0
+date_end=2026-10-09T17:06:01+08:00
+round3_rerun_exit=0
