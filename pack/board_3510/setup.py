@@ -6,6 +6,8 @@ from pathlib import Path
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
+from wheel_stage import stage_built_extension
+
 PACKAGE_NAME = "ir_board"
 VERSION = "1.0.0"
 ROOT = Path(__file__).parent.resolve()
@@ -29,6 +31,7 @@ class CMakeBuild(build_ext):
         ]
         subprocess.check_call(["cmake", str(ROOT), *cmake_args], cwd=build_temp)
         subprocess.check_call(["cmake", "--build", str(build_temp), "--config", cfg], cwd=build_temp)
+        stage_built_extension(Path(self.build_lib), ROOT / PACKAGE_NAME)
 
 
 setup(
