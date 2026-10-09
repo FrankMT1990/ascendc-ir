@@ -32,6 +32,6 @@
 | 20 | 冻结 C1 任务清单（支持集 ∩ level1） | `evals/c1/task_manifest.md` 与 `evals/c1/freeze.json`：7 个 f32 任务入清单（exp/sigmoid/gelu-tanh/mish/masked_scale/swi_glu/foreach_addcdiv），foreach_norm 全归约出局、f16/bf16 变体全部出局、W2 未测（level1 无 Cube 任务） | done |
 | 21 | 封存每任务 T_baseline 与 T_HW | 7 任务全部实封（`evals/c1/baseline` 与 `evals/c1/timing`）：h 全为大负数（aclnn 多核基线对单核下界），全部 bandwidth_bound，口径如实记录 | done || 封存每任务 T_baseline 与 T_HW | 950PR、CANN 9.1.0、CANNBench kernel-only、与计时输入同 shape；两项写进 freeze.json 并记输入哈希；缺项保持 unclassified，收包后不得补 | todo |
 | 22 | 封存数值门与两类扫描 | `evals/c1/tolerance.json`（atol=1e-5 rtol=1e-4）、计时+边界两组必测输入与 golden 哈希、逃逸/越面扫描及 16 反例自测全过，均入仓并封存 sha256 | done || 封存数值门与两类扫描 | 容差文件（逐元素 `abs(a−b) ≤ atol + rtol×abs(b)`，golden dtype 上比较）、每组必测输入与 golden 哈希、唯一计时输入组、IR 臂逃逸扫描与对照臂越面扫描及反例，第一份试点前入仓 | todo |
-| 23 | 核对 C3 五类注入 | UB/对齐/event 配对/跨 PIPE/未初始化每类有封存注入，召回 ≥0.9、误拒 0、定位命中 ≥0.8；任一类缺则 C3 未测并停止 | todo |
+| 23 | 核对 C3 五类注入 | master 已提交注入集（8 注入+6 合法+more_cases）实测：五类召回各 3/3、误拒 0、定位 27/27，记录 `evals/c1/c3_injection_check.txt` | done || 核对 C3 五类注入 | UB/对齐/event 配对/跨 PIPE/未初始化每类有封存注入，召回 ≥0.9、误拒 0、定位命中 ≥0.8；任一类缺则 C3 未测并停止 | todo |
 | 24 | 试点定预算 B | 前两次成功试点首次正确 `completion_tokens` 最大值 ×3 写回 freeze.json；试点不计入 R=5，期间不改任务书/容差/扫描 | todo |
 | 25 | 正式 C1 对比 | B 写回后发正式包，每臂 5 次，结果推独立分支并附 csv 哈希 | todo |

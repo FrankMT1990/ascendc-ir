@@ -354,7 +354,7 @@
  "budget_rule": "claims.md v2.8: B = 3 x max(first-correct completion_tokens of first two successful pilots)",
  "pilot_ids": null,
  "run_ids": null,
- "notes": "steps 1-3 sealed 2026-10-09 (manifest+freeze, t_baseline/t_hw/inputs, tolerance/golden/boundary+scans). C3 injection check is step 4 and gates entry to the agent environment.",
+ "notes": "steps 1-4 sealed 2026-10-09. Step 5 (pilots to determine budget B) and step 6 (formal runs) remain; pilots use frozen task book and must not change it.",
  "t_sealed": {
   "sealed_at": "2026-10-09",
   "method": "cann-bench PerfEvaluator (ACL launch + msprof kernel_details.csv, MsProfSummaryStrategy, warmup 5 repeat 20)",
@@ -397,5 +397,27 @@
    "overall_pass": true
   },
   "visibility_rule": "examples/、参考 .asc、asc-devkit 示例内核对两臂都不可见；检索日志在正式 run 归档"
+ },
+ "step4_c3_check": {
+  "sealed_at": "2026-10-09",
+  "injection_set": "evals/m4_m5/ @ master (gold.json blob 1d745d6d3daf5e34e6bac2ed3ab3eebc40f3b19b)",
+  "runner": "evals/m4_m5/run_injection.py",
+  "result_file": "evals/c1/c3_injection_check.txt",
+  "result_sha256": "64f3e78f74ca83c7ba5e256c1e2e076fa7f2cceb492987bf3792cf1a9c069c58",
+  "metrics": {
+   "legal_zero_false_reject": "6/6 (false reject = 0)",
+   "injection_recall": "27/27",
+   "localization_hit": "27/27",
+   "clean_diagnostics": "27/27",
+   "per_class_recall": {
+    "UB (V002,V006)": "3/3",
+    "alignment (V007)": "3/3",
+    "event pairing (V003,V005)": "3/3",
+    "cross-PIPE (V001,V004,V009)": "3/3",
+    "uninitialized (V010)": "3/3"
+   }
+  },
+  "thresholds": "per-class recall >= 0.9, false reject = 0, localization >= 0.8 (claims.md v2.8)",
+  "verdict": "C3 五类注入全部封存且实测达标；C3 不再是未测，允许进入 Agent 环境"
  }
 }
