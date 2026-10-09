@@ -46,9 +46,14 @@ def test_mmad_lowers_one_cube_pipeline():
     assert "__global__ __cube__ void mmad_custom" in text
     assert text.count("asc_mmad(") == 2
     assert "asc_sync_pipe(PIPE_M);" in text
-    assert "asc_copy_gm2l1_nd2nz(a_l1, a, 1, 32, 16, 0, 32, 32, 1, 0);" in text
+    assert "asc_set_gm2l1_nz_para(137439019009ULL);" in text
+    assert "asc_copy_gm2l1_nd2nz(a_l1, a, 64ULL, 0, 32, 16, 0, false);" in text
     assert "asc_mmad(c_l0, a_l0, b_l0, 32, 16, 32, 0, true, false, true);" in text
     assert "asc_set_l0c2gm_nz2nd(1, 0, 0);" in text
+    assert (
+        "asc_copy_l0c2gm(c, c_l0, 32, 32, 32, 32, 0, 0, 0, 0, 0, false, true, 0, 0, false, 0, false, false, false, false);"
+        in text
+    )
     assert "asc_unit_flag_mode" not in text
     assert "asc_load_l2_cache_mode" not in text
     # 单缓冲复用 L1/L0 时，第二轮写回前必须等上一轮消费（对照 asc-devkit mmad_double_buffer 的 lock）。

@@ -640,31 +640,19 @@ class _Emitter:
         row_stride = int(stmt.scalars[2]) if len(stmt.scalars) > 2 else cols
         if stmt.form in {"nd2nz", "dn2nz", "l12l0a", "l12l0b"} and stmt.dst.buffer.dtype is not DType.f16:
             raise CodegenError(f"{stmt.form} 这一批只生成 f16；f32 的 K 方向粒度不同，不能套用")
-        if stmt.form == "nd2nz":
-            # CANN 9.1.0 的 10 参形式：行距单位是元素，目的步长写在参数里。
-            lines = self._war_wait(stmt.dst.buffer, k, signature, waited)
-            dst = self._buf_ptr(stmt.dst, k)
-            src = self._gm_ptr(stmt.src, j, 0, k, i_value)
-            c0 = (rows + 15) // 16 * 16
-            if not 1 <= row_stride <= 65535 or not 1 <= c0 <= 16384:
-                raise CodegenError(f"nd2nz 的行距 {row_stride} 或 c0 步长 {c0} 超出 uint16")
-            lines.append(
-                f"asc_copy_gm2l1_nd2nz({dst}, {src}, 1, {rows}, {cols}, 0, {row_stride}, {c0}, 1, 0);"
-            )
-            return lines
-        if stmt.form == "dn2nz":
-            # 没有 10 参形式。9.1.0 的 L2 模式是 uint8，1 表示 NORMAL。
+        if stmt.form in {"nd2nz", "dn2nz"}:
+            # 3510 是 8 参：行距单位是字节，L2 模式用 0（NORMAL_FIRST_VICTIM）。
             lines = self._war_wait(stmt.dst.buffer, k, signature, waited)
             dst = self._buf_ptr(stmt.dst, k)
             src = self._gm_ptr(stmt.src, j, 0, k, i_value)
             aligned = (rows + 15) // 16 * 16
             config = (aligned << 32) | (1 << 16) | 1
             stride = row_stride * stmt.dst.buffer.dtype.nbytes
+            fn = "asc_copy_gm2l1_nd2nz" if stmt.form == "nd2nz" else "asc_copy_gm2l1_dn2nz"
             lines.extend(
                 [
                     f"asc_set_gm2l1_nz_para({config}ULL);",
-                    "asc_copy_gm2l1_dn2nz("
-                    f"{dst}, {src}, {stride}ULL, 1, {rows}, {cols}, 0, false);",
+                    f"{fn}({dst}, {src}, {stride}ULL, 0, {rows}, {cols}, 0, false);",
                 ]
             )
             return lines
@@ -688,7 +676,8 @@ class _Emitter:
                 "asc_set_l0c2gm_nz2nd(1, 0, 0);",
                 "asc_copy_l0c2gm("
                 f"{self._gm_ptr(stmt.dst, j, 1, k, i_value)}, {self._buf_ptr(stmt.src, k)}, "
-                f"{cols}, {rows}, {cols}, {src_stride}, 0, 0, 0, false, true);",
+                f"{cols}, {rows}, {cols}, {src_stride}, "
+                "0, 0, 0, 0, 0, false, true, 0, 0, false, 0, false, false, false, false);",
             ]
         raise CodegenError(f"没有 {stmt.form} 的降级")
 

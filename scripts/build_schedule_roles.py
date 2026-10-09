@@ -160,12 +160,12 @@ PATTERNS = {
     ),
     "copy_gm2l1_nd2nz": (
         "调度：mte2.nd2nz(gm, l1, rows, cols, row_stride=cols)。仅 f16。"
-        "CANN 9.1.0：asc_copy_gm2l1_nd2nz(l1, gm, 1, rows, cols, 0, row_stride, align16(rows), 1, 0)。"
-        "row_stride 单位是元素。row_stride 大于 cols 时表示 GM 行宽，用来搬 K 方向的一段。"
+        "3510：先 asc_set_gm2l1_nz_para，再 asc_copy_gm2l1_nd2nz(l1, gm, row_stride*2, 0, rows, cols, 0, false)。"
+        "第三个参数是字节。L2 模式 0 对应 NORMAL_FIRST_VICTIM。row_stride 大于 cols 时表示 GM 行宽。"
     ),
     "copy_gm2l1_dn2nz": (
         "调度：mte2.dn2nz(gm, l1, rows, cols, row_stride=cols)。"
-        "先 asc_set_gm2l1_nz_para，再 asc_copy_gm2l1_dn2nz(l1, gm, row_stride*2, 1, rows, cols, 0, false)。L2 模式用整数 1。"
+        "先 asc_set_gm2l1_nz_para，再 asc_copy_gm2l1_dn2nz(l1, gm, row_stride*2, 0, rows, cols, 0, false)。"
     ),
     "copy_l12l0a": (
         "调度：mte1.l12l0a(l1, l0a, rows, cols)。仅 f16。"
@@ -177,8 +177,9 @@ PATTERNS = {
     ),
     "copy_l0c2gm": (
         "调度：fix.l0c2gm(l0c, gm, rows, cols)。l0c 与 gm 都是 f32，rows 是 M、cols 是 N。"
-        "asc_set_l0c2gm_nz2nd(1, 0, 0) 后 asc_copy_l0c2gm(gm, l0c, cols, rows, cols, align16(rows), 0, 0, 0, false, true)。"
-        "最后两个参数是 channel_split=false、nz2nd=true，写回行优先。"
+        "asc_set_l0c2gm_nz2nd(1, 0, 0) 后接 21 参 asc_copy_l0c2gm："
+        "cols, rows, cols, align16(rows), 0, 0, 0, 0, 0, false, true, 0, 0, false, 0, false, false, false, false。"
+        "nz2nd 为 true，nz2dn 为 false，写回行优先。"
     ),
     "mmad": (
         "调度：m.mmad(l0c, l0a, l0b, m, k, n, init)。A/B 为 f16，L0C 为 f32。B 按 (n, k) 存放，结果是 A @ B.T。"

@@ -17,8 +17,10 @@ __global__ __cube__ void mmad_custom(__gm__ half* a, __gm__ half* b, __gm__ floa
     __cc__ float c_l0[1024];
 
     // prologue i = 0
-    asc_copy_gm2l1_nd2nz(a_l1, a, 1, 32, 16, 0, 32, 32, 1, 0);
-    asc_copy_gm2l1_nd2nz(b_l1, b, 1, 32, 16, 0, 32, 32, 1, 0);
+    asc_set_gm2l1_nz_para(137439019009ULL);
+    asc_copy_gm2l1_nd2nz(a_l1, a, 64ULL, 0, 32, 16, 0, false);
+    asc_set_gm2l1_nz_para(137439019009ULL);
+    asc_copy_gm2l1_nd2nz(b_l1, b, 64ULL, 0, 32, 16, 0, false);
     asc_sync_notify(PIPE_MTE2, PIPE_MTE1, EVENT_ID0);
     asc_sync_wait(PIPE_MTE2, PIPE_MTE1, EVENT_ID0);
     asc_copy_l12l0a(a_l0, a_l1, 0, 0, 2, 1, 2, 2);
@@ -32,9 +34,11 @@ __global__ __cube__ void mmad_custom(__gm__ half* a, __gm__ half* b, __gm__ floa
     asc_sync_notify(PIPE_M, PIPE_MTE1, EVENT_ID1);
     // peeled i = 1
     asc_sync_wait(PIPE_MTE1, PIPE_MTE2, EVENT_ID0);
-    asc_copy_gm2l1_nd2nz(a_l1, a + 16, 1, 32, 16, 0, 32, 32, 1, 0);
+    asc_set_gm2l1_nz_para(137439019009ULL);
+    asc_copy_gm2l1_nd2nz(a_l1, a + 16, 64ULL, 0, 32, 16, 0, false);
     asc_sync_wait(PIPE_MTE1, PIPE_MTE2, EVENT_ID1);
-    asc_copy_gm2l1_nd2nz(b_l1, b + 16, 1, 32, 16, 0, 32, 32, 1, 0);
+    asc_set_gm2l1_nz_para(137439019009ULL);
+    asc_copy_gm2l1_nd2nz(b_l1, b + 16, 64ULL, 0, 32, 16, 0, false);
     asc_sync_notify(PIPE_MTE2, PIPE_MTE1, EVENT_ID0);
     asc_sync_wait(PIPE_MTE2, PIPE_MTE1, EVENT_ID0);
     asc_sync_wait(PIPE_M, PIPE_MTE1, EVENT_ID0);
@@ -49,7 +53,7 @@ __global__ __cube__ void mmad_custom(__gm__ half* a, __gm__ half* b, __gm__ floa
     asc_sync_notify(PIPE_M, PIPE_FIX, EVENT_ID0);
     asc_sync_wait(PIPE_M, PIPE_FIX, EVENT_ID0);
     asc_set_l0c2gm_nz2nd(1, 0, 0);
-    asc_copy_l0c2gm(c, c_l0, 32, 32, 32, 32, 0, 0, 0, false, true);
+    asc_copy_l0c2gm(c, c_l0, 32, 32, 32, 32, 0, 0, 0, 0, 0, false, true, 0, 0, false, 0, false, false, false, false);
 }
 
 #include "op_mmad_launch.h"
