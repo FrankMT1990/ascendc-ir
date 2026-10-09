@@ -352,9 +352,31 @@
  },
  "budget_B": null,
  "budget_rule": "claims.md v2.8: B = 3 x max(first-correct completion_tokens of first two successful pilots)",
- "pilot_ids": null,
- "run_ids": null,
- "notes": "steps 1-4 sealed 2026-10-09. Step 5 (pilots to determine budget B) and step 6 (formal runs) remain; pilots use frozen task book and must not change it.",
+ "pilot_ids": [
+  "pilot-1",
+  "pilot-2",
+  "pilot-3",
+  "pilot-4",
+  "pilot-5",
+  "pilot-6"
+ ],
+ "run_ids": {
+  "ir_arm": [
+   "c1-ir-1",
+   "c1-ir-2",
+   "c1-ir-3",
+   "c1-ir-4",
+   "c1-ir-5"
+  ],
+  "control_arm": [
+   "c1-ctl-1",
+   "c1-ctl-2",
+   "c1-ctl-3",
+   "c1-ctl-4",
+   "c1-ctl-5"
+  ]
+ },
+ "notes": "steps 1-4 sealed; step 5 prep done (task book draft + pilot/run ids). Pilot execution channel and info-alignment sign-off pending owner decision; no formal package until B is written back.",
  "t_sealed": {
   "sealed_at": "2026-10-09",
   "method": "cann-bench PerfEvaluator (ACL launch + msprof kernel_details.csv, MsProfSummaryStrategy, warmup 5 repeat 20)",
@@ -419,5 +441,11 @@
   },
   "thresholds": "per-class recall >= 0.9, false reject = 0, localization >= 0.8 (claims.md v2.8)",
   "verdict": "C3 五类注入全部封存且实测达标；C3 不再是未测，允许进入 Agent 环境"
+ },
+ "pilot_plan": {
+  "written_at": "2026-10-09",
+  "task_book": "evals/c1/task_book.md (draft v1; info-alignment detail pending owner sign-off, to freeze before first pilot)",
+  "rule": "B = 3 x max(first-correct completion_tokens of first two successful pilots, by submission time); pilots excluded from R=5; up to 4 extra pilots if fewer than 2 succeed, all archived, no cherry-picking; task book/tolerance/scans frozen during pilots; <=20 board runs per run",
+  "token_reading": "T = completion_tokens + tool-return tokens; exact tool key name to be fixed and sealed with usage hash before formal runs"
  }
 }
