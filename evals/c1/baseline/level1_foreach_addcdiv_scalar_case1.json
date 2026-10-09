@@ -1,0 +1,21 @@
+{
+  "_metadata": {
+    "description": "CANN baseline 性能数据（collect_baseline.py 采集）",
+    "hardware": "950pr",
+    "generated_at": "2026-10-09T20:52:34.430793",
+    "source": "collect_baseline.py (PerfEvaluator + MsProfSummaryStrategy + refs)",
+    "warmup": 5,
+    "repeat": 20,
+    "profiler_level": "Level1",
+    "input_builder": "inputs.py (seed=0xC0FFEE+case_id*31337)",
+    "collection_method": "ref_func_profiling"
+  },
+  "level1": {
+    "foreach_addcdiv_scalar": {
+      "1": {
+        "baseline_perf_us": 28.58,
+        "t_hw_us": 15.73
+      }
+    }
+  }
+}

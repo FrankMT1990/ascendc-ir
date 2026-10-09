@@ -1,0 +1,15 @@
+start 2026-10-09T20:48:40+08:00 level1/exp case2
+done 2026-10-09T20:49:36+08:00 level1/exp case2 exit=0
+start 2026-10-09T20:49:36+08:00 level1/sigmoid case2
+done 2026-10-09T20:50:13+08:00 level1/sigmoid case2 exit=0
+start 2026-10-09T20:50:13+08:00 level1/mish case2
+done 2026-10-09T20:50:49+08:00 level1/mish case2 exit=0
+start 2026-10-09T20:50:49+08:00 level1/masked_scale case2
+done 2026-10-09T20:51:26+08:00 level1/masked_scale case2 exit=0
+start 2026-10-09T20:51:26+08:00 level1/swi_glu case2
+done 2026-10-09T20:52:03+08:00 level1/swi_glu case2 exit=0
+start 2026-10-09T20:52:03+08:00 level1/foreach_addcdiv_scalar case1
+done 2026-10-09T20:52:40+08:00 level1/foreach_addcdiv_scalar case1 exit=0
+start 2026-10-09T20:52:40+08:00 level1/gelu case5
+done 2026-10-09T20:53:17+08:00 level1/gelu case5 exit=0
+ALL_DONE 2026-10-09T20:53:17+08:00

@@ -46,4 +46,25 @@ level1 的 8 个任务全部是逐元素/掩码/foreach/激活类，没有矩阵
 ## 哈希与封存状态
 
 - 本清单与其机器可读版 `evals/c1/freeze.json` 一并提交；提交即封存，之后只允许追加，不允许改写已封存字段。
-- `t_baseline_us` / `t_hw_us` / `timing_input_sha256` 目前全部为 `null`，`kind = unclassified`，待第 2/3 步按 `04-next-work.md` 封存后回填。收包后不得补 `T_HW` 改分类。
+- `t_baseline_us` / `t_hw_us` / `timing_input_sha256` 已于 2026-10-09 封存（见下节），`kind` 全部为 `bandwidth_bound`。
+
+## 第 2 步：T_baseline 与 T_HW 封存结果（2026-10-09）
+
+同一台 Ascend950PR_9589、CANN 9.1.0（fullops 环境，nn/math 子包内核齐备）、同一计时入口：cann-bench `PerfEvaluator`（`ASCEND_LAUNCH_MODE=ACL` + msprof `kernel_details.csv`、MsProfSummaryStrategy、warmup 5、repeat 20、每 kernel 中位、多 kernel 求和）。
+
+- **T_baseline**：`scripts/collect_baseline.py` 采集 refs 实现（输入 `inputs.py`，`seed=0xC0FFEE+case_id*31337`，与计时输入同组数值），工件在 `evals/c1/baseline/`。
+- **T_HW**：IR 生成的 or-floor 下界核（`evals/c1/hw_floor/`：`floors.py` → `gen/*.asc` → 直调 pack），单核 `<<<1,0,stream>>>`、与任务同 shape 的流水搬运 + 最少向量指令（exp/sigmoid/gelu/mish 单流 `or(x,x)`；masked_scale 为真实 select 数据流含位打包掩码流；swi_glu 双流 `or(x0,x1)`；foreach 三读一写两条 `or`）。计时走同一 `PerfEvaluator`，工件在 `evals/c1/timing/`。
+
+| 任务 | T_baseline (μs) | T_HW (μs) | h = T_baseline/T_HW − 1 | kind |
+|---|---|---|---|---|
+| exp_f32 | 28.21 | 899.94 | −0.9687 | bandwidth_bound |
+| sigmoid_f32 | 13.86 | 901.32 | −0.9846 | bandwidth_bound |
+| gelu_f32 | 322.75 | 14360.41 | −0.9775 | bandwidth_bound |
+| mish_f32 | 15.69 | 899.78 | −0.9826 | bandwidth_bound |
+| masked_scale_f32 | 29.20 | 598.68 | −0.9512 | bandwidth_bound |
+| swi_glu_f32 | 23.95 | 904.72 | −0.9735 | bandwidth_bound |
+| foreach_addcdiv_f32 | 28.58 | 477.47 | −0.9401 | bandwidth_bound |
+
+**口径说明（如实封存）**：T_baseline 是 aclnn/refs 的多核时间（exp 的 torchair 融合、其余走 aclnn 内置 op，内部多核），T_HW 是 IR 单核搬运下界（单流约 35GB/s，与 `pack/vector_add_baseline` 的 4.370 μs 单核下界同量级；多流任务 57–67GB/s）。比值 h 因此全为大负数，7 个任务按判词表全部归**带宽顶满**。这与 `pack/vector_add_baseline` 记录的口径问题一致：按交接要求两项都实封、不改口径、不删任务。带宽顶满任务不因 rel 判输赢，判词只看成功次数（claims.md v2.8）。
+
+计时输入与 golden 的 sha256 明细在 `evals/c1/timing/inputs_golden_hashes.json`，聚合哈希写入 `freeze.json` 每任务的 `timing_input_sha256`。foreach 的下界核输入为 cat 连续视角（数值与独立 tensor 列表逐元素一致，已在哈希记录注明）；masked_scale 的掩码按 select 形态位打包（每字节 2 元素 4bit），golden 按 refs 原始 uint8 掩码计算。

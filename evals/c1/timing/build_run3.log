@@ -1,0 +1,195 @@
+=== Building c1hw wheel ===
+running bdist_wheel
+running build
+running build_py
+creating build
+creating build/lib.linux-x86_64-3.10
+creating build/lib.linux-x86_64-3.10/c1hw
+copying c1hw/__init__.py -> build/lib.linux-x86_64-3.10/c1hw
+running build_ext
+-- The CXX compiler identification is GNU 9.5.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Warning at /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:22 (message):
+  static library kineto_LIBRARY-NOTFOUND not found.
+Call Stack (most recent call first):
+  /usr/local/lib/python3.10/dist-packages/torch/share/cmake/Torch/TorchConfig.cmake:125 (append_torchlib_if_found)
+  CMakeLists.txt:50 (find_package)
+
+
+-- Found Torch: /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch.so  
+-- Found Python3: /usr/local/bin/python (found version "3.10.12") found components: Interpreter Development Development.Module Development.Embed 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/w00964611/c1hw_pack/build/temp.linux-x86_64-3.10
+[ 11%] bisheng floor_swi_glu_kernel
+/home/w00964611/c1hw_pack/kernels/floor_swi_glu_kernel.cpp:128:38: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_swi_glu<<<1, 0, stream>>>((__gm__ float*)x0, (__gm__ float*)x1, (__gm__ float*)z);
+                                     ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_swi_glu_kernel.cpp:128:57: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_swi_glu<<<1, 0, stream>>>((__gm__ float*)x0, (__gm__ float*)x1, (__gm__ float*)z);
+                                                        ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_swi_glu_kernel.cpp:128:76: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_swi_glu<<<1, 0, stream>>>((__gm__ float*)x0, (__gm__ float*)x1, (__gm__ float*)z);
+                                                                           ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 22%] bisheng floor_exp_kernel
+/home/w00964611/c1hw_pack/kernels/floor_exp_kernel.cpp:113:34: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_exp<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                 ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_exp_kernel.cpp:113:52: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_exp<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                   ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 33%] bisheng floor_foreach_addcdiv_kernel
+/home/w00964611/c1hw_pack/kernels/floor_foreach_addcdiv_kernel.cpp:150:46: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_foreach_addcdiv<<<1, 0, stream>>>((__gm__ float*)x1, (__gm__ float*)x2, (__gm__ float*)x3, (__gm__ float*)z);
+                                             ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_foreach_addcdiv_kernel.cpp:150:65: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_foreach_addcdiv<<<1, 0, stream>>>((__gm__ float*)x1, (__gm__ float*)x2, (__gm__ float*)x3, (__gm__ float*)z);
+                                                                ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_foreach_addcdiv_kernel.cpp:150:84: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_foreach_addcdiv<<<1, 0, stream>>>((__gm__ float*)x1, (__gm__ float*)x2, (__gm__ float*)x3, (__gm__ float*)z);
+                                                                                   ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_foreach_addcdiv_kernel.cpp:150:103: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_foreach_addcdiv<<<1, 0, stream>>>((__gm__ float*)x1, (__gm__ float*)x2, (__gm__ float*)x3, (__gm__ float*)z);
+                                                                                                      ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+4 warnings generated.
+[ 44%] bisheng floor_gelu_kernel
+/home/w00964611/c1hw_pack/kernels/floor_gelu_kernel.cpp:113:35: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_gelu<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                  ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_gelu_kernel.cpp:113:53: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_gelu<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                    ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 55%] bisheng floor_masked_scale_kernel
+/home/w00964611/c1hw_pack/kernels/floor_masked_scale_kernel.cpp:131:43: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_masked_scale<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ uint8_t*)mask, (__gm__ float*)z);
+                                          ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_masked_scale_kernel.cpp:131:61: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_masked_scale<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ uint8_t*)mask, (__gm__ float*)z);
+                                                            ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_masked_scale_kernel.cpp:131:84: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_masked_scale<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ uint8_t*)mask, (__gm__ float*)z);
+                                                                                   ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+3 warnings generated.
+[ 66%] bisheng floor_mish_kernel
+/home/w00964611/c1hw_pack/kernels/floor_mish_kernel.cpp:113:35: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_mish<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                  ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_mish_kernel.cpp:113:53: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_mish<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                    ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 77%] bisheng floor_sigmoid_kernel
+/home/w00964611/c1hw_pack/kernels/floor_sigmoid_kernel.cpp:113:38: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_sigmoid<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                     ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+/home/w00964611/c1hw_pack/kernels/floor_sigmoid_kernel.cpp:113:56: warning: 'cce_global' attribute ignored when parsing type [-Wignored-attributes]
+    floor_sigmoid<<<1, 0, stream>>>((__gm__ float*)x, (__gm__ float*)z);
+                                                       ^~~~~~
+/home/w00964611/cann-9.1.0-fullops/tools/bisheng_compiler/lib/clang/15.0.5/include/__clang_cce_defines.h:62:31: note: expanded from macro '__gm__'
+#define __gm__ __attribute__((cce_global))
+                              ^~~~~~~~~~
+2 warnings generated.
+[ 88%] Building CXX object CMakeFiles/_C.dir/plugin.cpp.o
+[100%] Linking CXX shared library ../../c1hw/_C.abi3.so
+[100%] Built target _C
+/usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/c1hw
+copying build/lib.linux-x86_64-3.10/c1hw/_C.abi3.so -> build/bdist.linux-x86_64/wheel/c1hw
+copying build/lib.linux-x86_64-3.10/c1hw/__init__.py -> build/bdist.linux-x86_64/wheel/c1hw
+running install_egg_info
+running egg_info
+writing c1hw.egg-info/PKG-INFO
+writing dependency_links to c1hw.egg-info/dependency_links.txt
+writing top-level names to c1hw.egg-info/top_level.txt
+reading manifest file 'c1hw.egg-info/SOURCES.txt'
+writing manifest file 'c1hw.egg-info/SOURCES.txt'
+Copying c1hw.egg-info to build/bdist.linux-x86_64/wheel/c1hw-1.0.0.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/c1hw-1.0.0.dist-info/WHEEL
+creating 'dist/c1hw-1.0.0-cp38-abi3-linux_x86_64.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'c1hw/_C.abi3.so'
+adding 'c1hw/__init__.py'
+adding 'c1hw-1.0.0.dist-info/METADATA'
+adding 'c1hw-1.0.0.dist-info/WHEEL'
+adding 'c1hw-1.0.0.dist-info/top_level.txt'
+adding 'c1hw-1.0.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+=== Install ===
+Looking in indexes: http://nexus.turing-ci.hisilicon.com/repository/pypi/simple
+Processing ./dist/c1hw-1.0.0-cp38-abi3-linux_x86_64.whl
+Installing collected packages: c1hw
+  Attempting uninstall: c1hw
+    Found existing installation: c1hw 1.0.0
+    Uninstalling c1hw-1.0.0:
+      Successfully uninstalled c1hw-1.0.0
+Successfully installed c1hw-1.0.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+=== Wheel size check (3acb588: must exceed 1695 bytes) ===
+total 252
+drwxr-xr-x 2 root    root      4096 Oct  9 21:41 .
+drwxr-xr-x 7 6447636 1049089   4096 Oct  9 21:39 ..
+-rw-r--r-- 1 root    root    248269 Oct  9 21:41 c1hw-1.0.0-cp38-abi3-linux_x86_64.whl

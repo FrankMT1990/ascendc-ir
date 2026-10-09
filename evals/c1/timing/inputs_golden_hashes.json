@@ -1,0 +1,92 @@
+{
+ "exp_f32": {
+  "task": "exp_f32",
+  "inputs_sha256": {
+   "x": "448bbdd771348835377b9b69a93ac3d57b8a7c12dff1b2f19413d2787e9e323e"
+  },
+  "golden_sha256": "33f0cac626d1d59962715b0aad9312acf36a2cd1b9b633064310345b757066a8",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ]
+ },
+ "sigmoid_f32": {
+  "task": "sigmoid_f32",
+  "inputs_sha256": {
+   "x": "448bbdd771348835377b9b69a93ac3d57b8a7c12dff1b2f19413d2787e9e323e"
+  },
+  "golden_sha256": "55b975d0ae0312c296a852d6470d0a5a7e434dcd83c0604589c00e72413ce9f1",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ]
+ },
+ "gelu_f32": {
+  "task": "gelu_f32",
+  "inputs_sha256": {
+   "x": "706becc8e2f8f6a36d9798c016942fbf198036b38bdb55162e5d3a530c4b16a6"
+  },
+  "golden_sha256": "9a75182f771df547ec1d1657d366532a9d05625200a21f7a7ab833789e18d5c3",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   8192,
+   8192
+  ]
+ },
+ "mish_f32": {
+  "task": "mish_f32",
+  "inputs_sha256": {
+   "x": "448bbdd771348835377b9b69a93ac3d57b8a7c12dff1b2f19413d2787e9e323e"
+  },
+  "golden_sha256": "949aba641024fdec9219d8c42ed54f985eb7cc0f3d5d1c691f8b7473219c9550",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ]
+ },
+ "masked_scale_f32": {
+  "task": "masked_scale_f32",
+  "inputs_sha256": {
+   "x": "448bbdd771348835377b9b69a93ac3d57b8a7c12dff1b2f19413d2787e9e323e",
+   "mask_packed_u8": "5647f05ec18958947d32874eeb788fa396a05d0bab7c1b71f112ceb7e9b31eee"
+  },
+  "golden_sha256": "2f228c6d9bce3db0df12b91a7d50a3bdb259f5df3d40a25c2843fd380ee7e091",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ],
+  "note": "mask 位打包为 select 形态（每字节 2 元素 4bit）；golden 用原始 uint8 mask 按 refs 计算"
+ },
+ "swi_glu_f32": {
+  "task": "swi_glu_f32",
+  "inputs_sha256": {
+   "x": "73fecaa82b2664c473a58bd0a6350f43c5d258f9af747f4d6f6cf23bd758953b"
+  },
+  "golden_sha256": "123b4b61add074284432ed020065ff68a55517a7ed202de33860fead113f6292",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ]
+ },
+ "foreach_addcdiv_f32": {
+  "task": "foreach_addcdiv_f32",
+  "inputs_sha256": {
+   "x1_cat": "05e21643f252f7953006998fe87b8805333000ce02f2e6d3da99ea6eb6f5006e",
+   "x2_cat": "b751c782f65019cc86cfd22418398f922673ff3bc61ef14aa9493e7f0e6dd551",
+   "x3_cat": "89678656f8469560915e28112a30aff5fa298d4fda79b03bc817b574a9b8e82a"
+  },
+  "golden_sha256": "8fdd618d5453a6d01c184d2541a9ffab0a0bca24000c58bf5f0045be721087fe",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2,
+   1024,
+   1024
+  ],
+  "note": "下界核输入为 cat 连续视角（数值与独立 tensor 列表逐元素一致）；golden 按 refs 独立列表计算后同样 cat"
+ }
+}

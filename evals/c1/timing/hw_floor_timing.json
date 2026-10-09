@@ -1,0 +1,51 @@
+{
+ "exp_f32": {
+  "t_hw_us": 899.94,
+  "device_kernels": {
+   "_Z9floor_expPfS_": 899.94
+  },
+  "data_source": "kernel_details_csv"
+ },
+ "sigmoid_f32": {
+  "t_hw_us": 901.32,
+  "device_kernels": {
+   "_Z13floor_sigmoidPfS_": 901.32
+  },
+  "data_source": "kernel_details_csv"
+ },
+ "gelu_f32": {
+  "t_hw_us": 14360.41,
+  "device_kernels": {
+   "_Z10floor_geluPfS_": 14360.41
+  },
+  "data_source": "kernel_details_csv"
+ },
+ "mish_f32": {
+  "t_hw_us": 899.78,
+  "device_kernels": {
+   "_Z10floor_mishPfS_": 899.78
+  },
+  "data_source": "kernel_details_csv"
+ },
+ "masked_scale_f32": {
+  "t_hw_us": 598.68,
+  "device_kernels": {
+   "_Z18floor_masked_scalePfPhS_": 598.68
+  },
+  "data_source": "kernel_details_csv"
+ },
+ "swi_glu_f32": {
+  "t_hw_us": 904.72,
+  "device_kernels": {
+   "_Z13floor_swi_gluPfS_S_": 904.72
+  },
+  "data_source": "kernel_details_csv"
+ },
+ "foreach_addcdiv_f32": {
+  "t_hw_us": 477.47,
+  "device_kernels": {
+   "_Z21floor_foreach_addcdivPfS_S_S_": 477.47
+  },
+  "data_source": "kernel_details_csv"
+ }
+}
