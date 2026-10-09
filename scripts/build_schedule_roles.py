@@ -82,7 +82,10 @@ PATTERNS = {
     "exp": _UNARY.format(name="exp"),
     "floor": _UNARY.format(name="floor"),
     "ln": _UNARY.format(name="ln"),
-    "log": _UNARY.format(name="log"),
+    "log": (
+        "调度名是 v.log。CANN 9.1.0 的寄存器自然对数是 asc_ln，不是 asc_log。"
+        "VF 循环与 v.ln 相同：asc_update_mask_b32；asc_load；asc_ln(dst, src, mask)；asc_store。"
+    ),
     "neg": _UNARY.format(name="neg"),
     "not": _UNARY.format(name="not"),
     "relu": _UNARY.format(name="relu"),
@@ -157,11 +160,12 @@ PATTERNS = {
     ),
     "copy_gm2l1_nd2nz": (
         "调度：mte2.nd2nz(gm, l1, rows, cols, row_stride=cols)。仅 f16。"
-        "先 asc_set_gm2l1_nz_para，再 asc_copy_gm2l1_nd2nz(l1, gm, row_stride*2, NORMAL_FIRST_VICTIM, rows, cols, 0, false)。"
-        "row_stride 大于 cols 时表示 GM 行宽，用来搬 K 方向的一段。"
+        "CANN 9.1.0：asc_copy_gm2l1_nd2nz(l1, gm, 1, rows, cols, 0, row_stride, align16(rows), 1, 0)。"
+        "row_stride 单位是元素。row_stride 大于 cols 时表示 GM 行宽，用来搬 K 方向的一段。"
     ),
     "copy_gm2l1_dn2nz": (
-        "调度：mte2.dn2nz(gm, l1, rows, cols, row_stride=cols)。参数和 nd2nz 相同，指令换成 asc_copy_gm2l1_dn2nz。"
+        "调度：mte2.dn2nz(gm, l1, rows, cols, row_stride=cols)。"
+        "先 asc_set_gm2l1_nz_para，再 asc_copy_gm2l1_dn2nz(l1, gm, row_stride*2, 1, rows, cols, 0, false)。L2 模式用整数 1。"
     ),
     "copy_l12l0a": (
         "调度：mte1.l12l0a(l1, l0a, rows, cols)。仅 f16。"
@@ -173,12 +177,12 @@ PATTERNS = {
     ),
     "copy_l0c2gm": (
         "调度：fix.l0c2gm(l0c, gm, rows, cols)。l0c 与 gm 都是 f32，rows 是 M、cols 是 N。"
-        "asc_set_l0c_copy_nz_para(1, 0, 0) 后 asc_copy_l0c2gm(gm, l0c, cols, rows, cols, align16(rows), "
-        "NORMAL_FIRST_VICTIM, DISABLE, NoQuant, NONE, false, true, false, false)。nz2nd 打开，写回行优先。"
+        "asc_set_l0c2gm_nz2nd(1, 0, 0) 后 asc_copy_l0c2gm(gm, l0c, cols, rows, cols, align16(rows), 0, 0, 0, false, true)。"
+        "最后两个参数是 channel_split=false、nz2nd=true，写回行优先。"
     ),
     "mmad": (
         "调度：m.mmad(l0c, l0a, l0b, m, k, n, init)。A/B 为 f16，L0C 为 f32。B 按 (n, k) 存放，结果是 A @ B.T。"
-        "asc_mmad(l0c, l0a, l0b, m, k, n, DISABLE, true, false, init)。"
+        "asc_mmad(l0c, l0a, l0b, m, k, n, 0, true, false, init)。unit flag 用整数 0。"
         "K 分块时第 0 轮 init 为真，其后为假，并且在累加前发 asc_sync_pipe(PIPE_M)。"
     ),
 }

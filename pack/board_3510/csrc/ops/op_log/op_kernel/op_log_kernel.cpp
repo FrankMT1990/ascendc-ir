@@ -18,7 +18,7 @@ __simd_vf__ inline void log_vf(
     for (uint16_t i = 0; i < repeat_time; ++i) {
         vmask = asc_update_mask_b32(data_len);
         asc_load(reg_src, src + i * one_rep_size);
-        asc_log(reg_dst, reg_src, vmask);
+        asc_ln(reg_dst, reg_src, vmask);
         asc_store(dst + i * one_rep_size, reg_dst);
     }
 }

@@ -13,6 +13,8 @@ import ir_board
 ROOT = Path(__file__).resolve().parents[1]
 N = 64
 TOL_OPS = {"div", "exp", "ln", "log", "sqrt", "leakyrelu"}
+# asc_ceil / asc_trunc 对 (-1, 0) 返回 +0.0，值和 IEEE 的 -0.0 相等，只差符号位。
+SIGNED_ZERO_OPS = {"ceil", "trunc"}
 
 
 def f32_inputs():
@@ -48,7 +50,7 @@ def bits_equal(got, golden):
     return int((got == golden).sum())
 
 
-def report(name, got, golden, tol):
+def report(name, got, golden, tol, op):
     got = got.detach().cpu().contiguous()
     golden = golden.detach().cpu().contiguous()
     diff = (got - golden).abs() if got.dtype.is_floating_point else (got != golden).to(torch.float32)
@@ -57,6 +59,10 @@ def report(name, got, golden, tol):
     if tol:
         limit = 1e-4 + 1e-4 * golden.abs()
         ok = bool((diff <= limit).all())
+    elif op in SIGNED_ZERO_OPS and got.dtype == torch.float32:
+        same = got.view(torch.int32) == golden.view(torch.int32)
+        both_zero = (got == 0) & (golden == 0) & ~torch.isnan(got) & ~torch.isnan(golden)
+        ok = bool((same | both_zero).all())
     else:
         ok = matched == int(golden.numel())
     print(
@@ -184,7 +190,7 @@ def main():
                 golden = a.float().matmul(b.float().transpose(0, 1))
             else:
                 raise RuntimeError(f"unknown kind {kind}")
-            if not report(name, got, golden, op in TOL_OPS):
+            if not report(name, got, golden, op in TOL_OPS, op):
                 failed.append(name)
         except Exception as exc:
             print(name, "EXC", type(exc).__name__, exc)

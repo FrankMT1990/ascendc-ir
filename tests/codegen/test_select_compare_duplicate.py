@@ -199,6 +199,60 @@ def test_xor_and_shift_scalar_use_int32_registers():
     assert "3f" not in text
 
 
+def test_log_emits_asc_ln_and_whole_float_literals():
+    @kernel(device="ascend950pr")
+    def log_custom(x: gmptr(f32), z: gmptr(f32)):
+        x_local = ubuf(f32, 64)
+        z_local = ubuf(f32, 64)
+        mte2.copy(x[0], x_local)
+        sync(mte2, v, on=x_local)
+        v.log(z_local, x_local)
+        sync(v, mte3, on=z_local)
+        mte3.copy(z_local, z[0])
+
+    text = generate(log_custom.trace())
+    assert "asc_ln(reg_dst, reg_src, vmask);" in text
+    assert "asc_log(" not in text
+
+    @kernel(device="ascend950pr")
+    def fill_custom(z: gmptr(f32)):
+        z_local = ubuf(f32, 64)
+        v.duplicate(z_local, 3.0)
+        sync(v, mte3, on=z_local)
+        mte3.copy(z_local, z[0])
+
+    text = generate(fill_custom.trace())
+    assert "3.0f" in text
+    assert "3f" not in text
+
+
+def test_log_emits_asc_ln_and_whole_float_literals():
+    @kernel(device="ascend950pr")
+    def log_custom(x: gmptr(f32), z: gmptr(f32)):
+        x_local = ubuf(f32, 64)
+        z_local = ubuf(f32, 64)
+        mte2.copy(x[0], x_local)
+        sync(mte2, v, on=x_local)
+        v.log(z_local, x_local)
+        sync(v, mte3, on=z_local)
+        mte3.copy(z_local, z[0])
+
+    text = generate(log_custom.trace())
+    assert "asc_ln(reg_dst, reg_src, vmask);" in text
+    assert "asc_log(" not in text
+
+    @kernel(device="ascend950pr")
+    def fill_custom(z: gmptr(f32)):
+        z_local = ubuf(f32, 64)
+        v.duplicate(z_local, 3.0)
+        sync(v, mte3, on=z_local)
+        mte3.copy(z_local, z[0])
+
+    text = generate(fill_custom.trace())
+    assert "3.0f" in text
+    assert "3f" not in text
+
+
 def test_every_catalog_api_has_a_schedule_role():
     import json
     from pathlib import Path

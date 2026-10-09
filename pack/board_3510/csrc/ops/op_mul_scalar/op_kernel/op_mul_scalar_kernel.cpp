@@ -33,7 +33,7 @@ __vector__ __global__ __aicore__ void op_mul_scalar(__gm__ float* x, __gm__ floa
     asc_copy_gm2ub(buf_0, x, 1, 256, 0, 0);
     asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);
     asc_sync_wait(PIPE_MTE2, PIPE_V, EVENT_ID0);
-    mul_scalar_vf(buf_0, buf_1, 64, 2f);
+    mul_scalar_vf(buf_0, buf_1, 64, 2.0f);
     asc_sync_notify(PIPE_V, PIPE_MTE3, EVENT_ID0);
     asc_sync_wait(PIPE_V, PIPE_MTE3, EVENT_ID0);
     asc_copy_ub2gm(z, buf_1, 1, 256, 0, 0);
