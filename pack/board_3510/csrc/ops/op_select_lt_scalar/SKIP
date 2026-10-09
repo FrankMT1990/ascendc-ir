@@ -1,8 +1,0 @@
-# SKIP: bisheng compile error (board_3510, CANN 9.1.0, dav-3510, attempt 1 keep-going enumeration)
-# 原文如下（含 make 进度行与源码行引用）：
-[ 86%] bisheng op_select_lt_scalar_kernel
-/home/w00964611/board_3510/csrc/ops/op_select_lt_scalar/op_kernel/op_select_lt_scalar_kernel.cpp:42:51: error: invalid digit 'f' in decimal constant
-    select_lt_scalar_vf(buf_0, buf_1, buf_2, 64, 1f);
-                                                  ^
-1 error generated.
-gmake[2]: *** [CMakeFiles/_C.dir/build.make:270: bisheng/op_select_lt_scalar_kernel.o] Error 1
