@@ -1,0 +1,52 @@
+op_add ok True bit 64 / 64 max_abs 0.0 nan 0
+op_sub ok True bit 64 / 64 max_abs 0.0 nan 0
+op_mul ok True bit 64 / 64 max_abs 0.0 nan 0
+op_div ok True bit 60 / 64 max_abs 5.960464477539063e-08 nan 0
+op_max ok True bit 64 / 64 max_abs 0.0 nan 0
+op_min ok True bit 64 / 64 max_abs 0.0 nan 0
+op_and ok True bit 64 / 64 max_abs 0.0 nan 0
+op_or ok True bit 64 / 64 max_abs nan nan 23
+op_prelu ok True bit 64 / 64 max_abs 0.0 nan 0
+op_abs ok True bit 64 / 64 max_abs 0.0 nan 0
+op_ceil ok True bit 55 / 64 max_abs 0.0 nan 0
+op_exp ok True bit 64 / 64 max_abs 0.0 nan 0
+op_floor ok True bit 64 / 64 max_abs 0.0 nan 0
+op_ln ok True bit 45 / 64 max_abs 1.1920928955078125e-07 nan 0
+op_log ok True bit 45 / 64 max_abs 1.1920928955078125e-07 nan 0
+op_neg ok True bit 64 / 64 max_abs 0.0 nan 0
+op_not ok True bit 64 / 64 max_abs 0.0 nan 0
+op_relu ok True bit 64 / 64 max_abs 0.0 nan 0
+op_rint ok True bit 64 / 64 max_abs 0.0 nan 0
+op_round ok True bit 64 / 64 max_abs 0.0 nan 0
+op_sqrt ok True bit 55 / 64 max_abs 1.1920928955078125e-07 nan 0
+op_trunc ok True bit 55 / 64 max_abs 0.0 nan 0
+op_add_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_max_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_min_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_mul_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_leakyrelu ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_gt ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_lt ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_ne ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_eq ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_ge ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_le ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_gt_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_lt_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_ne_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_eq_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_ge_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_select_le_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_duplicate ok True bit 64 / 64 max_abs 0.0 nan 0
+op_arange ok True bit 64 / 64 max_abs 0.0 nan 0
+op_xor ok True bit 64 / 64 max_abs 0.0 nan 0
+op_shiftleft ok True bit 64 / 64 max_abs 0.0 nan 0
+op_shiftright ok True bit 64 / 64 max_abs 0.0 nan 0
+op_shiftleft_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_shiftright_scalar ok True bit 64 / 64 max_abs 0.0 nan 0
+op_cast ok True bit 64 / 64 max_abs 0.0 nan 0
+op_repeat_reduce_sum ok True lane_sum 64.0 golden 64.0 abs_err 0.0
+op_mmad EXC AttributeError '_OpNamespace' 'ir_board' object has no attribute 'op_mmad'
+failed 1 of 50
+op_mmad

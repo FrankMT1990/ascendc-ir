@@ -1,0 +1,2 @@
+resolved /home/w00964611/board_3510/ir_board/__init__.py
+cc0a42fa5d5f934e4b2ab24c4dfd9148  ir_board/_C.abi3.so

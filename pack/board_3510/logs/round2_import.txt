@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/w00964611/board_3510/ir_board/__init__.py", line 4, in <module>
+    from . import _C
+ImportError: cannot import name '_C' from partially initialized module 'ir_board' (most likely due to a circular import) (/home/w00964611/board_3510/ir_board/__init__.py)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/home/w00964611/board_3510/ir_board/__init__.py", line 6, in <module>
+    raise ImportError("Cannot import _C. Install the ir_board package first.") from e
+ImportError: Cannot import _C. Install the ir_board package first.
+[ERROR] 2026-10-09-12:25:40 (PID:12300, Device:-1, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+md5sum: ir_board/_C.abi3.so: No such file or directory

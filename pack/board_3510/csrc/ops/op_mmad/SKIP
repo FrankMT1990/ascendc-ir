@@ -1,0 +1,218 @@
+# SKIP: bisheng compile error (board_3510 round2, CANN 9.1.0, dav-3510, 512950c)
+# 10 参 asc_copy_gm2l1_nd2nz / 11 参 asc_copy_l0c2gm 形态属于 2201 分支；3510 分支为 8 参 loop 形态与 21 参形态。原文如下：
+[ 69%] bisheng op_mmad_kernel
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:20:5: error: no matching function for call to 'asc_copy_gm2l1_nd2nz'
+    asc_copy_gm2l1_nd2nz(a_l1, a, 1, 32, 16, 0, 32, 32, 1, 0);
+    ^~~~~~~~~~~~~~~~~~~~
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1978:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1971:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1965:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint16_t* dst, __gm__ uint16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1959:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1953:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1947:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int16_t* dst, __gm__ int16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1941:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ hifloat8_t* dst, __gm__ hifloat8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1935:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ float* dst, __gm__ float* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1929:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ half* dst, __gm__ half* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1923:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ fp8_e5m2_t* dst, __gm__ fp8_e5m2_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1917:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ fp8_e4m3fn_t* dst, __gm__ fp8_e4m3fn_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1911:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:21:5: error: no matching function for call to 'asc_copy_gm2l1_nd2nz'
+    asc_copy_gm2l1_nd2nz(b_l1, b, 1, 32, 16, 0, 32, 32, 1, 0);
+    ^~~~~~~~~~~~~~~~~~~~
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1978:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1971:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1965:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint16_t* dst, __gm__ uint16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1959:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1953:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1947:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int16_t* dst, __gm__ int16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1941:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ hifloat8_t* dst, __gm__ hifloat8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1935:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ float* dst, __gm__ float* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1929:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ half* dst, __gm__ half* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1923:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ fp8_e5m2_t* dst, __gm__ fp8_e5m2_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1917:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ fp8_e4m3fn_t* dst, __gm__ fp8_e4m3fn_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1911:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:35:5: error: no matching function for call to 'asc_copy_gm2l1_nd2nz'
+    asc_copy_gm2l1_nd2nz(a_l1, a + 16, 1, 32, 16, 0, 32, 32, 1, 0);
+    ^~~~~~~~~~~~~~~~~~~~
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1978:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1971:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1965:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint16_t* dst, __gm__ uint16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1959:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1953:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1947:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int16_t* dst, __gm__ int16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1941:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ hifloat8_t* dst, __gm__ hifloat8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1935:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ float* dst, __gm__ float* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1929:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ half* dst, __gm__ half* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1923:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ fp8_e5m2_t* dst, __gm__ fp8_e5m2_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1917:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ fp8_e4m3fn_t* dst, __gm__ fp8_e4m3fn_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1911:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:37:5: error: no matching function for call to 'asc_copy_gm2l1_nd2nz'
+    asc_copy_gm2l1_nd2nz(b_l1, b + 16, 1, 32, 16, 0, 32, 32, 1, 0);
+    ^~~~~~~~~~~~~~~~~~~~
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1978:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1971:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1965:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint16_t* dst, __gm__ uint16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1959:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1953:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1947:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int16_t* dst, __gm__ int16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1941:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ hifloat8_t* dst, __gm__ hifloat8_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1935:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ float* dst, __gm__ float* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1929:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ half* dst, __gm__ half* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1923:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ fp8_e5m2_t* dst, __gm__ fp8_e5m2_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1917:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ fp8_e4m3fn_t* dst, __gm__ fp8_e4m3fn_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:1911:24: note: candidate function not viable: requires 8 arguments, but 10 were provided
+__aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint64_t loop1_src_stride, uint8_t l2_cache_ctl, uint16_t n_value,
+                       ^
+/home/w00964611/board_3510/csrc/ops/op_mmad/op_kernel/op_mmad_kernel.cpp:52:5: error: no matching function for call to 'asc_copy_l0c2gm'
+    asc_copy_l0c2gm(c, c_l0, 32, 32, 32, 32, 0, 0, 0, false, true);
+    ^~~~~~~~~~~~~~~
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2312:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ void *dst_addr, __cc__ int32_t *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2297:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ void *dst_addr, __cc__ float *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2282:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ int32_t *dst_addr, __cc__ int32_t *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2267:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ uint8_t *dst_addr, __cc__ int32_t *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2252:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ int8_t *dst_addr, __cc__ int32_t *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2237:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ hifloat8_t *dst_addr, __cc__ int32_t *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2222:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ fp8_e5m2_t *dst_addr, __cc__ int32_t *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2207:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ fp8_e4m3fn_t *dst_addr, __cc__ int32_t *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2192:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ half *dst_addr, __cc__ int32_t *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2178:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ bfloat16_t *dst_addr, __cc__ int32_t *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2163:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ float *dst_addr, __cc__ float *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2148:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ uint8_t *dst_addr, __cc__ float *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2133:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ int8_t *dst_addr, __cc__ float *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2118:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ hifloat8_t *dst_addr, __cc__ float *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2103:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ fp8_e5m2_t *dst_addr, __cc__ float *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2088:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ fp8_e4m3fn_t *dst_addr, __cc__ float *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2073:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ half *dst_addr, __cc__ float *src_addr,
+                       ^
+/usr/local/Ascend/cann-9.1.0/asc/include/c_api/cube_datamove/cube_datamove.h:2058:24: note: candidate function not viable: requires 21 arguments, but 11 were provided
+__aicore__ inline void asc_copy_l0c2gm(__gm__ bfloat16_t *dst_addr, __cc__ float *src_addr,
+                       ^
+5 errors generated.
+gmake[2]: *** [CMakeFiles/_C.dir/build.make:165: bisheng/op_mmad_kernel.o] Error 1
