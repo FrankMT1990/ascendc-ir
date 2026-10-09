@@ -1,0 +1,18 @@
+{
+  "version": "c1-step3-frozen",
+  "sealed_at": "2026-10-09",
+  "compare_rule": "per element: abs(a - b) <= atol + rtol * abs(b); a is the kernel output, b is the golden; comparison happens in the golden dtype (float32 for all C1 tasks); any element failing, any NaN in a or b, or dtype/element-count mismatch between a and b fails the kernel; max/mean error and norms are not used; a and b must not be swapped",
+  "tasks_dtype": "float32",
+  "atol": 1e-05,
+  "rtol": 0.0001,
+  "rationale": "f32 组合链（sigmoid/tanh/gelu-tanh/mish 由 exp/ln/div/mul 等基础指令组合，最长 13 条）的累积舍入约 1e-6~1e-5 相对量级，golden 是 torch 参考实现的单条超越函数；atol=1e-5、rtol=1e-4 覆盖该量级且不吞真实错误（board_3510 经验：同类指令对 golden 的偏差 <=1.19e-7，div/exp 类 <=6e-8）",
+  "applies_to": [
+    "exp_f32",
+    "sigmoid_f32",
+    "gelu_f32",
+    "mish_f32",
+    "masked_scale_f32",
+    "swi_glu_f32",
+    "foreach_addcdiv_f32"
+  ]
+}

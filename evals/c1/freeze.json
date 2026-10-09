@@ -354,7 +354,7 @@
  "budget_rule": "claims.md v2.8: B = 3 x max(first-correct completion_tokens of first two successful pilots)",
  "pilot_ids": null,
  "run_ids": null,
- "notes": "t_baseline/t_hw/timing_input hashes sealed 2026-10-09 per handoff 04 step 2; all 7 tasks bandwidth_bound (h<0.20). tolerance/golden/boundary inputs and scans to be sealed in step 3 before any pilot.",
+ "notes": "steps 1-3 sealed 2026-10-09 (manifest+freeze, t_baseline/t_hw/inputs, tolerance/golden/boundary+scans). C3 injection check is step 4 and gates entry to the agent environment.",
  "t_sealed": {
   "sealed_at": "2026-10-09",
   "method": "cann-bench PerfEvaluator (ACL launch + msprof kernel_details.csv, MsProfSummaryStrategy, warmup 5 repeat 20)",
@@ -362,5 +362,40 @@
   "t_hw_source": "evals/c1/timing/hw_floor_timing.json (IR or-floor kernels, single core, same harness)",
   "caveat": "T_baseline 为 aclnn/refs 多核时间，T_HW 为单核搬运下界；比值 h 因此为大负数，全部任务按判词表归带宽顶满。与 pack/vector_add_baseline 记录的口径问题一致，如实封存不改口径。",
   "input_hash_detail": "evals/c1/timing/inputs_golden_hashes.json"
+ },
+ "step3_sealed": {
+  "sealed_at": "2026-10-09",
+  "tolerance_file": "evals/c1/tolerance.json",
+  "tolerance_sha256": "d234aa15b6887d723e1892da6c15088d0670d202b682dce9db6878cdb4983612",
+  "compare_rule": "abs(a-b) <= atol + rtol*abs(b) per element in golden dtype (float32); atol=1e-5 rtol=1e-4; NaN/shape/dtype mismatch fails",
+  "timing_inputs_and_golden": {
+   "record": "evals/c1/timing/inputs_golden_hashes.json",
+   "sha256": "d72764b3813ae568caa9df63e4f504957595c8cf921a5bea9624001aba5c82fe",
+   "note": "golden 可复现定义：封存输入哈希 + cann-bench refs（abb6e47）+ 确定性生成脚本；gelu golden 268MB 不直接入 git，按哈希验证再生"
+  },
+  "boundary_inputs_and_golden": {
+   "record": "evals/c1/boundary/boundary_inputs_hashes.json",
+   "sha256": "cc01462ef68e2ea7ec0fcdc75198db5e0a1a049a36a74b55981c7e37e86093a5",
+   "generator": "evals/c1/boundary/gen_boundary.py (确定性边界值铺格，无随机)"
+  },
+  "ir_escape_scan": {
+   "script": "evals/c1/scans/ir_escape.py",
+   "sha256": "3650c1056d781101cdf0bb5fbf8c7ca74d0c849430965a10eafd51baa682b809",
+   "cases_pass": "9/9 (6 反例全命中, 3 正例全通过)"
+  },
+  "control_surface_scan": {
+   "script": "evals/c1/scans/control_surface.py",
+   "sha256": "86d8d386d5785d05e7fd76d8cd21d1daf58082704599b093535aaed7fc4d2f60",
+   "allowed_surface": "evals/c1/scans/allowed_surface.json",
+   "allowed_surface_sha256": "0d1bf655e37f8e21300a83b4eeebef0f101a1f32d51be1ae12e7bf48fbef6419",
+   "cases_pass": "7/7 (4 反例全命中, 3 正例全通过; 一致性: 允许面 ⊆ 冻结支持集∪搬运同步原语∪降级产物)"
+  },
+  "selftest": {
+   "script": "evals/c1/scans/run_selftest.py",
+   "result": "evals/c1/scans/selftest_result.json",
+   "result_sha256": "b109183bdeeba80bbec00be16036700f7f003149fa34c1e9e95eb530026d6834",
+   "overall_pass": true
+  },
+  "visibility_rule": "examples/、参考 .asc、asc-devkit 示例内核对两臂都不可见；检索日志在正式 run 归档"
  }
 }

@@ -68,3 +68,11 @@ level1 的 8 个任务全部是逐元素/掩码/foreach/激活类，没有矩阵
 **口径说明（如实封存）**：T_baseline 是 aclnn/refs 的多核时间（exp 的 torchair 融合、其余走 aclnn 内置 op，内部多核），T_HW 是 IR 单核搬运下界（单流约 35GB/s，与 `pack/vector_add_baseline` 的 4.370 μs 单核下界同量级；多流任务 57–67GB/s）。比值 h 因此全为大负数，7 个任务按判词表全部归**带宽顶满**。这与 `pack/vector_add_baseline` 记录的口径问题一致：按交接要求两项都实封、不改口径、不删任务。带宽顶满任务不因 rel 判输赢，判词只看成功次数（claims.md v2.8）。
 
 计时输入与 golden 的 sha256 明细在 `evals/c1/timing/inputs_golden_hashes.json`，聚合哈希写入 `freeze.json` 每任务的 `timing_input_sha256`。foreach 的下界核输入为 cat 连续视角（数值与独立 tensor 列表逐元素一致，已在哈希记录注明）；masked_scale 的掩码按 select 形态位打包（每字节 2 元素 4bit），golden 按 refs 原始 uint8 掩码计算。
+
+## 第 3 步：数值门与两类扫描封存（2026-10-09）
+
+- **容差**：`evals/c1/tolerance.json`（sha256 见 freeze.json step3_sealed）。比较式逐元素 `abs(a−b) ≤ atol + rtol×abs(b)`，a=内核输出、b=golden，在 golden dtype（f32）上比较；atol=1e-5、rtol=1e-4；任一元素不满足、NaN、dtype/元素数不一致即失败。
+- **必测输入两组**：计时组（与 T_baseline 同 shape 同数值，`evals/c1/timing/inputs_golden_hashes.json`）+ 边界组（`evals/c1/boundary/`：确定性边界值铺格——gelu 含 ±100 饱和区、foreach 除数下界 0.5、masked_scale 掩码全 0/1 交替）。每组输入与 golden 均已哈希封存；gelu golden 268MB 不直接入 git，由封存输入哈希 + refs（cann-bench abb6e47）+ 生成脚本构成可复现定义，按哈希验证再生。
+- **IR 臂逃逸扫描**：`evals/c1/scans/ir_escape.py`——字面 `asc_*`、exec/eval、动态/拼接指令名（getattr、v.compute 非字面量参数）、引用 .asc 文件、内嵌 C 字符串。反例 6/6 命中、正例 3/3 通过。
+- **对照臂越面扫描**：`evals/c1/scans/control_surface.py` + `allowed_surface.json`——允许面 = 冻结支持集 ∪ 搬运/同步原语 ∪ select/cast/reduce 的降级产物记号；Cube 接口与多核切分词汇命中即越面。反例 4/4 命中（含 mmad/nd2nz、block_idx、asc_axpy 清单外）、正例 3/3 通过；一致性校验：允许面 ⊆ 代码生成会发出的指令集合。
+- 自测记录：`evals/c1/scans/selftest_result.json`（overall_pass=true，16 用例 + 一致性）。

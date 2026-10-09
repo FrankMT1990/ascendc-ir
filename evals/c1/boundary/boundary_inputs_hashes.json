@@ -1,0 +1,90 @@
+{
+ "exp_f32": {
+  "inputs_sha256": [
+   "c7b4df43e3c3c16d09082feb6875a28788d9aa30674a9d3103761c3847d54aae"
+  ],
+  "golden_sha256": "1929e90d52e5b78f1133ac0f9849d4588927c89d8feb0716ee1683815c2e01b8",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ],
+  "note": "boundary pattern [-2,-1,-0.5,0,0.5,1,2] tiled over [2048,2048]"
+ },
+ "sigmoid_f32": {
+  "inputs_sha256": [
+   "c7b4df43e3c3c16d09082feb6875a28788d9aa30674a9d3103761c3847d54aae"
+  ],
+  "golden_sha256": "f909f3c10bfe07232520dbc047c8be7a9548c632b0862729a0889bbc60c4e6c4",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ],
+  "note": "boundary pattern [-2,-1,-0.5,0,0.5,1,2] tiled"
+ },
+ "gelu_f32": {
+  "inputs_sha256": [
+   "49ae40bba765d7a88ae9075f09d2552ae20aeb96fc7b66409900c7065684843a"
+  ],
+  "golden_sha256": "8892fcf57077774c3d29758cb9383511569af4f8b762a8ae80e0fdbcc369b407",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   8192,
+   8192
+  ],
+  "note": "boundary pattern [-100,-20,-3,-0.5,0,0.5,3,20,100] tiled over [8192,8192]"
+ },
+ "mish_f32": {
+  "inputs_sha256": [
+   "c7b4df43e3c3c16d09082feb6875a28788d9aa30674a9d3103761c3847d54aae"
+  ],
+  "golden_sha256": "ee839555fe4e1bf335a085d1642c30cd5b78bce676c3cdd9804837e9c2f596ef",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ],
+  "note": "boundary pattern [-2,-1,-0.5,0,0.5,1,2] tiled"
+ },
+ "masked_scale_f32": {
+  "inputs_sha256": [
+   "3d515aeeadc46c245ff39b16de39cec55b47809dab575ba31de8534ceab7637c",
+   "1edc90c062a17f59a2503d97140c96bf512e66e1da6a85bc89c17df2c60ec9f1"
+  ],
+  "golden_sha256": "23a06b54bf0b16cdae8473e27b552aeba5cc00f8921455b87ffaaf1965b3f338",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ],
+  "note": "x boundary [-2,-1,0,1,2]; mask alternating 0/1 (uint8, 2-element aligned)"
+ },
+ "swi_glu_f32": {
+  "inputs_sha256": [
+   "dec5889c807b644d394ff4b5786016ac8f95c5ddeae5df2eaa2ec12d431f74ff"
+  ],
+  "golden_sha256": "0c468514b8cac23f9cb8e8c64b6b00be2a5e017abf75d3ff142f937631697f88",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2048,
+   2048
+  ],
+  "note": "boundary pattern tiled over [2048,4096]"
+ },
+ "foreach_addcdiv_f32": {
+  "inputs_sha256": [
+   "10b61c60ce9065b1bfaf13734f7dfc45ed20bb438f586be27a29de999fdc7e59",
+   "10b61c60ce9065b1bfaf13734f7dfc45ed20bb438f586be27a29de999fdc7e59",
+   "d7b3bf0c64f2f31b52d55bbe1bfc5dae96588ddea85d61730ad51837ed6fca8c"
+  ],
+  "golden_sha256": "d43f46a20342db2160bd02a4b40fa46dc9bc30d1050429978f9fb032fc4873fe",
+  "golden_dtype": "torch.float32",
+  "golden_shape": [
+   2,
+   1024,
+   1024
+  ],
+  "note": "x1/x2 boundary [-1,-0.5,0,0.5,1]; x3 divisor boundary [0.5,0.75,1.0]"
+ }
+}

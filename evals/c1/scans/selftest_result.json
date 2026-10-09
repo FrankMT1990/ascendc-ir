@@ -1,0 +1,168 @@
+{
+ "ir_escape": {
+  "ir_bad_literal.py": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ir_bad_literal.py:12 v.compute with non-literal/concatenated name",
+    "ir_escape: 1 files scanned, 2 hits"
+   ]
+  },
+  "ir_bad_eval.py": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ir_bad_eval.py:13 exec/eval call",
+    "ir_escape: 1 files scanned, 1 hits"
+   ]
+  },
+  "ir_bad_concat.py": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ir_bad_concat.py:13 v.compute with non-literal/concatenated name",
+    "ir_escape: 1 files scanned, 1 hits"
+   ]
+  },
+  "ir_bad_ascfile.py": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ir_bad_ascfile.py:7 references .asc file",
+    "ir_escape: 1 files scanned, 1 hits"
+   ]
+  },
+  "ir_bad_cstring.py": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ir_bad_cstring.py:8 literal asc_*: asc_simd",
+    "ir_escape: 1 files scanned, 2 hits"
+   ]
+  },
+  "ir_bad_getattr.py": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ir_bad_getattr.py:13 getattr dynamic call",
+    "ir_escape: 1 files scanned, 1 hits"
+   ]
+  },
+  "ir_ok_add.py": {
+   "expect": "pass",
+   "rc": 0,
+   "pass": true,
+   "out_tail": [
+    "ir_escape: 1 files scanned, 0 hits"
+   ]
+  },
+  "ir_ok_chain.py": {
+   "expect": "pass",
+   "rc": 0,
+   "pass": true,
+   "out_tail": [
+    "ir_escape: 1 files scanned, 0 hits"
+   ]
+  },
+  "ir_ok_compute.py": {
+   "expect": "pass",
+   "rc": 0,
+   "pass": true,
+   "out_tail": [
+    "ir_escape: 1 files scanned, 0 hits"
+   ]
+  }
+ },
+ "control_surface": {
+  "ctl_bad_cube.asc": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ctl_bad_cube.asc:15 cube: asc_set_l0c2gm_nz2nd",
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ctl_bad_cube.asc:16 cube: asc_copy_l0c2gm",
+    "control_surface: 1 files scanned, 7 hits"
+   ]
+  },
+  "ctl_bad_multicore.asc": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ctl_bad_multicore.asc:6 offlist: asc_get_block_num",
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ctl_bad_multicore.asc:7 offlist: asc_get_block_idx",
+    "control_surface: 1 files scanned, 2 hits"
+   ]
+  },
+  "ctl_bad_offlist.asc": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ctl_bad_offlist.asc:20 offlist: asc_axpy",
+    "control_surface: 1 files scanned, 1 hits"
+   ]
+  },
+  "ctl_bad_multicore.cpp": {
+   "expect": "hit",
+   "rc": 1,
+   "pass": true,
+   "out_tail": [
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ctl_bad_multicore.cpp:4 multicore: block_idx",
+    "D:\\develop\\ascendc-ir\\evals\\c1\\scans\\cases\\ctl_bad_multicore.cpp:4 multicore: block_idx",
+    "control_surface: 1 files scanned, 5 hits"
+   ]
+  },
+  "ctl_ok_vector.asc": {
+   "expect": "pass",
+   "rc": 0,
+   "pass": true,
+   "out_tail": [
+    "control_surface: 1 files scanned, 0 hits"
+   ]
+  },
+  "ctl_ok_select.asc": {
+   "expect": "pass",
+   "rc": 0,
+   "pass": true,
+   "out_tail": [
+    "control_surface: 1 files scanned, 0 hits"
+   ]
+  },
+  "ctl_ok_pack.py": {
+   "expect": "pass",
+   "rc": 0,
+   "pass": true,
+   "out_tail": [
+    "control_surface: 1 files scanned, 0 hits"
+   ]
+  }
+ },
+ "consistency": {
+  "allowed_minus_support": [],
+  "derived_tokens": [
+   "asc_eq",
+   "asc_eq_scalar",
+   "asc_ge",
+   "asc_ge_scalar",
+   "asc_gt",
+   "asc_gt_scalar",
+   "asc_half2float",
+   "asc_le",
+   "asc_le_scalar",
+   "asc_lt",
+   "asc_lt_scalar",
+   "asc_ne",
+   "asc_ne_scalar",
+   "asc_reduce_sum"
+  ],
+  "pass": true
+ },
+ "overall_pass": true
+}
