@@ -27,7 +27,7 @@ __vector__ __global__ __aicore__ void op_duplicate(__gm__ float* z)
 
     __ubuf__ float buf_0[64];
 
-    duplicate_vf(buf_0, 64, 3f);
+    duplicate_vf(buf_0, 64, 3.0f);
     asc_sync_notify(PIPE_V, PIPE_MTE3, EVENT_ID0);
     asc_sync_wait(PIPE_V, PIPE_MTE3, EVENT_ID0);
     asc_copy_ub2gm(z, buf_0, 1, 256, 0, 0);

@@ -101,7 +101,7 @@
     "name": "op_log",
     "op": "log",
     "kind": "unary",
-    "token": "asc_log(",
+    "token": "asc_ln(",
     "literal": null
   },
   {

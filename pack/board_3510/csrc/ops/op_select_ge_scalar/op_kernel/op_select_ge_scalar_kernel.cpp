@@ -39,7 +39,7 @@ __vector__ __global__ __aicore__ void op_select_ge_scalar(__gm__ float* x, __gm_
     asc_copy_gm2ub(buf_1, y, 1, 256, 0, 0);
     asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);
     asc_sync_wait(PIPE_MTE2, PIPE_V, EVENT_ID0);
-    select_ge_scalar_vf(buf_0, buf_1, buf_2, 64, 1f);
+    select_ge_scalar_vf(buf_0, buf_1, buf_2, 64, 1.0f);
     asc_sync_notify(PIPE_V, PIPE_MTE3, EVENT_ID0);
     asc_sync_wait(PIPE_V, PIPE_MTE3, EVENT_ID0);
     asc_copy_ub2gm(z, buf_2, 1, 256, 0, 0);

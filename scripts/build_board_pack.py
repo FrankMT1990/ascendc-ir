@@ -158,7 +158,7 @@ for op in ("abs", "ceil", "exp", "floor", "ln", "log", "neg", "not", "relu", "ri
     SPECS.append({
         "name": op,
         "kind": "unary",
-        "token": f"asc_{op}(",
+        "token": "asc_ln(" if op == "log" else f"asc_{op}(",
         "src": _unary(op, "f32", _call(op, "z_local, x_local")),
         "sig": "f32->f32",
     })

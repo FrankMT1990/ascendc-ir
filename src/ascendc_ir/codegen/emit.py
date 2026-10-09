@@ -640,20 +640,31 @@ class _Emitter:
         row_stride = int(stmt.scalars[2]) if len(stmt.scalars) > 2 else cols
         if stmt.form in {"nd2nz", "dn2nz", "l12l0a", "l12l0b"} and stmt.dst.buffer.dtype is not DType.f16:
             raise CodegenError(f"{stmt.form} 这一批只生成 f16；f32 的 K 方向粒度不同，不能套用")
-        if stmt.form in {"nd2nz", "dn2nz"}:
+        if stmt.form == "nd2nz":
+            # CANN 9.1.0 的 10 参形式：行距单位是元素，目的步长写在参数里。
+            lines = self._war_wait(stmt.dst.buffer, k, signature, waited)
+            dst = self._buf_ptr(stmt.dst, k)
+            src = self._gm_ptr(stmt.src, j, 0, k, i_value)
+            c0 = (rows + 15) // 16 * 16
+            if not 1 <= row_stride <= 65535 or not 1 <= c0 <= 16384:
+                raise CodegenError(f"nd2nz 的行距 {row_stride} 或 c0 步长 {c0} 超出 uint16")
+            lines.append(
+                f"asc_copy_gm2l1_nd2nz({dst}, {src}, 1, {rows}, {cols}, 0, {row_stride}, {c0}, 1, 0);"
+            )
+            return lines
+        if stmt.form == "dn2nz":
+            # 没有 10 参形式。9.1.0 的 L2 模式是 uint8，1 表示 NORMAL。
             lines = self._war_wait(stmt.dst.buffer, k, signature, waited)
             dst = self._buf_ptr(stmt.dst, k)
             src = self._gm_ptr(stmt.src, j, 0, k, i_value)
             aligned = (rows + 15) // 16 * 16
             config = (aligned << 32) | (1 << 16) | 1
             stride = row_stride * stmt.dst.buffer.dtype.nbytes
-            fn = "asc_copy_gm2l1_nd2nz" if stmt.form == "nd2nz" else "asc_copy_gm2l1_dn2nz"
             lines.extend(
                 [
                     f"asc_set_gm2l1_nz_para({config}ULL);",
-                    f"{fn}("
-                    f"{dst}, {src}, {stride}ULL, asc_load_l2_cache_mode::NORMAL_FIRST_VICTIM, "
-                    f"{rows}, {cols}, 0, false);",
+                    "asc_copy_gm2l1_dn2nz("
+                    f"{dst}, {src}, {stride}ULL, 1, {rows}, {cols}, 0, false);",
                 ]
             )
             return lines
@@ -674,12 +685,10 @@ class _Emitter:
         if stmt.form == "l0c2gm":
             src_stride = (rows + 15) // 16 * 16
             return [
-                "asc_set_l0c_copy_nz_para(1, 0, 0);",
+                "asc_set_l0c2gm_nz2nd(1, 0, 0);",
                 "asc_copy_l0c2gm("
                 f"{self._gm_ptr(stmt.dst, j, 1, k, i_value)}, {self._buf_ptr(stmt.src, k)}, "
-                f"{cols}, {rows}, {cols}, {src_stride}, asc_store_l2_cache_mode::NORMAL_FIRST_VICTIM, "
-                "asc_unit_flag_mode::DISABLE, QuantMode_t::NoQuant, asc_relu_pre_mode::NONE, "
-                "false, true, false, false);",
+                f"{cols}, {rows}, {cols}, {src_stride}, 0, 0, 0, false, true);",
             ]
         raise CodegenError(f"没有 {stmt.form} 的降级")
 
@@ -696,7 +705,7 @@ class _Emitter:
         lines.append(
             "asc_mmad("
             f"{self._buf_ptr(stmt.dst, k)}, {self._buf_ptr(stmt.srcs[0], k)}, {self._buf_ptr(stmt.srcs[1], k)}, "
-            f"{m_dim}, {k_dim}, {n_dim}, asc_unit_flag_mode::DISABLE, true, false, {init_c});"
+            f"{m_dim}, {k_dim}, {n_dim}, 0, true, false, {init_c});"
         )
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
@@ -746,7 +755,7 @@ class _Emitter:
         if integer:
             literal = str(int(stmt.scalars[0]))
         else:
-            literal = f"{float(stmt.scalars[0]):.9g}f"
+            literal = _f32_literal(stmt.scalars[0])
         lines = self._war_wait(dst.buffer, k, signature, waited)
         lines.append(
             f"{stmt.op}_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems}, {literal});"
@@ -818,7 +827,7 @@ class _Emitter:
         lines = self._war_wait(dst.buffer, k, signature, waited)
         lines.append(
             f"{stmt.op}_vf({self._buf_ptr(src0, k)}, {self._buf_ptr(src1, k)}, "
-            f"{self._buf_ptr(dst, k)}, {dst.buffer.elems}, {value:.9g}f);"
+            f"{self._buf_ptr(dst, k)}, {dst.buffer.elems}, {_f32_literal(value)});"
         )
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
@@ -833,7 +842,7 @@ class _Emitter:
         self._require_vl(dst)
         value = float(stmt.scalars[0])
         lines = self._war_wait(dst.buffer, k, signature, waited)
-        lines.append(f"duplicate_vf({self._buf_ptr(dst, k)}, {dst.buffer.elems}, {value:.9g}f);")
+        lines.append(f"duplicate_vf({self._buf_ptr(dst, k)}, {dst.buffer.elems}, {_f32_literal(value)});")
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
 
@@ -848,7 +857,7 @@ class _Emitter:
         self._require_vl(dst)
         start = float(stmt.scalars[0])
         lines = self._war_wait(dst.buffer, k, signature, waited)
-        lines.append(f"arange_vf({self._buf_ptr(dst, k)}, {dst.buffer.elems}, {start:.9g}f);")
+        lines.append(f"arange_vf({self._buf_ptr(dst, k)}, {dst.buffer.elems}, {_f32_literal(start)});")
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
 
@@ -885,7 +894,7 @@ class _Emitter:
         alpha = float(stmt.scalars[0])
         lines = self._war_wait(dst.buffer, k, signature, waited)
         lines.append(
-            f"leakyrelu_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems}, {alpha:.9g}f);"
+            f"leakyrelu_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems}, {_f32_literal(alpha)});"
         )
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
@@ -998,7 +1007,7 @@ def _reg_helper(op: str, kind: str, c_dtype: str = "f32") -> str:
             "    for (uint16_t i = 0; i < repeat_time; ++i) {\n"
             "        vmask = asc_update_mask_b32(data_len);\n"
             "        asc_load(reg_src, src + i * one_rep_size);\n"
-            f"        asc_{op}(reg_dst, reg_src, vmask);\n"
+            f"        asc_{'ln' if op == 'log' else op}(reg_dst, reg_src, vmask);\n"
             "        asc_store(dst + i * one_rep_size, reg_dst);\n"
             "    }\n"
             "}"
@@ -1021,6 +1030,14 @@ def _reg_helper(op: str, kind: str, c_dtype: str = "f32") -> str:
         "    }\n"
         "}"
     )
+
+
+def _f32_literal(value: float) -> str:
+    """bisheng 不接受 0f/1f/3f。整数值必须写成 0.0f/1.0f/3.0f。"""
+    text = f"{float(value):.9g}"
+    if "." not in text and "e" not in text.lower():
+        text += ".0"
+    return text + "f"
 
 
 def _burst(buf) -> int:
