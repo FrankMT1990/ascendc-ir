@@ -376,7 +376,7 @@
    "c1-ctl-5"
   ]
  },
- "notes": "steps 1-4 sealed; step 5 prep done (task book draft + pilot/run ids). Pilot execution channel and info-alignment sign-off pending owner decision; no formal package until B is written back.",
+ "notes": "pilot-1 (IR arm) executed: 7/7 gate pass, board 7/7. Awaiting Cursor UI token reading for T. pilot-2 (ctl arm) next.",
  "t_sealed": {
   "sealed_at": "2026-10-09",
   "method": "cann-bench PerfEvaluator (ACL launch + msprof kernel_details.csv, MsProfSummaryStrategy, warmup 5 repeat 20)",
@@ -464,5 +464,30 @@
   "reading": "T = completion_tokens (option 1 of claims v2.5.8); no separate tool-return key exists in the provider usage mapping (opencode stores tokens: {input, output, reasoning, cache{read,write}}; tool results are counted as subsequent-round input), therefore no key to name",
   "usage_source": "opencode SQLite (opencode.db, message.data.tokens.output), extracted by evals/c1/runner/extract_usage.py and archived with hash",
   "B": "3 x max(first-correct T of first two successful pilots by submission time)"
+ },
+ "pilots": {
+  "c1-pilot-1": {
+   "arm": "ir",
+   "executed_at": "2026-10-10",
+   "agent_env": "Cursor on remote machine, GLM model, clean context, lab via orphan branch c1-lab-ir (zip)",
+   "restore_verification": "pasted code lost indentation; mechanically restored (4/8-space); correctness evidenced by codegen line-count match 7/7 (87/173/262/296/119/206/127) + verify clean",
+   "scan": "ir_escape 7/7 clean",
+   "gate": "7/7 pass (timing+boundary groups)",
+   "board_used": 7,
+   "t_best_us": {
+    "exp_f32": 544.91,
+    "sigmoid_f32": 1833.38,
+    "gelu_f32": 80927.22,
+    "mish_f32": 5057.16,
+    "masked_scale_f32": 604.19,
+    "swi_glu_f32": 3639.86,
+    "foreach_addcdiv_f32": 738.78
+   },
+   "record": "evals/c1/runner/pilot1_record.json",
+   "sources": "evals/c1/pilot/pilot1_ir/*.py",
+   "T_completion_tokens": null,
+   "T_note": "Cursor agent cannot read usage stats; awaiting owner to read session token total from Cursor UI; metering downgrade to be recorded (no provider usage raw text)",
+   "status": "success_pending_T"
+  }
  }
 }
