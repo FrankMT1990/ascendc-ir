@@ -457,5 +457,12 @@
   "D_run_scope": "一个 run = 一次会话完成全部 7 任务；pilot-1 = IR 臂，pilot-2 = 对照臂；R=5 的任务级名额由 5 run x 7 任务铺满",
   "E_token_reading": "T = run 截至首次全部 7 任务数值门通过时的会话累计 completion_tokens；工具回传键名待 runner 的 provider usage 结构核实后在第一份试点发出前写死",
   "F_package_channel": "GitHub 分支收包，commit 时间为提交时间戳；收包记录留在上板环境并同步进仓"
+ },
+ "token_reading_final": {
+  "sealed_at": "2026-10-10",
+  "T": "sum of assistant tokens.output over the experiment session(s) of the run, up to the moment the board environment confirms all 7 tasks pass the numeric gate",
+  "reading": "T = completion_tokens (option 1 of claims v2.5.8); no separate tool-return key exists in the provider usage mapping (opencode stores tokens: {input, output, reasoning, cache{read,write}}; tool results are counted as subsequent-round input), therefore no key to name",
+  "usage_source": "opencode SQLite (opencode.db, message.data.tokens.output), extracted by evals/c1/runner/extract_usage.py and archived with hash",
+  "B": "3 x max(first-correct T of first two successful pilots by submission time)"
  }
 }
