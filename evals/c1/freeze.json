@@ -350,7 +350,7 @@
   "status": "untested",
   "reason": "level1 has no generatable Cube task (no matmul-class task in level1)"
  },
- "budget_B": null,
+ "budget_B": 438000,
  "budget_rule": "claims.md v2.8: B = 3 x max(first-correct completion_tokens of first two successful pilots)",
  "pilot_ids": [
   "pilot-1",
@@ -447,7 +447,8 @@
   "task_book": "evals/c1/task_book.md (v1.0 frozen, sha256 36137f5686d990c3bffbd657c7dc9ae685691acb35dad3cf50bc46ceb9fcffee)",
   "rule": "B = 3 x max(first-correct completion_tokens of first two successful pilots, by submission time); pilots excluded from R=5; up to 4 extra pilots if fewer than 2 succeed, all archived, no cherry-picking; task book/tolerance/scans frozen during pilots; <=20 board runs per run",
   "token_reading": "T = completion_tokens + tool-return tokens; exact tool key name to be fixed and sealed with usage hash before formal runs",
-  "scaffold": "evals/c1/runner/ (harness, frozen before first pilot per claims)"
+  "scaffold": "evals/c1/runner/ (harness, frozen before first pilot per claims)",
+  "status": "B sealed; formal C1 (5 runs per arm) may be dispatched after this commit; ctl-arm pilot still recommended before formal runs as feasibility + T3 reference"
  },
  "owner_decisions": {
   "decided_at": "2026-10-09",
@@ -499,8 +500,13 @@
    "board_used": 7,
    "T_output_precise_so_far": 89967,
    "T_metering": "opencode.db tokens.output precise (extract_usage.py); includes only pre-repair work",
-   "status": "pending_swi_glu_fix (not a successful pilot yet)",
-   "record": "evals/c1/runner/pilot_local_ir_record.json"
+   "status": "success (after one repair round)",
+   "record": "evals/c1/runner/pilot_local_ir_record.json",
+   "T_output_precise": 93609,
+   "repair_round": "swi_glu flat-half -> row-wise per revised task book; repair delivery byte-verified against workspace (diff vs Cursor version: docstring only); fix1 run 7/7 gate pass",
+   "board_used_total": 14,
+   "fix_record": "evals/c1/runner/pilot_local_ir_fix1_record.json",
+   "submission_order": 2
   }
  },
  "task_book_revision": {
@@ -517,5 +523,15 @@
    ]
   ],
   "impact_on_executed_runs": "none: pilot-1 (Cursor) used row-wise semantics and passed; pilot-local-ir failed swi_glu on the flat reading, consistent with the contradiction"
+ },
+ "budget_B_detail": {
+  "computed_at": "2026-10-10",
+  "first_two_successful_pilots": [
+   "c1-pilot-1 (Cursor, IR arm, T=146000 wide-scope UI reading)",
+   "c1-pilot-local-ir (opencode, IR arm, T=93609 precise output)"
+  ],
+  "formula": "B = 3 x max(T1, T2) = 3 x 146000 = 438000",
+  "metering_note": "T1 is Cursor UI session total (input+output mixed, wide scope); T2 is precise completion_tokens. Taking max keeps B on the wide/safe side.",
+  "caveat": "ctl-arm pilot (c1-pilot-2), if run after this point, contributes an archived T3 that does not enter B per the first-two rule; if the ctl arm proves more token-hungry than B, formal ctl runs may see >B censoring — recorded here as a known risk accepted by the owner"
  }
 }
