@@ -1,0 +1,29 @@
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
+# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+# CANN Open Software License Agreement Version 2.0 (the "License").
+# Please refer to the License for details. You may not use this file except in compliance with the License.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# See LICENSE in the root of the software repository for the full text of the License.
+
+"""AscendC-IR：CANNBot 友好的显式物理 schedule 表示（Python 嵌入式）。"""
+
+from .model.core import DType, f16, f32, i32, u8
+from .trace.api import gmptr, l0a, l0b, l0c, l1buf, sync, ubuf
+from .trace.decorators import kernel
+
+__all__ = [
+    "DType",
+    "f16",
+    "f32",
+    "i32",
+    "u8",
+    "gmptr",
+    "kernel",
+    "l0a",
+    "l0b",
+    "l0c",
+    "l1buf",
+    "sync",
+    "ubuf",
+]

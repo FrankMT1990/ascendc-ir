@@ -1,0 +1,39 @@
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
+# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+# CANN Open Software License Agreement Version 2.0 (the "License").
+# Please refer to the License for details. You may not use this file except in compliance with the License.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# See LICENSE in the root of the software repository for the full text of the License.
+
+[device]
+id = "ascend950pr"
+npu_arch = 3510
+
+# 数值来源：cannbot-knowledge 架构卡
+# （knowledge/ops/triton/apis/ir/architecture/memory_hierarchy.md、
+#   knowledge/ops/triton/apis/ir/architecture/npu_hardware_overview.md）
+# 不变量 4 待完全满足：以 asc-devkit 头文件/官方文档逐字段核对后替换为头文件链接。
+[memory]
+ub_usable_bytes = 253952    # 248KB；物理 256KB，编译器预留 8KB
+l1_bytes = 524288           # 512KB
+l0a_bytes = 65536            # 64KB，910_95/950PR
+l0b_bytes = 65536            # 64KB
+l0c_bytes = 262144           # 256KB，950 的 L0C
+l0_align_bytes = 512         # L0A/L0B/L0C
+align_bytes = 32
+
+[pipes]
+available = ["s", "v", "m", "mte1", "mte2", "mte3", "fix"]
+# event id 按 (生产PIPE, 消费PIPE) 对独立：每对各有 event_ids 个可用 id。
+# 证据：官方 c_api_delicacy_async_add 样例在四条通道上共用 EVENT_ID0。
+event_ids = 8
+
+[pathways]
+"gm->ubuf" = "mte2"
+"ubuf->gm" = "mte3"
+"ubuf->ubuf" = "v"
+"gm->l1" = "mte2"
+"l1->l0a" = "mte1"
+"l1->l0b" = "mte1"
+"l0c->gm" = "fix"

@@ -1,0 +1,5108 @@
+{
+  "catalog_count": 696,
+  "roles": [
+    {
+      "name": "abs",
+      "role": "lowered",
+      "samples": [
+        "abs.asc",
+        "asc_abs.md",
+        "elu.asc"
+      ],
+      "basic_api": "Abs",
+      "pattern": "基础 API Abs 与 asc_abs 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_abs(dst, src, mask)；asc_store。调度：v.abs(dst, src)。"
+    },
+    {
+      "name": "abs_sub",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_abs_sub.md"
+      ],
+      "basic_api": "AbsSub_ISASI"
+    },
+    {
+      "name": "add",
+      "role": "lowered",
+      "samples": [
+        "add_double_buffer.asc",
+        "asc_add.md",
+        "asc_lock.md"
+      ],
+      "basic_api": "Add",
+      "pattern": "基础 API Add 与 asc_add 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 f32 源；asc_add(dst, src0, src1, mask)；asc_store。调度：v.add(dst, src0, src1)。"
+    },
+    {
+      "name": "add_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_add_scalar.md",
+        "elu.asc",
+        "gather_and_adds.asc"
+      ],
+      "basic_api": "Adds",
+      "pattern": "基础 API Adds 与 asc_add_scalar 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_add_scalar(dst, src, scalar, mask)；asc_store。调度：v.add_scalar(dst, src, scalar)。"
+    },
+    {
+      "name": "addc",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_addc.md"
+      ],
+      "basic_api": "AddC"
+    },
+    {
+      "name": "and",
+      "role": "lowered",
+      "samples": [
+        "asc_and.md",
+        "asc_and_deprecated.md",
+        "floor_mod.asc"
+      ],
+      "basic_api": "And",
+      "pattern": "基础 API And 与 asc_and 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 f32 源；asc_and(dst, src0, src1, mask)；asc_store。调度：v.and(dst, src0, src1)。"
+    },
+    {
+      "name": "arange",
+      "role": "lowered",
+      "samples": [
+        "arange.asc",
+        "asc_arange.md"
+      ],
+      "basic_api": "Arange",
+      "pattern": "基础 API Arange 与 asc_arange 是同一条指令。调度：v.arange(dst, start)，无源向量。VF：asc_create_mask_b32(PAT_ALL)；每段 asc_arange(dst, start) 后 asc_storealign；start 增加本段 f32 个数。"
+    },
+    {
+      "name": "arange_descend",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_arange.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "axpy",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_axpy.md"
+      ],
+      "basic_api": "Axpy"
+    },
+    {
+      "name": "bfloat162e1m2x2_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rd_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rd_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rd_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162e1m2x2.md",
+        "asc_bfloat162e1m2x2_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rn_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rn_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rna_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rna_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_ru_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_ru_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rz_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e1m2x2_rz_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rd_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rd_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rd_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162e2m1x2.md",
+        "asc_bfloat162e2m1x2_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rn_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rn_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rna_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rna_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_ru_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_ru_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rz_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162e2m1x2_rz_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162float",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162float.md",
+        "asc_bfloat162float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162float_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_rd_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162half.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162half_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rd",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rd_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rd_sat_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rd_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162int32.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rna",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_bfloat162int32.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rna_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_ru_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rz_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "bfloat162int32_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "cast",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": "Cast"
+    },
+    {
+      "name": "ceil",
+      "role": "lowered",
+      "samples": [
+        "asc_ceil.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_ceil(dst, src, mask)；asc_store。调度：v.ceil(dst, src)。"
+    },
+    {
+      "name": "clear_ar_spr",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_clear_ar_spr_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy.md",
+        "mergemode.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l0a",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_gm2l0a.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l0b",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_gm2l0b.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_gm2l1_2d_arch_3510.md",
+        "asc_copy_gm2l1_2d_deprecated.md",
+        "asc_copy_gm2l1_arch_2201.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1_align",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_gm2l1_align.md",
+        "asc_copy_gm2l1_align_deprecated.md",
+        "asc_set_gm2l1_loop1_stride.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1_dn2nz",
+      "role": "lowered",
+      "samples": [
+        "asc_copy_gm2l1_dn2nz.md",
+        "asc_copy_gm2l1_dn2nz_deprecated.md",
+        "asc_copy_l12l0a_mx.md"
+      ],
+      "basic_api": "DataCopy_GMToL1_DN2NZ",
+      "pattern": "基础 API DataCopy_GMToL1_DN2NZ 与 asc_copy_gm2l1_dn2nz 是同一条指令。调度：mte2.dn2nz(gm, l1, rows, cols, row_stride=cols)。先 asc_set_gm2l1_nz_para，再 asc_copy_gm2l1_dn2nz(l1, gm, row_stride*2, 0, rows, cols, 0, false)。"
+    },
+    {
+      "name": "copy_gm2l1_nd2nz",
+      "role": "lowered",
+      "samples": [
+        "asc_copy_gm2l1_highdim_deprecated.md",
+        "asc_copy_gm2l1_highdim_split_arch_3510.md",
+        "asc_copy_gm2l1_nd2nz_arch_2201.md"
+      ],
+      "basic_api": "DataCopy_GMToL1_ND2NZ",
+      "pattern": "基础 API DataCopy_GMToL1_ND2NZ 与 asc_copy_gm2l1_nd2nz 是同一条指令。调度：mte2.nd2nz(gm, l1, rows, cols, row_stride=cols)。仅 f16。3510：先 asc_set_gm2l1_nz_para，再 asc_copy_gm2l1_nd2nz(l1, gm, row_stride*2, 0, rows, cols, 0, false)。第三个参数是字节。L2 模式 0 对应 NORMAL_FIRST_VICTIM。row_stride 大于 cols 时表示 GM 行宽。"
+    },
+    {
+      "name": "copy_gm2l1_pad1",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1_pad2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1_pad3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1_pad4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1_pad5",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1_pad6",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1_pad7",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "copy_gm2l1_pad8",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l0c2gm",
+      "role": "lowered",
+      "samples": [
+        "asc_copy_gm2l1_2d_arch_3510.md",
+        "asc_copy_gm2l1_2d_deprecated.md",
+        "asc_copy_gm2l1_dn2nz.md"
+      ],
+      "basic_api": "DataCopy_L0CToGM",
+      "pattern": "基础 API DataCopy_L0CToGM 与 asc_copy_l0c2gm 是同一条指令。调度：fix.l0c2gm(l0c, gm, rows, cols)。l0c 与 gm 都是 f32，rows 是 M、cols 是 N。asc_set_l0c2gm_nz2nd(1, 0, 0) 后接 21 参 asc_copy_l0c2gm：cols, rows, cols, align16(rows), 0, 0, 0, 0, 0, false, true, 0, 0, false, 0, false, false, false, false。nz2nd 为 true，nz2dn 为 false，写回行优先。"
+    },
+    {
+      "name": "copy_l0c2l1",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l0c2l1.asc",
+        "asc_copy_l0c2l1_arch_2201.md",
+        "asc_copy_l0c2l1_arch_3510.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l0c2ub",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l0c2ub.asc",
+        "asc_copy_l0c2ub.md",
+        "asc_copy_l0c2ub_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12bt",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_gm2l1_highdim_deprecated.md",
+        "asc_copy_gm2l1_highdim_split_arch_3510.md",
+        "asc_copy_gm2l1_sync_highdim_split_arch_3510_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12fb",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l0c2gm.asc",
+        "asc_copy_l0c2l1.asc",
+        "asc_copy_l12fb_arch_2201.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12gm",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12gm.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12l0a",
+      "role": "lowered",
+      "samples": [
+        "asc_copy_gm2l1_2d_arch_3510.md",
+        "asc_copy_gm2l1_2d_deprecated.md",
+        "asc_copy_gm2l1_dn2nz.md"
+      ],
+      "basic_api": "LoadData_2D",
+      "pattern": "基础 API LoadData_2D 与 asc_copy_l12l0a 是同一条指令。调度：mte1.l12l0a(l1, l0a, rows, cols)。仅 f16。asc_copy_l12l0a(l0a, l1, 0, 0, ceil(rows/16), ceil(cols/16), ceil(rows/16), ceil(rows/16))。"
+    },
+    {
+      "name": "copy_l12l0a_mx",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0a_mx.md",
+        "asc_copy_l12l0b_mx.md",
+        "asc_copy_l12l0b_mx_sync_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12l0a_trans",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0a_trans.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12l0a_transpose",
+      "role": "sample_unlowered",
+      "samples": [
+        "load_data_l12l0_950.asc"
+      ],
+      "basic_api": "LoadDataWithTranspose"
+    },
+    {
+      "name": "copy_l12l0b",
+      "role": "lowered",
+      "samples": [
+        "asc_copy_gm2l1_highdim_deprecated.md",
+        "asc_copy_gm2l1_highdim_split_arch_3510.md",
+        "asc_copy_gm2l1_nd2nz_arch_3510.md"
+      ],
+      "basic_api": null,
+      "pattern": "调度：mte1.l12l0b(l1, l0b, rows, cols)。rows 是 N、cols 是这一段 K。asc_copy_l12l0b(l0b, l1, 0, 0, ceil(rows/16), ceil(cols/16), ceil(rows/16), ceil(rows/16))。"
+    },
+    {
+      "name": "copy_l12l0b_mx",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0a_mx.md",
+        "asc_copy_l12l0a_mx_sync_deprecated.md",
+        "asc_copy_l12l0b_mx.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12l0b_sparse",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0b_sparse.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12l0b_trans",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l0c2ub.asc",
+        "asc_copy_l12l0b_trans_arch_2201.md",
+        "asc_copy_l12l0b_trans_arch_3510.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12l0b_transpose",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_gm2l1_2d_arch_3510.md",
+        "asc_copy_gm2l1_2d_deprecated.md",
+        "asc_copy_gm2l1_dn2nz.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12l0c",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0c.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "copy_l12ub",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_gm2l1_align.md",
+        "asc_copy_gm2l1_align_deprecated.md",
+        "asc_copy_gm2l1_align_sync_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "create_iter_reg_b16",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "create_iter_reg_b32",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "create_iter_reg_b8",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "cumulative_histogram_bin0",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_cumulative_histogram.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "cumulative_histogram_bin1",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_cumulative_histogram.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "deintlv",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_deintlv.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "deintlv_b16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_deintlv.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "deintlv_b32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_deintlv.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "deintlv_b8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_deintlv.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "disable_hf32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_disable_hf32.md",
+        "asc_enable_hf32.md",
+        "matmul.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "disable_hif8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_disable_hif8.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "div",
+      "role": "lowered",
+      "samples": [
+        "asc_div.md",
+        "div.asc",
+        "floor_mod.asc"
+      ],
+      "basic_api": "Div",
+      "pattern": "基础 API Div 与 asc_div 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 f32 源；asc_div(dst, src0, src1, mask)；asc_store。调度：v.div(dst, src0, src1)。"
+    },
+    {
+      "name": "duplicate",
+      "role": "lowered",
+      "samples": [
+        "asc_duplicate.md"
+      ],
+      "basic_api": "Duplicate",
+      "pattern": "基础 API Duplicate 与 asc_duplicate 是同一条指令。调度：v.duplicate(dst, scalar)，无源向量。对应指令 asc_duplicate_scalar。VF：asc_update_mask_b32；asc_duplicate_scalar(dst, scalar, mask)；asc_storealign。不 load 源。"
+    },
+    {
+      "name": "duplicate_highest",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_duplicate_highest.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "duplicate_highest_merge",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_duplicate_highest_merge.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "duplicate_merge",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_duplicate_merge.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "duplicate_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_create_mask.md",
+        "asc_cumulative_histogram.md",
+        "asc_duplicate_scalar.md"
+      ],
+      "basic_api": null,
+      "pattern": "与 duplicate 同一条规则：调度名是 v.duplicate，发出的指令是 asc_duplicate_scalar。"
+    },
+    {
+      "name": "duplicate_scalar_merge",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_duplicate_scalar_merge.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "e1m2x22bfloat16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_e1m2x22bfloat16.md",
+        "asc_e1m2x22bfloat16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "e1m2x22bfloat16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "e1m2x22bfloat16_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "e1m2x22bfloat16_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "e2m1x22bfloat16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_e2m1x22bfloat16.md",
+        "asc_e2m1x22bfloat16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "e2m1x22bfloat16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "e2m1x22bfloat16_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "e2m1x22bfloat16_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "e4m32float",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_e4m32float.md",
+        "asc_e4m32float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "e4m32float_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "e4m32float_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "e4m32float_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "e5m22float",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_e5m22float.md",
+        "asc_e5m22float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "e5m22float_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_e5m22float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "e5m22float_v3",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_e5m22float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "e5m22float_v4",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_e5m22float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "enable_fp8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_enable_fp8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "enable_hf32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_disable_hf32.md",
+        "asc_enable_hf32.md",
+        "asc_enable_hf32_trans_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "enable_hf32_trans",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_enable_hf32_trans_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "enable_hif8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_disable_hif8.md",
+        "asc_enable_hif8.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "eq",
+      "role": "lowered",
+      "samples": [
+        "asc_eq.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32 只作尾块；asc_load 两个 f32；asc_eq(cmp, src0, src1, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。比较掩码不进缓冲。调度：v.select_eq(dst, src0, src1)。"
+    },
+    {
+      "name": "eq_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_eq_scalar.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：尾块掩码；asc_load 两个 f32；asc_eq_scalar(cmp, src0, scalar, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。调度：v.select_eq_scalar(dst, src0, src1, scalar)。"
+    },
+    {
+      "name": "exp",
+      "role": "lowered",
+      "samples": [
+        "asc_exp.md",
+        "elu.asc"
+      ],
+      "basic_api": "Exp",
+      "pattern": "基础 API Exp 与 asc_exp 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_exp(dst, src, mask)；asc_store。调度：v.exp(dst, src)。"
+    },
+    {
+      "name": "exp_sub",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_exp_sub.md",
+        "asc_exp_sub_deprecated.md"
+      ],
+      "basic_api": "ExpSub_ISASI"
+    },
+    {
+      "name": "exp_sub_half2float",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_exp_sub.md",
+        "asc_exp_sub_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "exp_sub_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "extract_mask",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_extract_mask.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "fill_l0a",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "fill_l0b",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "fill_l1",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_mmad_mx.md",
+        "matmul.asc",
+        "mmad_mx.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rd",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md",
+        "asc_float2bfloat16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rd_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md",
+        "asc_float2bfloat16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rd_sat_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rd_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rn_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rna",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rna_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rna_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_ru",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_ru_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_ru_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rz",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rz_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2bfloat16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rz_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2bfloat16_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e4m3_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2e4m3.md",
+        "asc_float2e4m3_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2e4m3_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e4m3_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e4m3_rn_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e4m3_rn_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e4m3_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e4m3_rn_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e4m3_rn_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e5m2_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2e5m2.md",
+        "asc_float2e5m2_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2e5m2_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e5m2_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e5m2_rn_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e5m2_rn_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e5m2_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e5m2_rn_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2e5m2_rn_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rd_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rd_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rd_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2half.md",
+        "asc_float2half_deprecated.md",
+        "elu.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rna_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_ro",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2half.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_ro_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_ro_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_ro_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_ru_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rz_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2half_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rh",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rh_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rh_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rh_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rh_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rh_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rh_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rh_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rna",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2hif8.md",
+        "asc_float2hif8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rna_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rna_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rna_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rna_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2hif8_rna_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rd_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rd_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rd_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2int16.md",
+        "asc_float2int16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rna_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "cast.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rna_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_ru_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rz_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int16_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_rd",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2int32.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_rd_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2int32.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_rna",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2int32.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_ru",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2int32.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int32_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rd_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rd_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rd_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_float2int64.md",
+        "asc_float2int64_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rna_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_ru_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rz_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "float2int64_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "floor",
+      "role": "lowered",
+      "samples": [
+        "asc_floor.md",
+        "truncate.asc"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_floor(dst, src, mask)；asc_store。调度：v.floor(dst, src)。"
+    },
+    {
+      "name": "fma",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_fma.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "frequency_histogram_bin0",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_frequency_histogram.md",
+        "histogram.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "frequency_histogram_bin1",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_frequency_histogram.md",
+        "histogram.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "gather",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_gather.md",
+        "gather.asc",
+        "reg_load_gather.asc"
+      ],
+      "basic_api": "Gather"
+    },
+    {
+      "name": "gather_datablock",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_gather_datablock.md",
+        "reg_load_gather.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "ge",
+      "role": "lowered",
+      "samples": [
+        "asc_ge.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32 只作尾块；asc_load 两个 f32；asc_ge(cmp, src0, src1, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。比较掩码不进缓冲。调度：v.select_ge(dst, src0, src1)。"
+    },
+    {
+      "name": "ge_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_ge_scalar.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：尾块掩码；asc_load 两个 f32；asc_ge_scalar(cmp, src0, scalar, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。调度：v.select_ge_scalar(dst, src0, src1, scalar)。"
+    },
+    {
+      "name": "get_l0c2gm_prequant",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_get_l0c2gm_prequant.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "get_l0c2gm_relu",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_get_l0c2gm_relu.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "get_l0c2gm_unitflag",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_get_l0c2gm_unitflag.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "get_mask_spr_b16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_get_mask_spr.md",
+        "asc_set_vector_mask.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "get_mask_spr_b32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_get_mask_spr.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "gt",
+      "role": "lowered",
+      "samples": [
+        "asc_gt.md",
+        "asc_select.md",
+        "compare.asc"
+      ],
+      "basic_api": "Compare",
+      "pattern": "基础 API Compare 与 asc_gt 是同一条指令。VF 循环：asc_update_mask_b32 只作尾块；asc_load 两个 f32；asc_gt(cmp, src0, src1, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。比较掩码不进缓冲。调度：v.select_gt(dst, src0, src1)。"
+    },
+    {
+      "name": "gt_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_gt_scalar.md",
+        "compare.asc",
+        "elu.asc"
+      ],
+      "basic_api": "Compares",
+      "pattern": "基础 API Compares 与 asc_gt_scalar 是同一条指令。VF 循环：尾块掩码；asc_load 两个 f32；asc_gt_scalar(cmp, src0, scalar, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。调度：v.select_gt_scalar(dst, src0, src1, scalar)。"
+    },
+    {
+      "name": "half2bfloat16_rd",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2bfloat16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2bfloat16_rn",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2bfloat16_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2bfloat16_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2bfloat16_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2float",
+      "role": "lowered",
+      "samples": [
+        "asc_half2float.md",
+        "asc_half2float_deprecated.md",
+        "elu.asc"
+      ],
+      "basic_api": null,
+      "pattern": "调度名是 v.cast(dst_f32, src_f16)，两边元素个数相同。发出的不是 asc_cast。VF：vlds(src, ptr, 0, UNPK_B16)；asc_half2float(dst, src, mask)；asc_storealign。不用 asc_loadalign_unpack，也不带 ASC_POSITION_EVEN。"
+    },
+    {
+      "name": "half2float_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2hif8_rh",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2hif8_rh_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2hif8_rh_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2hif8_rh_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2hif8_rna",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2hif8.md",
+        "asc_half2hif8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2hif8_rna_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2hif8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2hif8_rna_sat_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2hif8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2hif8_rna_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2hif8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_rd_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int16_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_rd",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int32.md",
+        "asc_half2int32_deprecated.md",
+        "cast.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_rd_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int32.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_ru",
+      "role": "sample_unlowered",
+      "samples": [
+        "cast.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int32_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rd_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rd_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rd_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rd_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rd_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rd_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rd_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rn",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rn_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rn_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rn_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rn_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rna",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int4x2.md",
+        "asc_half2int4x2_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rna_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rna_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rna_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rna_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rna_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_ru_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_ru_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_ru_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_ru_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_ru_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rz_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rz_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rz_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rz_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int4x2_rz_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rd",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rd_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rd_sat_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rd_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2int8.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rna_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_ru_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rz_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2int8_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rd",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2uint8.md",
+        "asc_half2uint8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rd_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2uint8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rd_sat_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2uint8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rd_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_half2uint8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rn",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rn_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rn_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rna_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rna_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_ru_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_ru_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rz_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rz_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "half2uint8_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "hif82float",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_hif82float.md",
+        "asc_hif82float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "hif82float_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "hif82float_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "hif82float_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "hif82half",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_hif82half.md",
+        "asc_hif82half_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "hif82half_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int162float",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int162float.md",
+        "asc_int162float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int162float_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int162half_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int162half_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int162half.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int162half_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int162half_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int162half_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int162int32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int162int32.md",
+        "asc_int162int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int162int32_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int162uint32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int162uint32.md",
+        "asc_int162uint32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int162uint32_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int162uint8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int162uint8.md",
+        "asc_int162uint8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int162uint8_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int162uint8.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int162uint8_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int162uint8_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322float_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322float_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int322float.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int322float_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322float_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322float_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322int16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int322int16.md",
+        "asc_int322int16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int322int16_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int322int16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int322int16_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322int16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322int64",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int322int64.md",
+        "asc_int322int64_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int322int64_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int322uint16.md",
+        "asc_int322uint16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint16_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int322uint16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint16_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int322uint8.md",
+        "asc_int322uint8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint8_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint8_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint8_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint8_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint8_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint8_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int322uint8_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22bfloat16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int4x22bfloat16.md",
+        "asc_int4x22bfloat16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22bfloat16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22bfloat16_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22bfloat16_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22half",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int4x22half.md",
+        "asc_int4x22half_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22half_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22half_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22half_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22int16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int4x22int16.md",
+        "asc_int4x22int16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22int16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22int16_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int4x22int16_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_rd",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_rd_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int642float.md",
+        "asc_int642float_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_rn_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_rna",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_rna_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_ru",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_ru_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_rz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642float_rz_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int642int32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int642int32.md",
+        "asc_int642int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int642int32_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int642int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int642int32_sat_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int642int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int642int32_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int642int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int82half",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int82half.md",
+        "asc_int82half_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int82half_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int82int16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int82int16.md",
+        "asc_int82int16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int82int16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int82int32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int82int32.md",
+        "asc_int82int32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "int82int32_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int82int32_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "int82int32_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "intlv",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_intlv.md",
+        "data_relayout.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "intlv_b16",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "intlv_b32",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "intlv_b8",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "le",
+      "role": "lowered",
+      "samples": [
+        "asc_le.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32 只作尾块；asc_load 两个 f32；asc_le(cmp, src0, src1, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。比较掩码不进缓冲。调度：v.select_le(dst, src0, src1)。"
+    },
+    {
+      "name": "le_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_le_scalar.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：尾块掩码；asc_load 两个 f32；asc_le_scalar(cmp, src0, scalar, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。调度：v.select_le_scalar(dst, src0, src1, scalar)。"
+    },
+    {
+      "name": "leakyrelu",
+      "role": "lowered",
+      "samples": [
+        "asc_leakyrelu.md",
+        "fused_compute.asc"
+      ],
+      "basic_api": "LeakyRelu",
+      "pattern": "基础 API LeakyRelu 与 asc_leakyrelu 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_leakyrelu(dst, src, scalar, mask)；asc_store。调度：v.leakyrelu(dst, src, scalar)。"
+    },
+    {
+      "name": "ln",
+      "role": "lowered",
+      "samples": [
+        "asc_ln.md"
+      ],
+      "basic_api": "Ln",
+      "pattern": "基础 API Ln 与 asc_ln 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_ln(dst, src, mask)；asc_store。调度：v.ln(dst, src)。"
+    },
+    {
+      "name": "load_image_to_cbuf",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_load_image_to_cbuf.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign",
+      "role": "compiler",
+      "samples": [
+        "abs.asc",
+        "add_double_buffer.asc",
+        "asc_abs.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc",
+      "role": "compiler",
+      "samples": [
+        "reg_load_store_align.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_datablock",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_brc_datablock.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_datablock_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_brc_datablock_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_elem",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_brc_elem.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_elem2datablock",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_brc_elem2datablock.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_elem2datablock_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_brc_elem2datablock_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_elem_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_brc_elem_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_postupdate",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_postupdate_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_postupdate_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_brc_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_datablock_strided",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_datablock_strided.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_deintlv",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_deintlv.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_deintlv_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_deintlv_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_downsample",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_downsample.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_downsample_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_downsample_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_mask",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_mask.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_mask_downsample",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_mask_downsample.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_mask_upsample",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_mask_upsample.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_postupdate",
+      "role": "compiler",
+      "samples": [
+        "asc_int322int16_deprecated.md",
+        "asc_int322int64_deprecated.md",
+        "asc_int322uint16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_unpack",
+      "role": "compiler",
+      "samples": [
+        "asc_loadalign_unpack.md",
+        "cast.asc",
+        "elu.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_unpack4",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_unpack4.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_unpack4_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_unpack4_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_unpack_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_unpack_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_unpack_postupdate_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_v4_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_unpack_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_v1_deprecated.md",
+        "asc_loadalign_v2_deprecated.md",
+        "asc_loadalign_v3_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_upsample",
+      "role": "compiler",
+      "samples": [
+        "asc_loadalign_upsample.md",
+        "reg_load_store_align.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadalign_upsample_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_upsample_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadunalign",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadunalign.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadunalign_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadunalign_postupdate.md",
+        "asc_loadunalign_pre.md",
+        "data_type_definition.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "loadunalign_pre",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadunalign.md",
+        "asc_loadunalign_postupdate.md",
+        "asc_loadunalign_pre.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "log",
+      "role": "lowered",
+      "samples": [
+        "asc_log.md"
+      ],
+      "basic_api": "Log",
+      "pattern": "基础 API Log 与 asc_log 是同一条指令。调度名是 v.log。CANN 9.1.0 的寄存器自然对数是 asc_ln，不是 asc_log。VF 循环与 v.ln 相同：asc_update_mask_b32；asc_load；asc_ln(dst, src, mask)；asc_store。"
+    },
+    {
+      "name": "lt",
+      "role": "lowered",
+      "samples": [
+        "asc_lt.md",
+        "compare.asc"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32 只作尾块；asc_load 两个 f32；asc_lt(cmp, src0, src1, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。比较掩码不进缓冲。调度：v.select_lt(dst, src0, src1)。"
+    },
+    {
+      "name": "lt_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_lt_scalar.md",
+        "elu.asc"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：尾块掩码；asc_load 两个 f32；asc_lt_scalar(cmp, src0, scalar, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。调度：v.select_lt_scalar(dst, src0, src1, scalar)。"
+    },
+    {
+      "name": "madd",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_madd.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "mask",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_mask.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "max",
+      "role": "lowered",
+      "samples": [
+        "asc_max.md"
+      ],
+      "basic_api": "Max",
+      "pattern": "基础 API Max 与 asc_max 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 f32 源；asc_max(dst, src0, src1, mask)；asc_store。调度：v.max(dst, src0, src1)。"
+    },
+    {
+      "name": "max_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_max_scalar.md"
+      ],
+      "basic_api": "Maxs",
+      "pattern": "基础 API Maxs 与 asc_max_scalar 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_max_scalar(dst, src, scalar, mask)；asc_store。调度：v.max_scalar(dst, src, scalar)。"
+    },
+    {
+      "name": "min",
+      "role": "lowered",
+      "samples": [
+        "asc_min.md"
+      ],
+      "basic_api": "Min",
+      "pattern": "基础 API Min 与 asc_min 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 f32 源；asc_min(dst, src0, src1, mask)；asc_store。调度：v.min(dst, src0, src1)。"
+    },
+    {
+      "name": "min_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_min_scalar.md"
+      ],
+      "basic_api": "Mins",
+      "pattern": "基础 API Mins 与 asc_min_scalar 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_min_scalar(dst, src, scalar, mask)；asc_store。调度：v.min_scalar(dst, src, scalar)。"
+    },
+    {
+      "name": "mmad",
+      "role": "lowered",
+      "samples": [
+        "asc_copy_gm2l1_2d_arch_3510.md",
+        "asc_copy_gm2l1_2d_deprecated.md",
+        "asc_copy_gm2l1_dn2nz.md"
+      ],
+      "basic_api": "Mmad",
+      "pattern": "基础 API Mmad 与 asc_mmad 是同一条指令。调度：m.mmad(l0c, l0a, l0b, m, k, n, init)。A/B 为 f16，L0C 为 f32。B 按 (n, k) 存放，结果是 A @ B.T。asc_mmad(l0c, l0a, l0b, m, k, n, 0, true, false, init)。unit flag 用整数 0。K 分块时第 0 轮 init 为真，其后为假，并且在累加前发 asc_sync_pipe(PIPE_M)。"
+    },
+    {
+      "name": "mmad_mx",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0a_mx.md",
+        "asc_copy_l12l0a_mx_sync_deprecated.md",
+        "asc_copy_l12l0b_mx.md"
+      ],
+      "basic_api": "MmadMx"
+    },
+    {
+      "name": "mmad_s4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "mmad_sparse",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_mmad_sparse.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "mul",
+      "role": "lowered",
+      "samples": [
+        "add_double_buffer.asc",
+        "asc_mul.md",
+        "elu.asc"
+      ],
+      "basic_api": "Mul",
+      "pattern": "基础 API Mul 与 asc_mul 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 f32 源；asc_mul(dst, src0, src1, mask)；asc_store。调度：v.mul(dst, src0, src1)。"
+    },
+    {
+      "name": "mul_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_icache_preload.md",
+        "asc_mul_scalar.md",
+        "elu.asc"
+      ],
+      "basic_api": "Muls",
+      "pattern": "基础 API Muls 与 asc_mul_scalar 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_mul_scalar(dst, src, scalar, mask)；asc_store。调度：v.mul_scalar(dst, src, scalar)。"
+    },
+    {
+      "name": "mul_scalar_float2half_rn",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_mul_scalar_float2half_rn.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "mula",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_mula.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "mull",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_mull.md"
+      ],
+      "basic_api": "Mull_ISASI"
+    },
+    {
+      "name": "muls",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_muls_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "muls_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "ne",
+      "role": "lowered",
+      "samples": [
+        "asc_ne.md",
+        "floor_mod.asc"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32 只作尾块；asc_load 两个 f32；asc_ne(cmp, src0, src1, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。比较掩码不进缓冲。调度：v.select_ne(dst, src0, src1)。"
+    },
+    {
+      "name": "ne_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_ne_scalar.md",
+        "floor_mod.asc"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：尾块掩码；asc_load 两个 f32；asc_ne_scalar(cmp, src0, scalar, tail)；asc_select(dst, src0, src1, cmp)；asc_storealign。调度：v.select_ne_scalar(dst, src0, src1, scalar)。"
+    },
+    {
+      "name": "neg",
+      "role": "lowered",
+      "samples": [
+        "asc_neg.md",
+        "data_type_definition.md"
+      ],
+      "basic_api": "Neg_ISASI",
+      "pattern": "基础 API Neg_ISASI 与 asc_neg 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_neg(dst, src, mask)；asc_store。调度：v.neg(dst, src)。"
+    },
+    {
+      "name": "not",
+      "role": "lowered",
+      "samples": [
+        "asc_not.md"
+      ],
+      "basic_api": "Not",
+      "pattern": "基础 API Not 与 asc_not 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_not(dst, src, mask)；asc_store。调度：v.not(dst, src)。"
+    },
+    {
+      "name": "or",
+      "role": "lowered",
+      "samples": [
+        "asc_or.md",
+        "asc_or_deprecated.md"
+      ],
+      "basic_api": "Or",
+      "pattern": "基础 API Or 与 asc_or 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 f32 源；asc_or(dst, src0, src1, mask)；asc_store。调度：v.or(dst, src0, src1)。"
+    },
+    {
+      "name": "pack",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_pack_deprecated.md"
+      ],
+      "basic_api": "Pack"
+    },
+    {
+      "name": "pack_to_high",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_pack_to_high.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "pack_to_low",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_pack_to_low.md",
+        "data_relayout.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "pack_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_pack_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "pair_reduce_sum",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_pair_reduce_sum.md",
+        "reduce_pair.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "prefetch_gm2l2cache",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "prefetch_gm2l2cache_dn2nz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "prefetch_gm2l2cache_nd2nz",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "prefetch_stop",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "prelu",
+      "role": "lowered",
+      "samples": [
+        "asc_prelu.md"
+      ],
+      "basic_api": "Prelu_ISASI",
+      "pattern": "基础 API Prelu_ISASI 与 asc_prelu 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 f32 源；asc_prelu(dst, src0, src1, mask)；asc_store。调度：v.prelu(dst, src0, src1)。"
+    },
+    {
+      "name": "reduce_max",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": "ReduceMax"
+    },
+    {
+      "name": "reduce_max_datablock",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_reduce_max_datablock.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "reduce_min",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": "ReduceMin"
+    },
+    {
+      "name": "reduce_min_datablock",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_reduce_min_datablock.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "reduce_sum",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_reduce_sum.md",
+        "reduce.asc"
+      ],
+      "basic_api": "ReduceSum"
+    },
+    {
+      "name": "reduce_sum_datablock",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_reduce_sum_datablock.md",
+        "reduce_block.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "relu",
+      "role": "lowered",
+      "samples": [
+        "asc_relu.md"
+      ],
+      "basic_api": "Relu",
+      "pattern": "基础 API Relu 与 asc_relu 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_relu(dst, src, mask)；asc_store。调度：v.relu(dst, src)。"
+    },
+    {
+      "name": "rint",
+      "role": "lowered",
+      "samples": [
+        "asc_rint.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_rint(dst, src, mask)；asc_store。调度：v.rint(dst, src)。"
+    },
+    {
+      "name": "round",
+      "role": "lowered",
+      "samples": [
+        "asc_round.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_round(dst, src, mask)；asc_store。调度：v.round(dst, src)。"
+    },
+    {
+      "name": "scatter",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_scatter.md",
+        "asc_scatter_deprecated.md"
+      ],
+      "basic_api": "Scatter_ISASI"
+    },
+    {
+      "name": "select",
+      "role": "lowered",
+      "samples": [
+        "asc_eq.md",
+        "asc_eq_scalar.md",
+        "asc_ge.md"
+      ],
+      "basic_api": "Select",
+      "pattern": "基础 API Select 与 asc_select 是同一条指令。调度：v.select(dst, src0, src1, mask)。mask 是 ubuf 上的 u8，字节数 = f32 个数 * 4 / 8。VF：asc_loadalign 两个 f32；asc_loadalign_postupdate 载入掩码（步进 vf_len/8）；asc_select(dst, src0, src1, 该掩码)；asc_storealign 用 asc_create_mask_b32(PAT_ALL)。不用 asc_update_mask_b32 当选择条件。"
+    },
+    {
+      "name": "set_fp32_mode",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_fp32_mode_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_gm2l1_loop1_stride",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_gm2l1_loop1_stride.md",
+        "asc_set_gm2l1_loop2_stride.md",
+        "asc_set_gm2l1_loop_size.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_gm2l1_loop2_stride",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_gm2l1_loop1_stride.md",
+        "asc_set_gm2l1_loop2_stride.md",
+        "asc_set_gm2l1_loop_size.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_gm2l1_loop_size",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_gm2l1_loop1_stride.md",
+        "asc_set_gm2l1_loop2_stride.md",
+        "asc_set_gm2l1_loop_size.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_gm2l1_nz_para",
+      "role": "compiler",
+      "samples": [
+        "asc_copy_gm2l1_dn2nz.md",
+        "asc_copy_gm2l1_dn2nz_deprecated.md",
+        "asc_copy_gm2l1_dn2nz_sync_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_gm2l1_pad",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_gm2l1_align.md",
+        "asc_copy_gm2l1_align_deprecated.md",
+        "asc_copy_gm2l1_align_sync_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_gm2l1_padding",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_gm2l1_padding.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_hf32_round_mode",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_disable_hf32.md",
+        "asc_enable_hf32.md",
+        "asc_set_fp32_mode_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c2gm_channel_para",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l0c2gm_channel_para_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c2gm_config",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l0c2gm_config_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c2gm_lrelu_alpha",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l0c2gm_lrelu_alpha_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c2gm_nz2nd",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l0c2gm_nz2nd_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c2gm_quant_post",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l0c2gm_quant_post_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c2gm_relu_alpha",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l0c2gm_relu_alpha_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c_copy_channel_para",
+      "role": "compiler",
+      "samples": [
+        "asc_copy_l0c2gm.asc",
+        "asc_set_l0c_copy_channel_para.md",
+        "mmad_direction.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c_copy_config",
+      "role": "compiler",
+      "samples": [
+        "asc_copy_l0c2gm.asc",
+        "asc_copy_l0c2l1.asc",
+        "asc_set_l0c_copy_config.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c_copy_lrelu_alpha",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l0c_copy_lrelu_alpha.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c_copy_nz_para",
+      "role": "compiler",
+      "samples": [
+        "asc_copy_gm2l1_dn2nz.md",
+        "asc_copy_gm2l1_dn2nz_deprecated.md",
+        "asc_copy_gm2l1_dn2nz_sync_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c_copy_params",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l0c_copy_params.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c_copy_prequant",
+      "role": "compiler",
+      "samples": [
+        "asc_copy_l0c2gm.asc",
+        "asc_copy_l0c2l1.asc",
+        "asc_set_l0c_copy_prequant.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l0c_copy_relu_alpha",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l0c_copy_relu_alpha.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l12l0_padding_val",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l12l0_padding_val_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l12l0a_3d_padding",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0a_3d_arch_3510.md",
+        "asc_copy_l12l0a_sync_3d_arch_3510_deprecated.md",
+        "asc_set_l12l0a_3d_padding.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l12l0b_3d_padding",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0b_3d_arch_3510.md",
+        "asc_copy_l12l0b_sync_3d_arch_3510_deprecated.md",
+        "asc_set_l12l0b_3d_padding.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l13d_fmatrix",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0a_3d_arch_3510.md",
+        "asc_copy_l12l0a_sync_3d_arch_3510_deprecated.md",
+        "asc_set_l12l0a_3d_padding.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l13d_fmatrix_b",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0b_3d_arch_3510.md",
+        "asc_copy_l12l0b_sync_3d_arch_3510_deprecated.md",
+        "asc_set_l12l0b_3d_padding.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l13d_padding",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l13d_padding_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l13d_rpt",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0a_3d_arch_3510.md",
+        "asc_copy_l12l0a_sync_3d_arch_3510_deprecated.md",
+        "asc_set_l12l0a_3d_padding.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l13d_rpt_b",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_copy_l12l0b_3d_arch_3510.md",
+        "asc_copy_l12l0b_sync_3d_arch_3510_deprecated.md",
+        "asc_set_l12l0b_3d_padding.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l13d_size",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_l13d_size.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_l3d_rpt_b",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "set_mmad_direction_m",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_mmad_direction_m.md",
+        "mmad_direction.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "set_mmad_direction_n",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_set_mmad_direction_n.md",
+        "mmad_direction.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "shiftleft",
+      "role": "lowered",
+      "samples": [
+        "asc_shiftleft.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：尾块掩码；asc_load 两个 int32（数据与移位量）；asc_shiftleft(dst, src, shift, mask)；asc_store。调度：v.shiftleft(dst, src, shift)，缓冲为 i32。"
+    },
+    {
+      "name": "shiftleft_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_shiftleft_scalar.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：尾块掩码；asc_load 一个 int32；asc_shiftleft_scalar(dst, src, int_shift, mask)；asc_store。调度：v.shiftleft_scalar(dst, src, shift)，shift 是整数，缓冲为 i32。"
+    },
+    {
+      "name": "shiftright",
+      "role": "lowered",
+      "samples": [
+        "asc_shiftright.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：尾块掩码；asc_load 两个 int32；asc_shiftright(dst, src, shift, mask)；asc_store。调度：v.shiftright(dst, src, shift)，缓冲为 i32。"
+    },
+    {
+      "name": "shiftright_scalar",
+      "role": "lowered",
+      "samples": [
+        "asc_shiftright_scalar.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：尾块掩码；asc_load 一个 int32；asc_shiftright_scalar(dst, src, int_shift, mask)；asc_store。调度：v.shiftright_scalar(dst, src, shift)，缓冲为 i32。"
+    },
+    {
+      "name": "sqrt",
+      "role": "lowered",
+      "samples": [
+        "asc_sqrt.md"
+      ],
+      "basic_api": "Sqrt",
+      "pattern": "基础 API Sqrt 与 asc_sqrt 是同一条指令。VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_sqrt(dst, src, mask)；asc_store。调度：v.sqrt(dst, src)。"
+    },
+    {
+      "name": "squeeze",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_squeeze.md",
+        "squeeze.asc"
+      ],
+      "basic_api": "Squeeze"
+    },
+    {
+      "name": "squeeze_and_storeunalign",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_get_squeeze_status.md",
+        "asc_squeeze_and_storeunalign.md",
+        "asc_squeeze_and_storeunalign_finalize.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "squeeze_and_storeunalign_finalize",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_get_squeeze_status.md",
+        "asc_squeeze_and_storeunalign.md",
+        "asc_squeeze_and_storeunalign_finalize.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "squeeze_and_storeunalign_init",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_get_squeeze_status.md",
+        "asc_squeeze_and_storeunalign.md",
+        "asc_squeeze_and_storeunalign_finalize.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "squeeze_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_squeeze_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "squeeze_with_status",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_clear_ar_spr_deprecated.md",
+        "asc_squeeze_with_status_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign",
+      "role": "compiler",
+      "samples": [
+        "abs.asc",
+        "add_double_buffer.asc",
+        "arange.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_1st",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_1st.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_1st_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_1st_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_intlv",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_intlv.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_pack",
+      "role": "compiler",
+      "samples": [
+        "asc_storealign_pack.md",
+        "cast.asc",
+        "elu.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_pack_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_int322int16_deprecated.md",
+        "asc_int322int64_deprecated.md",
+        "asc_int322uint16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_pack_postupdate_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_v4_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_pack_quarter",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_pack_quarter.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_pack_quarter_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_pack_quarter_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_pack_v2",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_v1_deprecated.md",
+        "asc_storealign_v2_deprecated.md",
+        "asc_storealign_v3_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_postupdate",
+      "role": "compiler",
+      "samples": [
+        "asc_storealign_postupdate.md",
+        "reg_load_store_align.asc",
+        "reg_load_store_mask.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_squeeze_status",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_squeeze_status.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storealign_squeeze_status_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_squeeze_status_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storeunalign",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadunalign.md",
+        "asc_storeunalign.md",
+        "asc_storeunalign_post.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storeunalign_post",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_clear_ar_spr_deprecated.md",
+        "asc_loadunalign.md",
+        "asc_storeunalign.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storeunalign_post_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadunalign_postupdate.md",
+        "asc_loadunalign_pre.md",
+        "asc_storeunalign_post_postupdate.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "storeunalign_postupdate",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_clear_ar_spr_deprecated.md",
+        "asc_loadunalign_postupdate.md",
+        "asc_loadunalign_pre.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "sub",
+      "role": "lowered",
+      "samples": [
+        "asc_sub.md",
+        "floor_mod.asc"
+      ],
+      "basic_api": "Sub",
+      "pattern": "基础 API Sub 与 asc_sub 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 f32 源；asc_sub(dst, src0, src1, mask)；asc_store。调度：v.sub(dst, src0, src1)。"
+    },
+    {
+      "name": "subc",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_subc.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "trunc",
+      "role": "lowered",
+      "samples": [
+        "asc_trunc.md"
+      ],
+      "basic_api": null,
+      "pattern": "VF 循环：asc_update_mask_b32；asc_load 一个 f32 源；asc_trunc(dst, src, mask)；asc_store。调度：v.trunc(dst, src)。"
+    },
+    {
+      "name": "uint162uint32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint162uint32.md",
+        "asc_uint162uint32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint162uint32_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint162uint8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint162uint8.md",
+        "asc_uint162uint8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint162uint8_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint162uint8.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint162uint8_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint162uint8_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322int16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint322int16.md",
+        "asc_uint322int16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint322int16_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint322int16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint322int16_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322int16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint322uint16.md",
+        "asc_uint322uint16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint16_sat",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint322uint16.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint16_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint322uint8.md",
+        "asc_uint322uint8_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint8_sat",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint8_sat_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint8_sat_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint8_sat_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint8_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint8_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint322uint8_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint82half",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint82half.md",
+        "asc_uint82half_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint82half_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint82uint16",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint82uint16.md",
+        "asc_uint82uint16_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint82uint16_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint82uint32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_uint82uint32.md",
+        "asc_uint82uint32_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "uint82uint32_v2",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint82uint32_v3",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "uint82uint32_v4",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "unpack_lower",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_unpack.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "unpack_upper",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_unpack.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "unsqueeze",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_unsqueeze.md"
+      ],
+      "basic_api": "Unsqueeze"
+    },
+    {
+      "name": "unsqueeze_s16",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "unsqueeze_s32",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "unsqueeze_s8",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "unsqueeze_u16",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "unsqueeze_u32",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "unsqueeze_u8",
+      "role": "no_sample",
+      "samples": [],
+      "basic_api": null
+    },
+    {
+      "name": "update_addr_reg_b16",
+      "role": "compiler",
+      "samples": [
+        "asc_storealign_1st.md",
+        "asc_storealign_intlv.md",
+        "reg_load_store_align.asc"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "update_addr_reg_b32",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_storealign_v2_deprecated.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "update_addr_reg_b8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_loadalign_v2_deprecated.md",
+        "asc_update_addr_reg.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "update_mask_b16",
+      "role": "compiler",
+      "samples": [
+        "add_double_buffer.asc",
+        "asc_cumulative_histogram.md",
+        "asc_duplicate_merge.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "update_mask_b32",
+      "role": "compiler",
+      "samples": [
+        "abs.asc",
+        "asc_abs.md",
+        "asc_abs_sub.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "update_mask_b8",
+      "role": "sample_unlowered",
+      "samples": [
+        "asc_cumulative_histogram.md",
+        "asc_hif82half_deprecated.md",
+        "asc_pack_to_high.md"
+      ],
+      "basic_api": null
+    },
+    {
+      "name": "xor",
+      "role": "lowered",
+      "samples": [
+        "asc_xor.md"
+      ],
+      "basic_api": "Xor",
+      "pattern": "基础 API Xor 与 asc_xor 是同一条指令。VF 循环：asc_update_mask_b32 作尾块掩码；asc_load 两个 int32 源；asc_xor(dst, src0, src1, mask)；asc_store。调度：v.xor(dst, src0, src1)，缓冲为 i32。"
+    }
+  ],
+  "counts": {
+    "lowered": 55,
+    "compiler": 16,
+    "sample_unlowered": 251,
+    "no_sample": 374
+  }
+}
