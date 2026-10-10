@@ -444,8 +444,18 @@
  },
  "pilot_plan": {
   "written_at": "2026-10-09",
-  "task_book": "evals/c1/task_book.md (draft v1; info-alignment detail pending owner sign-off, to freeze before first pilot)",
+  "task_book": "evals/c1/task_book.md (v1.0 frozen, sha256 36137f5686d990c3bffbd657c7dc9ae685691acb35dad3cf50bc46ceb9fcffee)",
   "rule": "B = 3 x max(first-correct completion_tokens of first two successful pilots, by submission time); pilots excluded from R=5; up to 4 extra pilots if fewer than 2 succeed, all archived, no cherry-picking; task book/tolerance/scans frozen during pilots; <=20 board runs per run",
-  "token_reading": "T = completion_tokens + tool-return tokens; exact tool key name to be fixed and sealed with usage hash before formal runs"
+  "token_reading": "T = completion_tokens + tool-return tokens; exact tool key name to be fixed and sealed with usage hash before formal runs",
+  "scaffold": "evals/c1/runner/ (harness, frozen before first pilot per claims)"
+ },
+ "owner_decisions": {
+  "decided_at": "2026-10-09",
+  "A_execution_channel": "业主侧干净 Agent 会话；产出推 GitHub 分支（每 run 一分支）；上板环境负责收包/构建/执行/数值门/计时/扫描/归档；usage 原文从 runner 侧截取并封存哈希",
+  "B_info_alignment": "形态对齐、调度不对齐：任务书第 3 节 3510 已验证形态速查两臂同见；调度层（buffer/tile/流水/同步）不提示；超越函数组合方式属调度层",
+  "C_board_counting": "一次上板 = 一次执行尝试；构建（含失败重试）不计；IR 臂本地检查器反馈不占上板——该不对称作为工具链优势如实记录",
+  "D_run_scope": "一个 run = 一次会话完成全部 7 任务；pilot-1 = IR 臂，pilot-2 = 对照臂；R=5 的任务级名额由 5 run x 7 任务铺满",
+  "E_token_reading": "T = run 截至首次全部 7 任务数值门通过时的会话累计 completion_tokens；工具回传键名待 runner 的 provider usage 结构核实后在第一份试点发出前写死",
+  "F_package_channel": "GitHub 分支收包，commit 时间为提交时间戳；收包记录留在上板环境并同步进仓"
  }
 }

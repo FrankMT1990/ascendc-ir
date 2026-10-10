@@ -1,0 +1,85 @@
+{
+ "run_id": "selftest-A",
+ "arm": "ir",
+ "received_at": "2026-10-10T12:57:30.533371+08:00",
+ "package_dir": "/home/w00964611/c1_pkg_A",
+ "board_budget": 20,
+ "board_used": 7,
+ "files": {
+  "exp_f32.py": {
+   "sha256": "02498d3873c23ec87a2b3f3ac529b1de75adab192d449ac81bd6c4cbe056c8f7",
+   "size": 547
+  },
+  "foreach_addcdiv_f32.py": {
+   "sha256": "d85cb2f2ff504285398b50120175ba32ee78cd9da8bfb6ba18c3d82a49957b76",
+   "size": 898
+  },
+  "gelu_f32.py": {
+   "sha256": "ad6b2fa215afeeb808b458fb5b503aaea9935ff4a3a3ebe8c50b0a033cdd7565",
+   "size": 549
+  },
+  "masked_scale_f32.py": {
+   "sha256": "5c23a22e39a8bcb1e84320e38732bdf0502193d8ade832b89c4f9f72522566d5",
+   "size": 729
+  },
+  "mish_f32.py": {
+   "sha256": "af0c7a0170b672c02d9c0ac17f2e4a7b0c8cc83404699a0f07ef839f4c9fee1e",
+   "size": 548
+  },
+  "sigmoid_f32.py": {
+   "sha256": "e935c880f10a2bdfa2f9964816a3f79f64c708e4e5ca7d63214f14c244ede0b3",
+   "size": 551
+  },
+  "swi_glu_f32.py": {
+   "sha256": "e18c6a742d8b0e5829afeeed6b1102baabcccecccd6592f3b8ca0891b5b15e78",
+   "size": 684
+  }
+ },
+ "scan": {
+  "exp_f32.py": false,
+  "foreach_addcdiv_f32.py": false,
+  "gelu_f32.py": false,
+  "masked_scale_f32.py": false,
+  "mish_f32.py": false,
+  "sigmoid_f32.py": false,
+  "swi_glu_f32.py": false
+ },
+ "build": {
+  "ir_errors": {},
+  "ok": true,
+  "wheel": "/home/w00964611/c1_runs/selftest-A/pack/dist/c1run-1.0.0-cp38-abi3-linux_x86_64.whl"
+ },
+ "gate": {
+  "exp_f32": {
+   "timing": "FAIL 4194304 violations, first at 0: |-1.23076-0.157846| > 2.57846e-05",
+   "boundary": "FAIL 4194304 violations, first at 0: |-2-0.0497871| > 1.49787e-05"
+  },
+  "foreach_addcdiv_f32": {
+   "timing": "FAIL 2097045 violations, first at 0: |1.90623-1.07455| > 0.000117455",
+   "boundary": "FAIL 1817532 violations, first at 0: |-1--3| > 0.00031"
+  },
+  "gelu_f32": {
+   "timing": "FAIL 34771269 violations, first at 0: |43.8306-43.8306| > 0.00439306",
+   "boundary": "FAIL 44739244 violations, first at 0: |-100--0| > 1e-05"
+  },
+  "masked_scale_f32": {
+   "timing": "FAIL 4194282 violations, first at 0: |-1.23076--0| > 1e-05",
+   "boundary": "FAIL 1677721 violations, first at 0: |-2--0| > 1e-05"
+  },
+  "mish_f32": {
+   "timing": "FAIL 4194249 violations, first at 0: |-1.23076--0.308651| > 4.08651e-05",
+   "boundary": "FAIL 3595118 violations, first at 0: |-2--0.252501| > 3.52501e-05"
+  },
+  "sigmoid_f32": {
+   "timing": "FAIL 4194091 violations, first at 0: |-1.23076-0.226049| > 3.26049e-05",
+   "boundary": "FAIL 4194304 violations, first at 0: |-2-0.119203| > 2.19203e-05"
+  },
+  "swi_glu_f32": {
+   "timing": "FAIL 4194241 violations, first at 0: |-1.49639--0.35035| > 4.5035e-05",
+   "boundary": "FAIL 4194304 violations, first at 0: |-1.70141e+38--0.119203| > 2.19203e-05"
+  }
+ },
+ "timing": {},
+ "usage_record_slot": null,
+ "passed_tasks": []
+}
