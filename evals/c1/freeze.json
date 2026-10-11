@@ -553,8 +553,9 @@
  "replication_design": {
   "written_at": "2026-10-10 (before first formal package, within the freeze window)",
   "structure": "业主决定双环境复现：本地 opencode 与 Cursor 各自完整跑两臂（每环境内部同模型同客户端同计法，满足 claims '两臂相同'约束）。R=5 的判词组（c1-ir-*/c1-ctl-*）必须单环境；另一环境为复现组（c1r-ir-*/c1r-ctl-*），独立报告不并入判词，方向一致则结论加固，不一致则如实披露。",
-  "primary_group_env": "PENDING_OWNER_CHOICE",
-  "replication_group_env": "PENDING_OWNER_CHOICE",
-  "note": "选择依据：opencode 的 T 精确可查（db），判词组若用 opencode 则 m3/删失计量最严；Cursor 只有界面宽口径读数。rel（性能判词）不依赖 T，主组选择对判词影响有限，主要影响 m3 精度。"
+  "primary_group_env": "local opencode (GLM 5.3 1M, fresh session per run, per-run lab dir D:/develop/c1-runs/<run_id>)",
+  "replication_group_env": "Cursor on owner's remote machine (same model, lab via c1-lab-ir / c1-lab-ctl zips, parameterized prompt per run)",
+  "note": "选择依据：opencode 的 T 精确可查（db），判词组若用 opencode 则 m3/删失计量最严；Cursor 只有界面宽口径读数。rel（性能判词）不依赖 T，主组选择对判词影响有限，主要影响 m3 精度。",
+  "primary_env_rationale": "opencode 的 provider usage 精确可查（db tokens.output），判词组的 m3 与 >B 删失计量最严谨；Cursor 复现组以界面读数做方向参考"
  }
 }
