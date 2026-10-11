@@ -533,5 +533,28 @@
   "formula": "B = 3 x max(T1, T2) = 3 x 146000 = 438000",
   "metering_note": "T1 is Cursor UI session total (input+output mixed, wide scope); T2 is precise completion_tokens. Taking max keeps B on the wide/safe side.",
   "caveat": "ctl-arm pilot (c1-pilot-2), if run after this point, contributes an archived T3 that does not enter B per the first-two rule; if the ctl arm proves more token-hungry than B, formal ctl runs may see >B censoring — recorded here as a known risk accepted by the owner"
+ },
+ "replication_run_ids": {
+  "ir_arm": [
+   "c1r-ir-1",
+   "c1r-ir-2",
+   "c1r-ir-3",
+   "c1r-ir-4",
+   "c1r-ir-5"
+  ],
+  "control_arm": [
+   "c1r-ctl-1",
+   "c1r-ctl-2",
+   "c1r-ctl-3",
+   "c1r-ctl-4",
+   "c1r-ctl-5"
+  ]
+ },
+ "replication_design": {
+  "written_at": "2026-10-10 (before first formal package, within the freeze window)",
+  "structure": "业主决定双环境复现：本地 opencode 与 Cursor 各自完整跑两臂（每环境内部同模型同客户端同计法，满足 claims '两臂相同'约束）。R=5 的判词组（c1-ir-*/c1-ctl-*）必须单环境；另一环境为复现组（c1r-ir-*/c1r-ctl-*），独立报告不并入判词，方向一致则结论加固，不一致则如实披露。",
+  "primary_group_env": "PENDING_OWNER_CHOICE",
+  "replication_group_env": "PENDING_OWNER_CHOICE",
+  "note": "选择依据：opencode 的 T 精确可查（db），判词组若用 opencode 则 m3/删失计量最严；Cursor 只有界面宽口径读数。rel（性能判词）不依赖 T，主组选择对判词影响有限，主要影响 m3 精度。"
  }
 }
