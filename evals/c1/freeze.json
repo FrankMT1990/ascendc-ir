@@ -664,5 +664,12 @@
   "B": 438000,
   "formal_ready": true,
   "observation": "v1.0 知识供给下对照臂 3+3 轮编译失败、IR 臂一次全过——形态知识缺口即工具链价值的主要来源；v1.1（签名表+知识卡）后对照臂一次过。token 量级：IR 臂 93-146K vs 对照臂 146-293K（B=438K 罩住全部试点）"
- }
+ },
+ "formal_execution_mode": {
+  "sealed_at": "2026-10-12",
+  "primary_group": "判词组 10 run 由上板环境 agent 经 Task 工具自动拉起 10 个 fresh-context subagent 执行（业主授权自动化，本消息起生效）。每个 subagent 只见各自 run 目录（D:/develop/c1-runs/<run_id>）内的 lab 材料（AGENTS.md/task_book v1.1/toolchain 或 knowledge），prompt 硬性禁读外部路径。usage 从 opencode.db 按 session 精确提取（已验证 subagent 会话记录完整）；修复轮经 task_id 续接同一会话，T=run 全部会话累计 output——与 pilot-local 系列口径一致。",
+  "isolation_note": "subagent 的目录隔离为 prompt 约束（非物理）；会话工具轨迹存于 db 可事后审计——不合规访问可检出。",
+  "replication_group": "Cursor 侧由业主以编排 prompt 一次性派发 10 个 subagent（各自新上下文、lab zip 隔离），主 agent 汇总交付；token 以界面读数口径。"
+ },
+ "formal_runs": {}
 }
