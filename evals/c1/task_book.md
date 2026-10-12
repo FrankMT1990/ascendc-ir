@@ -32,6 +32,18 @@
 8. `asc_select` 的谓词掩码是 UB 上的**位打包**字节流（字节数 = f32 个数 × 4 / 8），由 `asc_loadalign_postupdate` 装载；比较后选择（`asc_gt` 等 + `asc_select`）的比较掩码留在 VF 寄存器内，不占 UB buffer。
 9. 类型转换只有 half→float 方向的样例形态（`vlds` 带 `UNPK_B16` 解包 + `asc_half2float`）。
 10. 软件流水稳态循环里不能出现 `if` 分支；K 分块累加时首段 init 置真、后续段置假。
+11. **调用约定（一句话规则：所有向量计算 intrinsic 的最后一个参数都是 vmask）**——依据本设备逐位验证过的内核源码：
+    - `asc_load(reg, ptr)` / `asc_store(ptr, reg)`：2 参（store 不带 mask）
+    - 一元（abs/neg/exp/ln/sqrt/floor/ceil/round/rint/trunc/not）：`(dst, src, vmask)` 3 参
+    - 二元（add/sub/mul/div/max/min/and/or/xor/prelu）：`(dst, a, b, vmask)` 4 参
+    - 标量（mul_scalar/add_scalar/max_scalar/min_scalar）：`(dst, src, value, vmask)` 4 参
+    - `asc_duplicate_scalar(dst, value, vmask)` 3 参
+    - 比较（gt/lt/ge/le/eq/ne 及 scalar 版）：`(vector_bool 输出, src[, value], vmask)` 4 参
+    - `asc_select(dst, a, b, mask)`：4 参，**掩码在末位**
+    - `asc_loadalign_postupdate(pred, mask_ptr, mask_rep_size)`：3 参，`mask_rep_size = asc_get_vf_len()/8`
+    - `asc_get_vf_len()` 返回**字节数**（256）；float* 指针步进按元素数（每 vf 块 `vf_len/4` 个 f32）
+12. **`__simd_vf__` 辅助函数的参数只能是 `__ubuf__` 指针（加长度）**——向量寄存器引用不能跨 simd_vf 函数边界；向量计算 intrinsic 收在 vf 函数内部，`__vector__` 内核体只做搬运、同步与调用。
+13. **管线与同步记号**：`PIPE_MTE2`（GM→UB 搬运）、`PIPE_V`（向量计算）、`PIPE_MTE3`（UB→GM 写回）；`PIPE_M` 是矩阵管（本批不用）。跨管同步：`asc_sync_notify(源管, 目标管, EVENT_IDn)` 后接 `asc_sync_wait(源管, 目标管, EVENT_IDn)` 配对。
 
 ## 4. 任务列表与内核签名（冻结自 `evals/c1/freeze.json`）
 
@@ -59,7 +71,14 @@
 
 - 直接写 `.asc`（每任务一个文件）：只写**内核函数**（`__vector__ __global__ __aicore__ void`，GM 参数签名严格按第 4 节）；`extern "C" launch_<task>(...)` 包装与 torch 直调插件由上板环境自动生成。
 - 允许面 = `allowed_surface.json`（本目录，其中的 asc_* 记号 + 搬运/同步原语）；越面候选作废。
+- **API 知识卡**：本目录 `knowledge/`（62 张，来源 cannbot-knowledge，业主决策 2026-10-12 引入）——按符号名查卡确认签名与参数语义；裁决优先级：编译器报错原文 > 本机 CANN 9.1.0 头文件 > 知识卡（存在已知文档漂移，见 `knowledge/README.md`）。
 - 提交物：7 个 `.asc` 文件。
+
+## 版本记录
+
+- v1.0（2026-10-09）：初版冻结。
+- v1.0 修订（2026-10-10）：swi_glu 措辞（平铺→逐行语义，与 golden 一致）；对照臂 launch 由上板环境自动生成。试点间披露，不影响已跑数据。
+- v1.1（2026-10-12）：速查页补第 11–13 条（调用约定权威签名表、simd_vf 边界、管线记号——三轮编译反馈沉淀的形态层知识，两臂同见）；对照臂引入 API 知识卡（业主决策）。**实验定义变更**：对照臂从"裸写+速查页"变为"速查页+知识卡增强的手写 C"，IR 臂不变（工具链即其知识源）。正式 run 未发，无已跑数据受影响。
 
 ## 7. 执行与判分（上板环境执行，Agent 可见流程）
 
