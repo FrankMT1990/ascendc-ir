@@ -376,7 +376,7 @@
    "c1-ctl-5"
   ]
  },
- "notes": "pilot-1 success (T=146K wide-scope UI reading). pilot-local-ir 6/7 pending swi_glu fix. ctl-arm pilot-2 to be dispatched next (c1-lab-ctl orphan branch); B = 3 x max(T of first two successful pilots by submission time).",
+ "notes": "pilot-2 (ctl arm) success after v1.1 knowledge upgrade: 7/7 gate pass, board 7, 3 prior compile rounds on v1.0 documented. B unchanged (438000, first-two rule). Local ctl pilot still in progress. Formal runs ready to dispatch once local ctl pilot lands.",
  "t_sealed": {
   "sealed_at": "2026-10-09",
   "method": "cann-bench PerfEvaluator (ACL launch + msprof kernel_details.csv, MsProfSummaryStrategy, warmup 5 repeat 20)",
@@ -517,6 +517,30 @@
    "board_used_total": 14,
    "fix_record": "evals/c1/runner/pilot_local_ir_fix1_record.json",
    "submission_order": 2
+  },
+  "c1-pilot-2": {
+   "arm": "ctl",
+   "executed_at": "2026-10-12",
+   "agent_env": "Cursor on remote machine (GLM, lab via c1-lab-ctl zip)",
+   "knowledge_source": "task_book v1.1 (cheatsheet 11-13 + 62 API knowledge cards, owner decision F)",
+   "compile_rounds": "3 failed rounds on v1.0 (call convention -> signature table -> simd_vf boundary) before v1.1 upgrade; v1.1 passed first try",
+   "gate": "7/7 pass (timing+boundary groups)",
+   "scan": "control_surface 7/7 clean",
+   "board_used": 7,
+   "t_best_us": {
+    "exp_f32": 863.2,
+    "sigmoid_f32": 909.56,
+    "gelu_f32": 18545.34,
+    "mish_f32": 1258.44,
+    "masked_scale_f32": 877.64,
+    "swi_glu_f32": 2052.64,
+    "foreach_addcdiv_f32": 806.8
+   },
+   "record": "evals/c1/runner/pilot2_ctl_record.json",
+   "sources": "evals/c1/pilot/pilot2_ctl/*.asc + delivery.md",
+   "T_completion_tokens": null,
+   "T_note": "awaiting Cursor UI session reading (arm total, wide scope); T3 archived, does not enter B per first-two-successful-pilots rule",
+   "status": "success_pending_T"
   }
  },
  "task_book_revision": {
