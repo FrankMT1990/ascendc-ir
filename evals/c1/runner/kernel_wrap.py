@@ -22,6 +22,18 @@ _RE_KERNEL = re.compile(
     r"(__vector__\s+)?__global__\s+(__aicore__\s+)?(__vector__\s+)?void\s+(\w+)\s*\(([^)]*)\)", re.S)
 
 
+_TYPE_ALIASES = {
+    "unsigned char": "uint8_t",
+    "unsigned int": "uint32_t",
+    "unsigned short": "uint16_t",
+    "unsigned long": "uint64_t",
+    "char": "int8_t",
+    "short": "int16_t",
+    "int": "int32_t",
+    "long": "int64_t",
+}
+
+
 def parse_kernel(asc_text: str):
     m = _RE_KERNEL.search(asc_text)
     if not m:
@@ -37,6 +49,7 @@ def parse_kernel(asc_text: str):
         for prefix in ("__gm__", "__ubuf__", "__cbuf__", "const "):
             if ty.startswith(prefix):
                 ty = ty[len(prefix):].strip()
+        ty = _TYPE_ALIASES.get(ty, ty)
         params.append((ty + "*", nm.strip()))
     return name, params
 
@@ -291,19 +304,17 @@ def assemble_pack(asc_by_task: dict, pack_dir: Path, pkg="c1run"):
 
 
 def build_pack(pack_dir: Path, log_path: Path):
-    """构建 wheel 并安装（pip）。返回 (ok, wheel_path|None)。"""
+    """构建 wheel 并安装（pip）。返回 (ok, wheel_path|None)。构建输出完整落日志。"""
     r = subprocess.run(
         ["bash", "-c",
          f"cd {pack_dir} && rm -rf build dist {pack_dir.name}/_C.abi3.so && mkdir -p dist && "
-         f"python3 setup.py bdist_wheel --dist-dir dist >/dev/null 2>&1 && "
-         f"pip install --force-reinstall --no-deps dist/*.whl >/dev/null 2>&1"],
+         f"python3 setup.py bdist_wheel --dist-dir dist 2>&1 && "
+         f"pip install --force-reinstall --no-deps dist/*.whl 2>&1"],
         capture_output=True, text=True)
+    log_path.write_text(r.stdout + "\n=== stderr ===\n" + r.stderr, encoding="utf-8")
     if r.returncode != 0:
-        log_path.write_text(r.stdout + "\n" + r.stderr, encoding="utf-8")
         return False, None
     wheels = sorted((pack_dir / "dist").glob("*.whl"))
     if not wheels:
-        log_path.write_text("no wheel produced", encoding="utf-8")
         return False, None
-    log_path.write_text("build ok: " + str(wheels[-1]), encoding="utf-8")
     return True, wheels[-1]

@@ -557,5 +557,19 @@
   "replication_group_env": "Cursor on owner's remote machine (same model, lab via c1-lab-ir / c1-lab-ctl zips, parameterized prompt per run)",
   "note": "选择依据：opencode 的 T 精确可查（db），判词组若用 opencode 则 m3/删失计量最严；Cursor 只有界面宽口径读数。rel（性能判词）不依赖 T，主组选择对判词影响有限，主要影响 m3 精度。",
   "primary_env_rationale": "opencode 的 provider usage 精确可查（db tokens.output），判词组的 m3 与 >B 删失计量最严谨；Cursor 复现组以界面读数做方向参考"
- }
+ },
+ "scaffold_fixes": [
+  {
+   "fixed_at": "2026-10-12",
+   "trigger": "c1-pilot-local-ctl assemble failed: kernel signature [('float*','x'),('unsigned char*','mask'),...] rejected against spec uint8_t*",
+   "fix": "kernel_wrap.parse_kernel 类型别名归一化（unsigned char≡uint8_t 等 C++ typedef 事实），判定逻辑不变",
+   "scope": "对接层 bug，不改数值门/扫描/计量"
+  },
+  {
+   "fixed_at": "2026-10-12",
+   "trigger": "c1-pilot-2 构建失败时 build.log 为空（build_pack 吞掉了全部输出），无法回传编译器原文",
+   "fix": "build_pack 不再重定向到 /dev/null，构建输出完整落日志（任务书第 6 节承诺的编译反馈通道）",
+   "scope": "观测层 bug，不改判分"
+  }
+ ]
 }
