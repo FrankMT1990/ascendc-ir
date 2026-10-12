@@ -538,9 +538,33 @@
    },
    "record": "evals/c1/runner/pilot2_ctl_record.json",
    "sources": "evals/c1/pilot/pilot2_ctl/*.asc + delivery.md",
-   "T_completion_tokens": null,
+   "T_completion_tokens": 293000,
    "T_note": "awaiting Cursor UI session reading (arm total, wide scope); T3 archived, does not enter B per first-two-successful-pilots rule",
-   "status": "success_pending_T"
+   "status": "success (T3 archived, wide-scope Cursor UI reading)"
+  },
+  "c1-pilot-local-ctl": {
+   "arm": "ctl",
+   "executed_at": "2026-10-12",
+   "agent_env": "local opencode session ses_ed70a6355ffel7SLL75kIR6vZt (GLM, clean context, D:/develop/c1-agent-lab-ctl)",
+   "knowledge_source": "task_book v1.1 + knowledge cards",
+   "compile_rounds": "4 rounds: v1.0 call-convention -> signature table -> simd_vf boundary -> v1.1 const/post-update semantics of asc_update_mask_b32 (agent correctly identified the decrement semantics and chose the in-loop classic pattern over the literal const fix, avoiding silent numeric failure)",
+   "gate": "7/7 pass (timing+boundary)",
+   "scan": "control_surface 7/7 clean",
+   "board_used": 7,
+   "t_best_us": {
+    "exp_f32": 1008.98,
+    "sigmoid_f32": 1017.36,
+    "gelu_f32": 21421.08,
+    "mish_f32": 1273.42,
+    "masked_scale_f32": 1017.07,
+    "swi_glu_f32": 1897.41,
+    "foreach_addcdiv_f32": 728.65
+   },
+   "record": "evals/c1/runner/pilot_local_ctl_record.json",
+   "sources": "evals/c1/pilot/pilot_local_ctl/*.asc",
+   "T_output_precise": 146667,
+   "T_metering": "opencode.db tokens.output precise",
+   "status": "success"
   }
  },
  "task_book_revision": {
@@ -609,5 +633,36 @@
    "fix": "build_pack 不再重定向到 /dev/null，构建输出完整落日志（任务书第 6 节承诺的编译反馈通道）",
    "scope": "观测层 bug，不改判分"
   }
- ]
+ ],
+ "pilot_summary": {
+  "completed_at": "2026-10-12",
+  "result": "4/4 pilots successful (2 arms x 2 envs)",
+  "ir_arm": {
+   "cursor": {
+    "rounds": 1,
+    "T": 146000,
+    "scope": "UI total"
+   },
+   "opencode": {
+    "rounds": "1 + 1 repair (swi_glu wording)",
+    "T": 93609,
+    "scope": "precise output"
+   }
+  },
+  "ctl_arm": {
+   "cursor": {
+    "rounds": "3 compile fails on v1.0 + 1 pass on v1.1",
+    "T": 293000,
+    "scope": "UI total"
+   },
+   "opencode": {
+    "rounds": "4 (v1.0 x3 + v1.1 x1)",
+    "T": 146667,
+    "scope": "precise output"
+   }
+  },
+  "B": 438000,
+  "formal_ready": true,
+  "observation": "v1.0 知识供给下对照臂 3+3 轮编译失败、IR 臂一次全过——形态知识缺口即工具链价值的主要来源；v1.1（签名表+知识卡）后对照臂一次过。token 量级：IR 臂 93-146K vs 对照臂 146-293K（B=438K 罩住全部试点）"
+ }
 }
