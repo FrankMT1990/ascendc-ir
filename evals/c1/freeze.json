@@ -697,5 +697,13 @@
    "sources": "evals/c1/formal/c1-ir-1/*.py",
    "status": "complete"
   }
- }
+ },
+ "formal_incidents": [
+  {
+   "at": "2026-10-12, c1-ctl-1 first subagent session",
+   "incident": "判词组 c1-ctl-1..5 目录缺 knowledge/（62 张 API 知识卡）：run 目录生成于知识卡创建之前，task_book v1.1 同步时未一并复制。c1-ctl-1 首个 subagent 会话（ses_ed091ff1fffeIQHZ93fZN26AIC）在无卡条件下基于 v1.1 速查完成交付（形态正确），但其条件与试点（有卡）及其他判词组 run 不一致。",
+   "resolution": "判词组条件一致性优先：补齐 c1-ctl-1..5 的 knowledge/；c1-ctl-1 首次会话作废归档（abort，T 记录不计入判词组），以补卡后的条件重跑 c1-ctl-1",
+   "waste": "aborted session tokens recorded for audit only"
+  }
+ ]
 }
