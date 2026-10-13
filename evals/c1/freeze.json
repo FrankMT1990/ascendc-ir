@@ -707,6 +707,50 @@
    "record": "evals/c1/runner/c1_ctl1_record.json",
    "sources": "evals/c1/formal/c1-ctl-1/*.asc",
    "status": "complete"
+  },
+  "c1-ir-2": {
+   "arm": "ir",
+   "env": "opencode subagent (ses_eccc15e02ffeETUxhVe7QfGnu3)",
+   "executed_at": "2026-10-12",
+   "gate": "7/7 pass first try",
+   "board_used": 7,
+   "T_output_precise": 56684,
+   "record": "evals/c1/runner/c1-ir-2_record.json",
+   "sources": "evals/c1/formal/c1-ir-2/",
+   "status": "complete"
+  },
+  "c1-ir-3": {
+   "arm": "ir",
+   "env": "opencode subagent (ses_eccc0ca2bffePfqpURppwNWR9x)",
+   "executed_at": "2026-10-12",
+   "gate": "7/7 pass first try",
+   "board_used": 7,
+   "T_output_precise": 61550,
+   "record": "evals/c1/runner/c1-ir-3_record.json",
+   "sources": "evals/c1/formal/c1-ir-3/",
+   "status": "complete"
+  },
+  "c1-ctl-2": {
+   "arm": "ctl",
+   "env": "opencode subagent (ses_eccc10dfaffeLRJDAL3fZkSl5I)",
+   "executed_at": "2026-10-12",
+   "gate": "7/7 pass first try",
+   "board_used": 7,
+   "T_output_precise": 66804,
+   "record": "evals/c1/runner/c1-ctl-2_record.json",
+   "sources": "evals/c1/formal/c1-ctl-2/",
+   "status": "complete"
+  },
+  "c1-ctl-3": {
+   "arm": "ctl",
+   "env": "opencode subagent (ses_eccc08375ffeI0aq6yRxQvRVHD)",
+   "executed_at": "2026-10-12",
+   "gate": "7/7 pass first try",
+   "board_used": 7,
+   "T_output_precise": 70583,
+   "record": "evals/c1/runner/c1-ctl-3_record.json",
+   "sources": "evals/c1/formal/c1-ctl-3/",
+   "status": "complete"
   }
  },
  "formal_incidents": [
