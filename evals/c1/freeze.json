@@ -680,5 +680,22 @@
   "isolation_note": "subagent 的目录隔离为 prompt 约束（非物理）；会话工具轨迹存于 db 可事后审计——不合规访问可检出。",
   "replication_group": "Cursor 侧由业主以编排 prompt 一次性派发 10 个 subagent（各自新上下文、lab zip 隔离），主 agent 汇总交付；token 以界面读数口径。"
  },
- "formal_runs": {}
+ "formal_runs": {
+  "c1-ir-1": {
+   "arm": "ir",
+   "env": "opencode subagent (ses_ed09243c0ffeUzAMFZt2RaBZQC)",
+   "executed_at": "2026-10-12",
+   "gate": "7/7 pass (6 first round + masked_scale via toolchain fix rerun; agent IR unchanged)",
+   "board_used": 8,
+   "t_best_us": null,
+   "T_output_precise": 76552,
+   "toolchain_incident": "emit.py select mask cast-parenthesis bug (see scaffold_fixes); agent source needed no change",
+   "records": [
+    "evals/c1/runner/c1_ir1_record.json",
+    "evals/c1/runner/c1_ir1_fix1_record.json"
+   ],
+   "sources": "evals/c1/formal/c1-ir-1/*.py",
+   "status": "complete"
+  }
+ }
 }

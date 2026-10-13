@@ -1,0 +1,42 @@
+{
+ "run_id": "c1-ir-1-fix1",
+ "arm": "ir",
+ "received_at": "2026-10-13T10:20:22.359266+08:00",
+ "package_dir": "/home/w00964611/c1_pkg_ir1_fix",
+ "board_budget": 20,
+ "board_used": 1,
+ "files": {
+  "masked_scale_f32.py": {
+   "sha256": "6529fcb3db1b75c8075b7c6f4a9c1017ae5a35011347c1b310acea1d331515fd",
+   "size": 834
+  }
+ },
+ "scan": {
+  "masked_scale_f32.py": false
+ },
+ "build": {
+  "ir_errors": {},
+  "ok": true,
+  "wheel": "/home/w00964611/c1_runs/c1-ir-1-fix1/pack/dist/c1run-1.0.0-cp38-abi3-linux_x86_64.whl"
+ },
+ "gate": {
+  "masked_scale_f32": {
+   "timing": "pass",
+   "boundary": "pass"
+  }
+ },
+ "timing": {
+  "masked_scale_f32": {
+   "t_best_us": 204.0,
+   "device_kernels": {
+    "_Z16masked_scale_f32PfPhS_": 204.0
+   },
+   "csv_ref": "see profiler archive under c1_reports"
+  }
+ },
+ "usage_record_slot": null,
+ "passed_tasks": [
+  "masked_scale_f32"
+ ],
+ "timing_note": "T_best only from timing-input group (hash-verified); gate+timing together count as 1 board run per task"
+}
