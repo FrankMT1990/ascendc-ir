@@ -696,6 +696,17 @@
    ],
    "sources": "evals/c1/formal/c1-ir-1/*.py",
    "status": "complete"
+  },
+  "c1-ctl-1": {
+   "arm": "ctl",
+   "env": "opencode subagent (ses_ecd02809bffeF5EmKAGSTelwYu; first session aborted per knowledge-missing incident, see formal_incidents)",
+   "executed_at": "2026-10-12",
+   "gate": "7/7 pass first try",
+   "board_used": 7,
+   "T_output_precise": 58711,
+   "record": "evals/c1/runner/c1_ctl1_record.json",
+   "sources": "evals/c1/formal/c1-ctl-1/*.asc",
+   "status": "complete"
   }
  },
  "formal_incidents": [
