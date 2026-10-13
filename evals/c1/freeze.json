@@ -632,6 +632,15 @@
    "trigger": "c1-pilot-2 构建失败时 build.log 为空（build_pack 吞掉了全部输出），无法回传编译器原文",
    "fix": "build_pack 不再重定向到 /dev/null，构建输出完整落日志（任务书第 6 节承诺的编译反馈通道）",
    "scope": "观测层 bug，不改判分"
+  },
+  {
+   "fixed_at": "2026-10-12",
+   "trigger": "formal run c1-ir-1 masked_scale boundary FAIL: violations start at tile>=1 (838861 = one x-pattern class), probe showed tile0 correct",
+   "root_cause": "IR 工具链 codegen bug：emit.py select 的掩码指针 cast 拼接未加括号，(__ubuf__ uint32_t*)mask_local + 4096 被 C++ cast 优先级解析为 u32 指针偏移 4096（=16384B，越界），正确语义是先做 u8 槽位偏移（4096B=第二槽）再 cast。stages=2 的掩码缓冲在第二块起全部读越界谓词。",
+   "fix": "emit.py 780 行加括号：(__ubuf__ uint32_t*)({ptr})。单行、纯量纲修正，不改 IR 语法/语义/判分。",
+   "why_not_visible_before": "board_3510 op_select 为单槽；试点两份 masked_scale 生成为单缓冲结构（[4096] 声明、无槽位偏移），未触发；c1-ir-1 的 Agent 写了 stages=2 合法 IR 首次暴露",
+   "formal_impact": "c1-ir-1 的 Agent IR 源无需任何修改（其 IR 合法且 verify 通过），修复轮以修复后工具链重新 codegen 并重验 masked_scale；已跑 run/pilot 的正确性不受影响（其结构未经过该路径）",
+   "scope": "IR 臂工具链（codegen）bug 修复，判词组 run 中途发生，如实披露"
   }
  ],
  "pilot_summary": {

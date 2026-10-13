@@ -777,7 +777,7 @@ class _Emitter:
         lines = self._war_wait(dst.buffer, k, signature, waited)
         lines.append(
             f"select_vf({self._buf_ptr(src0, k)}, {self._buf_ptr(src1, k)}, "
-            f"(__ubuf__ uint32_t*){self._buf_ptr(mask, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems});"
+            f"(__ubuf__ uint32_t*)({self._buf_ptr(mask, k)}), {self._buf_ptr(dst, k)}, {dst.buffer.elems});"
         )
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
