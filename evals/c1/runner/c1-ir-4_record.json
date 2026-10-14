@@ -1,0 +1,144 @@
+{
+ "run_id": "c1-ir-4",
+ "arm": "ir",
+ "received_at": "2026-10-14T10:47:27.211703+08:00",
+ "package_dir": "/home/w00964611/c1_pkg_c1-ir-4",
+ "board_budget": 20,
+ "board_used": 7,
+ "files": {
+  "exp_f32.py": {
+   "sha256": "05079a9b74e29bbdd37b434d1fba7892bbca3de8e9e5c9c6032284e4fb6702a7",
+   "size": 656
+  },
+  "foreach_addcdiv_f32.py": {
+   "sha256": "dee350c5a312c73d930524fbf5662bf7c9fb600e7a31c221b11f7dae84f01b4b",
+   "size": 930
+  },
+  "gelu_f32.py": {
+   "sha256": "42f7962566a645883f3c04e3b0f56a3c5acd342b285d3ac09d77c623cc078bae",
+   "size": 1094
+  },
+  "masked_scale_f32.py": {
+   "sha256": "739d0b94e76c31351a770dada67615da56536f4e00f9b7a05fc66f9206201f3f",
+   "size": 863
+  },
+  "mish_f32.py": {
+   "sha256": "5d6526932f795bf2d6618096b442e4ef30119ef0c8168eb450ca540a183adf5c",
+   "size": 1093
+  },
+  "sigmoid_f32.py": {
+   "sha256": "0b771bdec8c7cd17f3525d949fd5a48f58db7e288979e852eeb0e52d09797f7b",
+   "size": 772
+  },
+  "swi_glu_f32.py": {
+   "sha256": "4e38870bbef0b920901a5876ea0a18ffadc77318813e44a16e27741443168092",
+   "size": 1044
+  }
+ },
+ "scan": {
+  "exp_f32.py": false,
+  "foreach_addcdiv_f32.py": false,
+  "gelu_f32.py": false,
+  "masked_scale_f32.py": false,
+  "mish_f32.py": false,
+  "sigmoid_f32.py": false,
+  "swi_glu_f32.py": false
+ },
+ "build": {
+  "ir_errors": {},
+  "ok": true,
+  "wheel": "/home/w00964611/c1_runs/c1-ir-4/pack/dist/c1run-1.0.0-cp38-abi3-linux_x86_64.whl"
+ },
+ "gate": {
+  "exp_f32": {
+   "timing": "pass",
+   "boundary": "pass"
+  },
+  "foreach_addcdiv_f32": {
+   "timing": "pass",
+   "boundary": "pass"
+  },
+  "gelu_f32": {
+   "timing": "pass",
+   "boundary": "pass"
+  },
+  "masked_scale_f32": {
+   "timing": "pass",
+   "boundary": "pass"
+  },
+  "mish_f32": {
+   "timing": "pass",
+   "boundary": "pass"
+  },
+  "sigmoid_f32": {
+   "timing": "pass",
+   "boundary": "pass"
+  },
+  "swi_glu_f32": {
+   "timing": "pass",
+   "boundary": "pass"
+  }
+ },
+ "timing": {
+  "exp_f32": {
+   "t_best_us": 506.64,
+   "device_kernels": {
+    "_Z7exp_f32PfS_": 506.64
+   },
+   "csv_ref": "see profiler archive under c1_reports"
+  },
+  "foreach_addcdiv_f32": {
+   "t_best_us": 476.43,
+   "device_kernels": {
+    "_Z19foreach_addcdiv_f32PfS_S_S_": 476.43
+   },
+   "csv_ref": "see profiler archive under c1_reports"
+  },
+  "gelu_f32": {
+   "t_best_us": 46883.56,
+   "device_kernels": {
+    "_Z8gelu_f32PfS_": 46883.56
+   },
+   "csv_ref": "see profiler archive under c1_reports"
+  },
+  "masked_scale_f32": {
+   "t_best_us": 338.99,
+   "device_kernels": {
+    "_Z16masked_scale_f32PfPhS_": 338.99
+   },
+   "csv_ref": "see profiler archive under c1_reports"
+  },
+  "mish_f32": {
+   "t_best_us": 2821.75,
+   "device_kernels": {
+    "_Z8mish_f32PfS_": 2821.75
+   },
+   "csv_ref": "see profiler archive under c1_reports"
+  },
+  "sigmoid_f32": {
+   "t_best_us": 1184.08,
+   "device_kernels": {
+    "_Z11sigmoid_f32PfS_": 1184.08
+   },
+   "csv_ref": "see profiler archive under c1_reports"
+  },
+  "swi_glu_f32": {
+   "t_best_us": 2031.06,
+   "device_kernels": {
+    "_Z11swi_glu_f32PfS_": 2031.06
+   },
+   "csv_ref": "see profiler archive under c1_reports"
+  }
+ },
+ "usage_record_slot": null,
+ "passed_tasks": [
+  "exp_f32",
+  "foreach_addcdiv_f32",
+  "gelu_f32",
+  "masked_scale_f32",
+  "mish_f32",
+  "sigmoid_f32",
+  "swi_glu_f32"
+ ],
+ "timing_note": "T_best only from timing-input group (hash-verified); gate+timing together count as 1 board run per task"
+}
