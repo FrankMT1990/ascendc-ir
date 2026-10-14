@@ -1,0 +1,58 @@
+{
+ "exp_f32": {
+  "opt_median_us": 276.5,
+  "orig_ir_median_us": 492.6,
+  "ctl_median_us": 706.6,
+  "speedup_vs_orig": 1.78,
+  "opt_over_ctl": 0.391,
+  "target_pass": true
+ },
+ "sigmoid_f32": {
+  "opt_median_us": 390.6,
+  "orig_ir_median_us": 1182.5,
+  "ctl_median_us": 711.6,
+  "speedup_vs_orig": 3.03,
+  "opt_over_ctl": 0.549,
+  "target_pass": true
+ },
+ "gelu_f32": {
+  "opt_median_us": 5581.7,
+  "orig_ir_median_us": 45591.8,
+  "ctl_median_us": 16213.5,
+  "speedup_vs_orig": 8.17,
+  "opt_over_ctl": 0.344,
+  "target_pass": true
+ },
+ "mish_f32": {
+  "opt_median_us": 544.4,
+  "orig_ir_median_us": 2821.8,
+  "ctl_median_us": 1083.9,
+  "speedup_vs_orig": 5.18,
+  "opt_over_ctl": 0.502,
+  "target_pass": true
+ },
+ "masked_scale_f32": {
+  "opt_median_us": 203.5,
+  "orig_ir_median_us": 339.0,
+  "ctl_median_us": 720.0,
+  "speedup_vs_orig": 1.67,
+  "opt_over_ctl": 0.283,
+  "target_pass": true
+ },
+ "swi_glu_f32": {
+  "opt_median_us": 726.5,
+  "orig_ir_median_us": 2023.7,
+  "ctl_median_us": 1481.1,
+  "speedup_vs_orig": 2.79,
+  "opt_over_ctl": 0.491,
+  "target_pass": true
+ },
+ "foreach_addcdiv_f32": {
+  "opt_median_us": 306.5,
+  "orig_ir_median_us": 476.4,
+  "ctl_median_us": 576.2,
+  "speedup_vs_orig": 1.55,
+  "opt_over_ctl": 0.532,
+  "target_pass": true
+ }
+}

@@ -818,5 +818,14 @@
   "censored_over_B": 0,
   "report": "evals/c1/verdict.md",
   "claims_version": "v2.8 判词表（预注册按序匹配）"
+ },
+ "toolchain_optimization_v1_2": {
+  "at": "2026-10-12, after C1 verdict (判词组数据不变，判词后的工具链迭代)",
+  "trigger": "业主指令：针对未达标问题（长链任务 IR 臂落后 CTL 1.4-2.8x）迭代优化 IR 设计直至达标",
+  "change": "emit.py 新增语句批融合（_plan_fusion/_gen_fused_helper/_emit_group 批调用）：循环体内连续 v 管语句中，生命周期闭合于段内、不被 copy/sync 引用的临时 buffer 提升为寄存器直通（load 一次→寄存器指令链→store 一次），替代原先每语句独立 vf helper 的逐 op UB 往返。可融合 op：f32 的 reg_binary/unary/scalar + add/duplicate/leakyrelu/select；含 select 的谓词装载。Agent 的 IR 源零改动（同源重编译验证）。",
+  "bugs_fixed_during": "skip_until 跨 unroll 子迭代污染（sub=1 语句丢失，冒烟阶段截获）；add 的 lowering_kind=None 分类；buffer 按 name 去重",
+  "validation": "35 份判词组 IR 源重新生成全部通过（verify+codegen+融合断言）；上板 5 个 c1-opt-ir-* run 全部 7/7 双组数值门通过（语义不变的板上证明）",
+  "perf": "evals/c1/formal/opt_perf_summary.json：长链 sigmoid/gelu/mish/swi_glu 提速 3.03/8.17/5.18/2.79x，短链 exp/masked_scale/foreach 提速 1.78/1.67/1.55x；优化后 IR 全 7 任务快于 CTL 中位 1.8-3.5x（达标线：长链 gap≤1.2 全过、短链不回退全过）",
+  "verdict_impact": "无：判词组（判词依据）数据与记录冻结不动；本优化为 C4/性能域的后续迭代，全部新数据独立归档"
  }
 }

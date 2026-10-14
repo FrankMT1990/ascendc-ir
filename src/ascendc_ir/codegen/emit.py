@@ -300,6 +300,185 @@ class _Emitter:
         self._war = self._analyze_war()
         self._last_read = self._analyze_last_reads()
         self._unroll = self._unroll_factor()
+        self._fuse_plans = self._plan_fusion()
+
+    # ---- 融合：把循环体里连续的 v 管语句批提升为寄存器直通 ----
+
+    @staticmethod
+    def _fusible_op(stmt) -> bool:
+        if not isinstance(stmt, ComputeStmt):
+            return False
+        if stmt.op in {"add", "select", "duplicate", "leakyrelu"}:
+            return True
+        kind = lowering_kind(stmt.op)
+        if kind in {"reg_binary", "reg_unary", "reg_scalar"}:
+            if stmt.op in BINARY_I32 or stmt.op in SCALAR_I32:
+                return False
+            return stmt.dst.buffer.dtype is DType.f32
+        return False
+
+    def _plan_fusion(self):
+        """识别可融合段：连续可融合语句，段内临时 buffer 只在段内读写、
+        不被任何 copy/sync 语句引用、无段外写入。"""
+        from ..model.stmts import CopyStmt, SyncStmt
+
+        body = self.body
+        n = len(body)
+        refs = {}
+
+        def touch(name, kind_key, j):
+            rec = refs.setdefault(name, {"reads": [], "writes": [], "other": []})
+            rec[kind_key].append(j)
+
+        for j, st in enumerate(body):
+            if isinstance(st, ComputeStmt):
+                for s in st.srcs:
+                    touch(s.buffer.name, "reads", j)
+                if st.dst is not None:
+                    touch(st.dst.buffer.name, "writes", j)
+            elif isinstance(st, CopyStmt):
+                if st.src is not None and hasattr(st.src, "buffer"):
+                    touch(st.src.buffer.name, "other", j)
+                if st.dst is not None and hasattr(st.dst, "buffer"):
+                    touch(st.dst.buffer.name, "other", j)
+            elif isinstance(st, SyncStmt):
+                for b in st.on:
+                    touch(b.name, "other", j)
+
+        plans = []
+        j = 0
+        while j < n:
+            if not self._fusible_op(body[j]):
+                j += 1
+                continue
+            a = j
+            while j < n and self._fusible_op(body[j]):
+                j += 1
+            b = j
+            if b - a < 2:
+                continue
+            seg = body[a:b]
+            seg_writes = [st.dst.buffer for st in seg]
+            seg_write_names = {buf.name for buf in seg_writes}
+            # 段外写入的 buffer：整段保守回退
+            if any(refs[name]["writes"] and (min(refs[name]["writes"]) < a or max(refs[name]["writes"]) >= b)
+                   for name in seg_write_names):
+                continue
+            temps, outputs = [], []
+            for buf in seg_writes:
+                if any(o.name == buf.name for o in outputs):
+                    continue
+                rec = refs[buf.name]
+                reads_outside = any(r < a or r >= b for r in rec["reads"])
+                if rec["other"] or reads_outside:
+                    outputs.append(buf)
+                else:
+                    temps.append(buf)
+            if not outputs:
+                continue
+            inputs = []
+            input_names = set()
+            for st in seg:
+                for s in st.srcs:
+                    if s.buffer.name not in seg_write_names and s.buffer.name not in input_names:
+                        inputs.append(s.buffer)
+                        input_names.add(s.buffer.name)
+            plans.append({
+                "start": a, "end": b, "stmts": seg,
+                "inputs": inputs, "temps": temps, "outputs": outputs,
+                "name": f"fused_vf_{len(plans)}",
+            })
+        # 段间不得共享 buffer 名（输出可能是后续段输入——允许，指针语义不变）
+        return plans
+
+    def _slot_ptr(self, buf, k: int) -> str:
+        if buf.stages == 1:
+            return buf.name
+        slot = k % buf.stages if not self._slot_from_ref else 0
+        return buf.name if slot == 0 else f"{buf.name} + {slot * buf.elems}"
+
+    def _gen_fused_helper(self, plan) -> list:
+        seg = plan["stmts"]
+        inputs, outputs = plan["inputs"], plan["outputs"]
+        out_names = {b.name for b in outputs}
+        mask_inputs = []  # select 的 u8 packed mask 外部输入
+        sig_params = []
+        for b in inputs:
+            if b.dtype is DType.u8:
+                sig_params.append(f"__ubuf__ uint32_t* {b.name}")
+                mask_inputs.append(b)
+            else:
+                sig_params.append(f"__ubuf__ float* {b.name}")
+        for b in outputs:
+            sig_params.append(f"__ubuf__ float* {b.name}")
+        elems = outputs[0].elems
+        sig_params.append("uint32_t data_len")
+
+        reg_names = set()
+        for b in inputs + outputs + plan["temps"]:
+            if b.dtype is DType.u8:
+                continue
+            reg_names.add(b.name)
+        body = [
+            "    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);",
+            "    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;",
+            "    uint16_t mask_rep_size = asc_get_vf_len() / 8;",
+            "",
+            "    vector_bool vmask;",
+        ]
+        for nm in sorted(reg_names):
+            body.append(f"    vector_float r_{nm};")
+        for b in mask_inputs:
+            body.append(f"    __ubuf__ uint32_t* mp_{b.name} = {b.name};")
+        pred_n = 0
+        for st in seg:
+            if st.op == "select":
+                body.append(f"    vector_bool pred_{pred_n};")
+                pred_n += 1
+        body += [
+            "    for (uint16_t i = 0; i < repeat_time; ++i) {",
+            "        vmask = asc_update_mask_b32(data_len);",
+        ]
+        for b in inputs:
+            if b.dtype is not DType.u8:
+                body.append(f"        asc_load(r_{b.name}, {b.name} + i * one_rep_size);")
+        pred_n = 0
+        for st in seg:
+            dst = f"r_{st.dst.buffer.name}"
+            if st.op == "select":
+                mask_buf = st.srcs[2].buffer
+                body.append(f"        asc_loadalign_postupdate(pred_{pred_n}, mp_{mask_buf.name}, mask_rep_size);")
+                body.append(
+                    f"        asc_select({dst}, r_{st.srcs[0].buffer.name}, r_{st.srcs[1].buffer.name}, pred_{pred_n});"
+                )
+                pred_n += 1
+            elif st.op == "duplicate":
+                body.append(f"        asc_duplicate_scalar({dst}, {_f32_literal(st.scalars[0])}, vmask);")
+            elif st.op == "leakyrelu":
+                body.append(
+                    f"        asc_leakyrelu({dst}, r_{st.srcs[0].buffer.name}, {_f32_literal(st.scalars[0])}, vmask);"
+                )
+            else:
+                kind = lowering_kind(st.op)
+                src0 = f"r_{st.srcs[0].buffer.name}"
+                if st.op == "add" or kind == "reg_binary":
+                    src1 = f"r_{st.srcs[1].buffer.name}"
+                    body.append(f"        asc_{st.op}({dst}, {src0}, {src1}, vmask);")
+                elif kind == "reg_unary":
+                    op_c = "ln" if st.op == "log" else st.op
+                    body.append(f"        asc_{op_c}({dst}, {src0}, vmask);")
+                else:
+                    body.append(f"        asc_{st.op}({dst}, {src0}, {_f32_literal(st.scalars[0])}, vmask);")
+        for b in outputs:
+            body.append(f"        asc_store({b.name} + i * one_rep_size, r_{b.name});")
+        body += ["    }", "}"]
+
+        head = (
+            f"__simd_vf__ inline void {plan['name']}(\n"
+            + "".join(f"    {p},\n" for p in sig_params[:-1])
+            + f"    {sig_params[-1]})\n{{"
+        )
+        return head.splitlines() + body
 
     # ---- 分析 ----
 
@@ -496,6 +675,9 @@ class _Emitter:
             emitted.add(op)
             lines.extend(_reg_helper(op, kind, reg_c_dtype(op) or "f32").splitlines())
             lines.append("")
+        for plan in self._fuse_plans:
+            lines.extend(self._gen_fused_helper(plan))
+            lines.append("")
         params = ", ".join(f"__gm__ {_DTYPE_TO_C[p.dtype.value]}* {p.name}" for p in k.params)
         cube = any(buf.space is not Space.UB for buf in k.buffers)
         if cube and any(buf.space is Space.UB for buf in k.buffers):
@@ -541,11 +723,38 @@ class _Emitter:
         return "\n".join(lines)
 
     def _emit_group(self, lines, indent: str, i_value, signature) -> None:
+        plan_by_start = {p["start"]: p for p in self._fuse_plans}
         for sub in range(self._unroll):
             if self._unroll > 1:
                 lines.append(f"{indent}// 槽位 {sub}")
             waited = set()
+            skip_until = -1
             for j, stmt in enumerate(self.body):
+                if j < skip_until:
+                    continue
+                if j in plan_by_start:
+                    plan = plan_by_start[j]
+                    skip_until = plan["end"]
+                    for ob in plan["outputs"]:
+                        lines.extend(
+                            indent + w for w in self._war_wait(ob, sub, signature, waited)
+                        )
+                    args = []
+                    for b in plan["inputs"]:
+                        ptr = self._slot_ptr(b, sub)
+                        if b.dtype is DType.u8:
+                            args.append(f"(__ubuf__ uint32_t*){ptr}")
+                        else:
+                            args.append(ptr)
+                    for b in plan["outputs"]:
+                        args.append(self._slot_ptr(b, sub))
+                    args.append(str(plan["outputs"][0].elems))
+                    lines.append(f"{indent}{plan['name']}({', '.join(args)});")
+                    for jj, st in enumerate(plan["stmts"], start=plan["start"]):
+                        lines.extend(
+                            indent + w for w in self._release_reads(st, jj, sub, signature)
+                        )
+                    continue
                 lines.extend(indent + line for line in self._emit_stmt(stmt, j, sub, i_value, signature, waited))
 
     def _emit_stmt(self, stmt, j: int, k: int, i_value, signature, waited: set) -> list:
