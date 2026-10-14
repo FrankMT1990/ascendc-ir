@@ -121,11 +121,22 @@ def v001_pathway(kernel, device) -> list:
 
 def v002_ub_capacity(kernel, device) -> list:
     ub = [b for b in kernel.buffers if b.space.value == "ubuf"]
-    total = sum(b.total_bytes for b in ub)
+    # 段内私有临时 buffer 会被代码生成提升为寄存器直通（codegen/fusion.py 的
+    # 同一判定），不占实际 UB 分配；容量按扣除后的量检查。
+    try:
+        from ..codegen.fusion import promoted_temp_names
+        from ..codegen.reroll import reroll
+        tiles, body, _epilogue, ok, _ = reroll(kernel)
+        scope = body if (ok and tiles > 1) else kernel.statements
+        temps = promoted_temp_names(scope)
+    except Exception:
+        temps = set()
+    counted = [b for b in ub if b.name not in temps]
+    total = sum(b.total_bytes for b in counted)
     if total <= device.ub_usable_bytes:
         return []
-    largest = max(ub, key=lambda b: b.total_bytes)
-    breakdown = ", ".join(f"{b.name}={b.total_bytes}B" for b in ub)
+    largest = max(counted, key=lambda b: b.total_bytes)
+    breakdown = ", ".join(f"{b.name}={b.total_bytes}B" for b in counted)
     return [
         Diagnostic(
             "V002", "block", largest.callsite,
