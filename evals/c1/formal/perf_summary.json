@@ -1,0 +1,107 @@
+{
+ "exp_f32": {
+  "ir_median_us": 492.6,
+  "ctl_median_us": 706.6,
+  "ir_minmax": [
+   491.3,
+   506.6
+  ],
+  "ctl_minmax": [
+   706.4,
+   1666.1
+  ],
+  "ctl_over_ir": 1.435,
+  "A_ir": 0.0573,
+  "A_ctl": 0.0399
+ },
+ "sigmoid_f32": {
+  "ir_median_us": 1182.5,
+  "ctl_median_us": 711.6,
+  "ir_minmax": [
+   1147.6,
+   1508.4
+  ],
+  "ctl_minmax": [
+   710.9,
+   1670.8
+  ],
+  "ctl_over_ir": 0.602,
+  "A_ir": 0.0117,
+  "A_ctl": 0.0195
+ },
+ "gelu_f32": {
+  "ir_median_us": 45591.8,
+  "ctl_median_us": 16213.5,
+  "ir_minmax": [
+   39028.5,
+   62527.6
+  ],
+  "ctl_minmax": [
+   15613.4,
+   28247.2
+  ],
+  "ctl_over_ir": 0.356,
+  "A_ir": 0.0071,
+  "A_ctl": 0.0199
+ },
+ "mish_f32": {
+  "ir_median_us": 2821.8,
+  "ctl_median_us": 1083.9,
+  "ir_minmax": [
+   2686.8,
+   3142.2
+  ],
+  "ctl_minmax": [
+   939.1,
+   1724.0
+  ],
+  "ctl_over_ir": 0.384,
+  "A_ir": 0.0056,
+  "A_ctl": 0.0145
+ },
+ "masked_scale_f32": {
+  "ir_median_us": 339.0,
+  "ctl_median_us": 720.0,
+  "ir_minmax": [
+   204.0,
+   339.6
+  ],
+  "ctl_minmax": [
+   719.4,
+   1680.1
+  ],
+  "ctl_over_ir": 2.124,
+  "A_ir": 0.0861,
+  "A_ctl": 0.0406
+ },
+ "swi_glu_f32": {
+  "ir_median_us": 2023.7,
+  "ctl_median_us": 1481.1,
+  "ir_minmax": [
+   2020.5,
+   2357.2
+  ],
+  "ctl_minmax": [
+   937.4,
+   2122.4
+  ],
+  "ctl_over_ir": 0.732,
+  "A_ir": 0.0118,
+  "A_ctl": 0.0162
+ },
+ "foreach_addcdiv_f32": {
+  "ir_median_us": 476.4,
+  "ctl_median_us": 576.2,
+  "ir_minmax": [
+   376.5,
+   499.9
+  ],
+  "ctl_minmax": [
+   575.3,
+   1035.9
+  ],
+  "ctl_over_ir": 1.209,
+  "A_ir": 0.06,
+  "A_ctl": 0.0496
+ }
+}
