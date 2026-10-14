@@ -805,5 +805,18 @@
    "resolution": "判词组条件一致性优先：补齐 c1-ctl-1..5 的 knowledge/；c1-ctl-1 首次会话作废归档（abort，T 记录不计入判词组），以补卡后的条件重跑 c1-ctl-1",
    "waste": "aborted session tokens recorded for audit only"
   }
- ]
+ ],
+ "verdict": {
+  "computed_at": "2026-10-12",
+  "task_level": "7/7 成立（带宽顶满、两臂成功数 5/5、IR ≥ CTL）",
+  "W1": "成立",
+  "W2": "未测（level1 无 Cube 任务，开跑前封存）",
+  "C1": "部分成立（W1）",
+  "m3_report_only": 0.1677,
+  "T_IR_median": 56684,
+  "T_CTL_median": 66189,
+  "censored_over_B": 0,
+  "report": "evals/c1/verdict.md",
+  "claims_version": "v2.8 判词表（预注册按序匹配）"
+ }
 }
