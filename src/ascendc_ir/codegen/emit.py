@@ -355,7 +355,11 @@ class _Emitter:
             "        vmask = asc_update_mask_b32(data_len);",
         ]
         for b in inputs:
-            if b.dtype is not DType.u8:
+            if b.dtype is DType.u8:
+                continue
+            if b.elems == 64:
+                body.append(f"        asc_load(r_{b.name}, {b.name});")  # VF 宽广播源：每块重读同一常量
+            else:
                 body.append(f"        asc_load(r_{b.name}, {b.name} + i * one_rep_size);")
         pred_n = 0
         for st in seg:
@@ -590,6 +594,9 @@ class _Emitter:
             emitted.add(op)
             lines.extend(_reg_helper(op, kind, reg_c_dtype(op) or "f32").splitlines())
             lines.append("")
+            if kind in {"reg_binary", "reg_scalar"} and (op == "add" or reg_c_dtype(op) == "f32"):
+                lines.extend(_bcast_helper(op, "add" if op == "add" else kind).splitlines())
+                lines.append("")
         for plan in self._fuse_plans:
             lines.extend(self._gen_fused_helper(plan))
             lines.append("")
@@ -832,16 +839,32 @@ class _Emitter:
         dst = stmt.dst
         want = DType.i32 if stmt.op in BINARY_I32 else DType.f32
         self._require_ub(dst, stmt.op, want)
+        vf_len = 64
+        bcast_src = None
         for src in stmt.srcs:
             self._require_ub(src, stmt.op, want)
+            if src.buffer.elems == vf_len and dst.buffer.elems != vf_len:
+                bcast_src = src  # VF 宽广播源：逐块常量复用
+                continue
             if src.buffer.elems != dst.buffer.elems:
-                raise CodegenError(f"{stmt.op} 的源和目的元素个数必须相同")
+                raise CodegenError(f"{stmt.op} 的源和目的元素个数必须相同（或源为 {vf_len} 个 f32 的 VF 宽广播形态）")
         self._require_vl(dst)
         lines = self._war_wait(dst.buffer, k, signature, waited)
-        lines.append(
-            f"{stmt.op}_vf({self._buf_ptr(stmt.srcs[0], k)}, {self._buf_ptr(stmt.srcs[1], k)}, "
-            f"{self._buf_ptr(dst, k)}, {dst.buffer.elems});"
-        )
+        if bcast_src is not None:
+            other = next(s for s in stmt.srcs if s is not bcast_src)
+            if other.buffer.elems != dst.buffer.elems:
+                other, bcast_src = bcast_src, other
+                if bcast_src.buffer.elems != dst.buffer.elems:
+                    raise CodegenError(f"{stmt.op} 广播形态要求另一个源与目的等长")
+            lines.append(
+                f"{stmt.op}_bcast_vf({self._buf_ptr(other, k)}, {self._buf_ptr(bcast_src, k)}, "
+                f"{self._buf_ptr(dst, k)}, {dst.buffer.elems});"
+            )
+        else:
+            lines.append(
+                f"{stmt.op}_vf({self._buf_ptr(stmt.srcs[0], k)}, {self._buf_ptr(stmt.srcs[1], k)}, "
+                f"{self._buf_ptr(dst, k)}, {dst.buffer.elems});"
+            )
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
 
@@ -867,17 +890,25 @@ class _Emitter:
         want = DType.i32 if integer else DType.f32
         self._require_ub(dst, stmt.op, want)
         self._require_ub(src, stmt.op, want)
-        if src.buffer.elems != dst.buffer.elems:
-            raise CodegenError(f"{stmt.op} 的源和目的元素个数必须相同")
+        vf_len = 64
+        bcast = src.buffer.elems == vf_len and dst.buffer.elems != vf_len
+        if not bcast and src.buffer.elems != dst.buffer.elems:
+            raise CodegenError(f"{stmt.op} 的源和目的元素个数必须相同（或源为 {vf_len} 个 f32 的 VF 宽广播形态）")
         self._require_vl(dst)
         if integer:
             literal = str(int(stmt.scalars[0]))
         else:
             literal = _f32_literal(stmt.scalars[0])
         lines = self._war_wait(dst.buffer, k, signature, waited)
-        lines.append(
-            f"{stmt.op}_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems}, {literal});"
-        )
+        if bcast:
+            lines.append(
+                f"{stmt.op}_bcast_vf({self._buf_ptr(src, k)}, {self._buf_ptr(src, k)}, "
+                f"{self._buf_ptr(dst, k)}, {dst.buffer.elems}, {literal});"
+            )
+        else:
+            lines.append(
+                f"{stmt.op}_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {dst.buffer.elems}, {literal});"
+            )
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
 
@@ -1041,8 +1072,8 @@ class _Emitter:
         if not isinstance(src, BufRef) or src.buffer.dtype is not DType.f32:
             raise CodegenError("repeat_reduce_sum 当前只生成 f32")
         self._require_f32(dst, "repeat_reduce_sum")
-        if dst.buffer.elems != 8:
-            raise CodegenError("repeat_reduce_sum 的目的 buffer 必须是 8 个 f32，供寄存器归约的 8 个通道写回")
+        if dst.buffer.elems not in (8, 64):
+            raise CodegenError("repeat_reduce_sum 的目的 buffer 必须是 8（通道形态）或 64（VF 宽，总和广播到全部 lane，供后续块常量复用）个 f32")
         if src.buffer.elems % 64 != 0:
             raise CodegenError("repeat_reduce_sum 的源元素个数必须是 64 的倍数，对齐 3510 的 VF 长度")
         if src.buffer.stage_bytes > _BURST_LEN_MAX:
@@ -1083,6 +1114,38 @@ class _Emitter:
         ev = f"EVENT_ID{base}"
         p, q = _PIPE_TO_C[stmt.producer], _PIPE_TO_C[stmt.consumer]
         return [f"asc_sync_notify({p}, {q}, {ev});", f"asc_sync_wait({p}, {q}, {ev});"]
+
+
+
+
+def _bcast_helper(op: str, kind: str) -> str:
+    """二元/标量 op 的广播源形态：src_vf 为 VF 宽（64 f32）常量，逐块 load 复用。"""
+    extra = ", float value" if kind == "reg_scalar" else ""
+    if kind == "reg_scalar":
+        call = f"asc_{op}(reg_dst, reg_src, value, vmask)"
+    else:
+        call = f"asc_{op}(reg_dst, reg_src, reg_const, vmask)"
+    return (
+        f"__simd_vf__ inline void {op}_bcast_vf(\n"
+        f"    __ubuf__ float* src, __ubuf__ float* src_vf, __ubuf__ float* dst,\n"
+        f"    uint32_t data_len{extra})\n"
+        "{\n"
+        "    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);\n"
+        "    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;\n"
+        "\n"
+        "    vector_bool vmask;\n"
+        "    vector_float reg_src;\n"
+        "    vector_float reg_const;\n"
+        "    vector_float reg_dst;\n"
+        "    for (uint16_t i = 0; i < repeat_time; ++i) {\n"
+        "        vmask = asc_update_mask_b32(data_len);\n"
+        "        asc_load(reg_src, src + i * one_rep_size);\n"
+        "        asc_load(reg_const, src_vf);\n"
+        f"        {call};\n"
+        "        asc_store(dst + i * one_rep_size, reg_dst);\n"
+        "    }\n"
+        "}"
+    )
 
 
 def _reg_helper(op: str, kind: str, c_dtype: str = "f32") -> str:
