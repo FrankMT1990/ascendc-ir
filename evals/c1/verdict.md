@@ -98,3 +98,26 @@ Cursor 侧 c1r-ir-1..5 / c1r-ctl-1..5（编排 prompt 已交业主）——独�
 | foreach_addcdiv_f32 | 476.4 | 306.5 | 1.55× | 576.2 | 0.53 | ✓（不回退） |
 
 **全部达标且反转**：优化后 IR 在全部 7 任务上快于 CTL 中位（1.8–3.5×）。原判词（部分成立 W1）与判词组数据冻结不动——本迭代属于 C4/性能域的后续工具链版本（v1.2），数据独立归档于 c1-opt-ir-* 收包记录与 opt_perf_summary.json。
+
+## 附录：L2/L3 任务能力映射（判词后，2026-10-13 ~ 2026-10-15，业主指令的能力扩展评估）
+
+**范围**：cann-bench level2 任务中选 4 个 f32 对齐 case 做单核 IR 可达性验证——不属于冻结判词组的 7 任务，判词（部分成立 W1）不变。runner 的 TASK_SIGNATURES/插件元数据扩到 11 项（机械支撑，两臂知识面不因此变化）。
+
+**A 组（逐元素族）**：一次通过——maximum case2 [2048,2048]、apply_adam_w case1 [1024,1024]（13 步长链，v1.2 融合 + V002 容量扣除均生效）。
+
+**B 组（归一化族）**：两轮通过——首轮 softmax ~94% 违例、rms_norm 全违例，根因 `asc_reduce_sum` 语义为**行和只落 dst 的 lane0**（其余 lane 置 0，与知识卡伪代码一致），非广播；后续以该 buffer 作除数/因子时 lane1-63 除 0。修复：reduce_sum_vf helper 末尾加 `asc_duplicate`（3510 `vdup(dst, src, mask, POS_LOWEST, MODE_ZEROING)`——lane0 广播到全部 lane），目的 buffer 收紧为恰 64 个 f32；rms_norm IR 另修 mean 因子（1/TILE²→1/TILE）。
+
+**板结果**（容器 level23_bfix_run.log，2026-10-15；容差同判词组 1e-5+1e-4·|golden|）：
+
+| 任务 | shape | 违例 | t_best（单核） | 修复前 |
+|---|---|---|---|---|
+| maximum_f32 | [2048,2048] | 0/4194304 | 525.0 μs | PASS（一次过） |
+| apply_adam_w_f32 | [1024,1024] | 0/1048576 | 240.6 μs | PASS（一次过） |
+| softmax_f32 | [2048,2048] | 0/4194304 | 903.4 μs | ~94% 违例 |
+| rms_norm_f32 | [32,128,1024] | 0/4194304 | 1965.9 μs | 全违例 |
+
+**边界与口径**：① 多核基线（softmax case2 15.89 μs / rms_norm 15.61 μs）与本单核口径不可比，同判词组带宽顶满分类现实；② softmax case2 输入域 [-2,2]，IR 采用直接 exp 形（非稳定式）与 torch 稳定式在该域差异于容差内；③ rms_norm IR 为 sqrt(mean)+eps（与上板 golden 一致；与 cann-bench ref 的 sqrt(mean+eps) 差异 <2e-6）；④ rms_norm 已知冗余（gamma 逐行重载、fused 块内 inv_n 链重算）为后续优化项；⑤ **知识卡缺口**：62 张卡缺 `asc_duplicate`（vector 广播形态）与 `asc_reduce_max/min`——归约→广播链在卡集内不可表达，后续实验的知识卡集需补跨 lane 形态。
+
+**回归**（工具链改动披露配套）：单测 43/43（含融合时代两个陈旧锚点修复）；M4/M5 注入集 27/27 召回、6/6 零误拒；35 份判词组源零 reduce 使用、代表源哈希 HEAD/改动后一致。
+
+**L3 初筛（未上板）**：Cube 族（grouped_matmul/batched gemm 等）依赖多核切分与 nd2nz/mmad 管线编排，单核 f16 mmad 路径已在 M0b 验证但与 L3 任务的 fp16/int8 大 shape 多核形态不匹配；分支/汇聚族（gather/scatter/argmax）需索引搬运+标量比较→索引回转，指令集可表达、调度复杂度未评估——两者均列为待评估边界，不预先声称支持。

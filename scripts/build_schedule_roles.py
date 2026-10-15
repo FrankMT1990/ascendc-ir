@@ -155,8 +155,9 @@ PATTERNS = {
         "不用 asc_loadalign_unpack，也不带 ASC_POSITION_EVEN。"
     ),
     "repeat_reduce_sum": (
-        "调度：v.repeat_reduce_sum(dst, src)。src 为 f32 且元素数是 64 的倍数；dst 必须是 8 个 f32。"
-        "VF：累加器清 0；每段 asc_loadalign、asc_reduce_sum、asc_add 进累加器；asc_storealign 写出 8 个通道。主机再把通道相加。"
+        "调度：v.repeat_reduce_sum(dst, src)。src 为 f32 且元素数是 64 的倍数；dst 必须是 64 个 f32。"
+        "VF：累加器清 0；每段 asc_loadalign、asc_reduce_sum、asc_add 进累加器（行和只在 lane0）；"
+        "末尾 asc_duplicate 把 lane0 广播到全部 64 lane 后 asc_storealign 写出，dst 即 VF 宽行和，可作二元/标量 op 的广播源。"
     ),
     "copy_gm2l1_nd2nz": (
         "调度：mte2.nd2nz(gm, l1, rows, cols, row_stride=cols)。仅 f16。"

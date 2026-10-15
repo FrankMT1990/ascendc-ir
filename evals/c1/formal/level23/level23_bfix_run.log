@@ -1,0 +1,13 @@
+pack assembled: ['apply_adam_w_f32', 'maximum_f32', 'rms_norm_f32', 'softmax_f32']
+build=0
+maximum: violations = 0/4194304 -> PASS
+apply_adam_w: violations = 0/1048576 -> PASS
+softmax: violations = 0/4194304 -> PASS
+rms_norm: violations = 0/4194304 -> PASS
+=== SUMMARY (t_best us) ===
+maximum_f32: PASS t_best=525.0
+apply_adam_w_f32: PASS t_best=240.6
+softmax_f32: PASS t_best=903.4
+rms_norm_f32: PASS t_best=1965.9
+GATE PASS
+LEVEL23_AB_DONE

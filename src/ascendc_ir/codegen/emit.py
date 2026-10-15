@@ -20,6 +20,9 @@
 - 计算 op 已在 CANN 9.1.0 的 3510 上核对：f32 add、f32 leakyrelu、f16→f32 cast、
   f32 repeat_reduce_sum。cast 用 `vlds(..., UNPK_B16)` 和 `asc_half2float(dst, src, mask)`，
   不用 asc-devkit 才有的 `asc_loadalign_unpack`。datablock_reduce_sum 仍拒绝生成。
+  repeat_reduce_sum 的行和只在 dst 的 lane0 有效（asc_reduce_sum 语义），helper 末尾用
+  `asc_duplicate`（vdup POS_LOWEST）把 lane0 广播到全部 64 lane，dst 因此必须恰好 64 个 f32，
+  广播后的 dst 可作为二元/标量 op 的 VF 宽广播源。
   向量计算在 3510 上没有 UB 指针版实现，lowering 为 reg 向量风格（ADR 0014）。
   搬运 burst_len 在 3510 上单位为字节（2201 为 32B 块数），搬运量直接发单 stage 字节数。
 - v0.2 不生成多核切分；不支持跨 PIPE 就地改写（一个 buffer 的生产 PIPE 必须唯一）。
@@ -140,6 +143,7 @@ _REDUCE_VF_HELPER = """__simd_vf__ inline void reduce_sum_vf(
     vector_float src_reg;
     vector_float dst_reg;
     vector_float acc_reg;
+    vector_float bcast_reg;
     asc_duplicate_scalar(acc_reg, 0.0f);
     for (uint16_t i = 0; i < repeat_time; ++i) {
         vmask = asc_update_mask_b32(data_len);
@@ -147,7 +151,8 @@ _REDUCE_VF_HELPER = """__simd_vf__ inline void reduce_sum_vf(
         asc_reduce_sum(dst_reg, src_reg, vmask);
         asc_add(acc_reg, acc_reg, dst_reg, vmask);
     }
-    asc_storealign(y_local, acc_reg, vmask);
+    asc_duplicate(bcast_reg, acc_reg, vmask);
+    asc_storealign(y_local, bcast_reg, vmask);
 }"""
 
 _SELECT_VF_HELPER = """__simd_vf__ inline void select_vf(
@@ -1072,8 +1077,8 @@ class _Emitter:
         if not isinstance(src, BufRef) or src.buffer.dtype is not DType.f32:
             raise CodegenError("repeat_reduce_sum 当前只生成 f32")
         self._require_f32(dst, "repeat_reduce_sum")
-        if dst.buffer.elems not in (8, 64):
-            raise CodegenError("repeat_reduce_sum 的目的 buffer 必须是 8（通道形态）或 64（VF 宽，总和广播到全部 lane，供后续块常量复用）个 f32")
+        if dst.buffer.elems != 64:
+            raise CodegenError("repeat_reduce_sum 的目的 buffer 必须是 64（VF 宽）：行和先落 lane0，再经 asc_duplicate(vdup POS_LOWEST) 广播到全部 lane，供后续 _bcast_vf 逐块复用")
         if src.buffer.elems % 64 != 0:
             raise CodegenError("repeat_reduce_sum 的源元素个数必须是 64 的倍数，对齐 3510 的 VF 长度")
         if src.buffer.stage_bytes > _BURST_LEN_MAX:

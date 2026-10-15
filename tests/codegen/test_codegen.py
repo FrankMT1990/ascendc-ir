@@ -67,14 +67,14 @@ def test_war_release_after_last_read():
 
     out = generate(two_reads.trace())
     lines = out.splitlines()
-    add_idx = [n for n, line in enumerate(lines) if line.strip().startswith("add_vf(")]
+    add_idx = [n for n, line in enumerate(lines) if line.strip().startswith("fused_vf_0(")]
     notify_idx = [n for n, line in enumerate(lines) if "asc_sync_notify(PIPE_V, PIPE_MTE2" in line]
     # 每个子迭代释放 x/y 各一次（共 2×2=4 条）；每个 buffer 每轮只发一次
     assert len(notify_idx) == 4
     for k in range(2):
         sub = notify_idx[2 * k : 2 * k + 2]
         for n in sub:
-            assert sum(1 for a in add_idx if a < n) == 2 * (k + 1)  # 两条 add 都读完才释放
+            assert sum(1 for a in add_idx if a < n) == k + 1  # 两条 add 融合进同一个 fused_vf_0，消费完才释放
 
 
 def test_war_release_deduped_for_repeated_src():
@@ -189,7 +189,7 @@ def test_leakyrelu_cast_and_reduce_emit_reg_helpers():
     @kernel(device="ascend950pr")
     def reduced(x: gmptr(f32), y: gmptr(f32)):
         src = ubuf(f32, 64)
-        dst = ubuf(f32, 8)
+        dst = ubuf(f32, 64)
         mte2.copy(x[0], src[0])
         sync(mte2, v, on=src)
         v.repeat_reduce_sum(dst, src)

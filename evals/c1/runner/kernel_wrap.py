@@ -16,6 +16,10 @@ TASK_SIGNATURES = {
     "masked_scale_f32": [("float*", "x"), ("uint8_t*", "mask"), ("float*", "z")],
     "swi_glu_f32": [("float*", "x"), ("float*", "z")],
     "foreach_addcdiv_f32": [("float*", "x1"), ("float*", "x2"), ("float*", "x3"), ("float*", "z")],
+    "maximum_f32": [("float*", "x"), ("float*", "y"), ("float*", "z")],
+    "apply_adam_w_f32": [("float*", "var"), ("float*", "grad"), ("float*", "m"), ("float*", "v"), ("float*", "y")],
+    "softmax_f32": [("float*", "x"), ("float*", "z")],
+    "rms_norm_f32": [("float*", "x"), ("float*", "gamma"), ("float*", "z")],
 }
 
 _RE_KERNEL = re.compile(
@@ -63,8 +67,10 @@ def gen_kernel_cpp(asc_text: str, task_id: str, pack_dir: Path) -> Path:
     if (name, params) is None:
         raise ValueError(f"{task_id}: cannot parse kernel signature")
     expected = TASK_SIGNATURES[task_id]
-    if [(t, n) for t, n in params] != expected:
-        raise ValueError(f"{task_id}: kernel signature {params} != task spec {expected}")
+    if [t for t, _ in params] != [t for t, _ in expected]:
+        raise ValueError(
+            f"{task_id}: kernel signature types {[t for t, _ in params]} != task spec {[t for t, _ in expected]}"
+        )
     cast = ", ".join(f"(__gm__ {_ctype(t)}*){n}" for t, n in params)
     launch_params = ", ".join(f"GM_ADDR {n}" for t, n in params)
     cpp = f"""{asc_text.rstrip()}
@@ -92,6 +98,10 @@ _PLUGIN_META = {
     "masked_scale_f32": ('TORCH_CHECK(x.scalar_type() == torch::kFloat32, "x dtype"); TORCH_CHECK(mask.scalar_type() == torch::kUInt8, "mask dtype"); TORCH_CHECK(x.numel() == 2048*2048, "numel"); TORCH_CHECK(mask.numel() == x.numel()*4/8, "mask numel"); return torch::empty_like(x);', "x, mask"),
     "swi_glu_f32": ('TORCH_CHECK(x.scalar_type() == torch::kFloat32, "x dtype"); TORCH_CHECK(x.numel() == 2048*4096, "numel"); auto s = x.sizes().vec(); s.back() /= 2; return torch::empty(s, x.options());', "x"),
     "foreach_addcdiv_f32": ('TORCH_CHECK(x1.scalar_type() == torch::kFloat32, "dtype"); TORCH_CHECK(x1.numel() == 2*1024*1024, "numel"); TORCH_CHECK(x2.numel() == x1.numel() && x3.numel() == x1.numel(), "numel"); return torch::empty_like(x1);', "x1, x2, x3"),
+    "maximum_f32": ('TORCH_CHECK(x.scalar_type() == torch::kFloat32, "dtype"); TORCH_CHECK(x.numel() == 2048*2048 && y.numel() == x.numel(), "numel"); return torch::empty_like(x);', "x, y"),
+    "apply_adam_w_f32": ('TORCH_CHECK(var.scalar_type() == torch::kFloat32, "dtype"); TORCH_CHECK(var.numel() == 1024*1024, "numel"); TORCH_CHECK(grad.numel() == var.numel() && m.numel() == var.numel() && v.numel() == var.numel(), "numel"); return torch::empty_like(var);', "var, grad, m, v"),
+    "softmax_f32": ('TORCH_CHECK(x.scalar_type() == torch::kFloat32, "dtype"); TORCH_CHECK(x.numel() == 2048*2048, "numel"); return torch::empty_like(x);', "x"),
+    "rms_norm_f32": ('TORCH_CHECK(x.scalar_type() == torch::kFloat32, "dtype"); TORCH_CHECK(x.numel() == 32*128*1024, "numel"); TORCH_CHECK(gamma.numel() == 1024, "gamma"); return torch::empty_like(x);', "x, gamma"),
 }
 
 

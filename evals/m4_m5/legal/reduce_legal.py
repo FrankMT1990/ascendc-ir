@@ -15,7 +15,7 @@ from ascendc_ir.pipes import mte2, mte3, v
 @kernel(device="ascend950pr")
 def reduce_legal(x: gmptr(f32), y: gmptr(f32)):
     x_local = ubuf(f32, 64)
-    y_local = ubuf(f32, 8)
+    y_local = ubuf(f32, 64)
     mte2.copy(x[0], x_local[0])
     sync(mte2, v, on=x_local)
     v.repeat_reduce_sum(y_local[0], x_local[0])

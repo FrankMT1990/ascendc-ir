@@ -79,6 +79,7 @@
 - v1.0（2026-10-09）：初版冻结。
 - v1.0 修订（2026-10-10）：swi_glu 措辞（平铺→逐行语义，与 golden 一致）；对照臂 launch 由上板环境自动生成。试点间披露，不影响已跑数据。
 - v1.1（2026-10-12）：速查页补第 11–13 条（调用约定权威签名表、simd_vf 边界、管线记号——三轮编译反馈沉淀的形态层知识，两臂同见）；对照臂引入 API 知识卡（业主决策）。**实验定义变更**：对照臂从"裸写+速查页"变为"速查页+知识卡增强的手写 C"，IR 臂不变（工具链即其知识源）。正式 run 未发，无已跑数据受影响。
+- v1.2（2026-10-15，判词后）：冻结判词组（第 2/4 节的 7 任务）不变；判词后的 L2/L3 能力扩展评估另录——runner 的 TASK_SIGNATURES/插件元数据扩到 11 项（+maximum/apply_adam_w/softmax/rms_norm，机械支撑），工具链新增 `asc_duplicate`（lane0→全 lane 广播）形态使 repeat_reduce_sum 目的 buffer 成为 VF 宽行和（详见 verdict.md 附录与 freeze.json toolchain_iteration_v1_3）。知识卡缺口披露：卡集缺 asc_duplicate/asc_reduce_max 等跨 lane 形态。
 
 ## 7. 执行与判分（上板环境执行，Agent 可见流程）
 

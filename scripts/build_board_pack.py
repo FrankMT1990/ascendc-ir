@@ -129,7 +129,7 @@ def _reduce() -> str:
 @kernel(device="ascend950pr")
 def op_repeat_reduce_sum(x: gmptr(f32), z: gmptr(f32)):
     x_local = ubuf(f32, {N})
-    z_local = ubuf(f32, 8)
+    z_local = ubuf(f32, 64)
     mte2.copy(x[0], x_local)
     sync(mte2, v, on=x_local)
     v.repeat_reduce_sum(z_local, x_local)

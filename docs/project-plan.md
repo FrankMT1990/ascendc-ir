@@ -33,5 +33,7 @@
 | 21 | 封存每任务 T_baseline 与 T_HW | 7 任务全部实封（`evals/c1/baseline` 与 `evals/c1/timing`）：h 全为大负数（aclnn 多核基线对单核下界），全部 bandwidth_bound，口径如实记录 | done || 封存每任务 T_baseline 与 T_HW | 950PR、CANN 9.1.0、CANNBench kernel-only、与计时输入同 shape；两项写进 freeze.json 并记输入哈希；缺项保持 unclassified，收包后不得补 | todo |
 | 22 | 封存数值门与两类扫描 | `evals/c1/tolerance.json`（atol=1e-5 rtol=1e-4）、计时+边界两组必测输入与 golden 哈希、逃逸/越面扫描及 16 反例自测全过，均入仓并封存 sha256 | done || 封存数值门与两类扫描 | 容差文件（逐元素 `abs(a−b) ≤ atol + rtol×abs(b)`，golden dtype 上比较）、每组必测输入与 golden 哈希、唯一计时输入组、IR 臂逃逸扫描与对照臂越面扫描及反例，第一份试点前入仓 | todo |
 | 23 | 核对 C3 五类注入 | master 已提交注入集（8 注入+6 合法+more_cases）实测：五类召回各 3/3、误拒 0、定位 27/27，记录 `evals/c1/c3_injection_check.txt` | done || 核对 C3 五类注入 | UB/对齐/event 配对/跨 PIPE/未初始化每类有封存注入，召回 ≥0.9、误拒 0、定位命中 ≥0.8；任一类缺则 C3 未测并停止 | todo |
-| 24 | 试点定预算 B | 前两次成功试点首次正确 `completion_tokens` 最大值 ×3 写回 freeze.json；试点不计入 R=5，期间不改任务书/容差/扫描 | todo |
-| 25 | 正式 C1 对比 | B 写回后发正式包，每臂 5 次，结果推独立分支并附 csv 哈希 | todo |
+| 24 | 试点定预算 B | 4 个试点（pilot1_ir/pilot2_ctl/pilot_local_ir/pilot_local_ctl）归档；前两次成功试点最大 completion_tokens×3 → B=438,000 写回 freeze.json | done |
+| 25 | 正式 C1 对比 | 10 run（每臂 5）全部执行：判词组 70/70 任务全过门；判词=**部分成立（W1）**（m3=+0.168 仅报告；7 任务全 bandwidth_bound 只看成功数；W2 未测），`evals/c1/verdict.md` + master 4133658 归档 | done |
+| 26 | 判词后工具链迭代（业主指令） | v1.2 语句批融合（长链 2.8-8.2×，全 7 任务反超 CTL 1.8-3.5×，5 个 opt run 板上证明）；v1.3 归约广播基础（asc_duplicate lane0→全 lane）；详见 freeze.json toolchain_* 与 verdict.md 附录 | done |
+| 27 | L2/L3 能力映射（判词后，业主指令） | L2 16 任务：4 个已过板（maximum/apply_adam_w/softmax/rms_norm，0 违例，`evals/c1/formal/level23/`）；L3 21 任务：初筛未上板。**进行中** | doing |

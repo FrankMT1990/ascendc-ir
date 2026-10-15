@@ -827,5 +827,17 @@
   "validation": "35 份判词组 IR 源重新生成全部通过（verify+codegen+融合断言）；上板 5 个 c1-opt-ir-* run 全部 7/7 双组数值门通过（语义不变的板上证明）",
   "perf": "evals/c1/formal/opt_perf_summary.json：长链 sigmoid/gelu/mish/swi_glu 提速 3.03/8.17/5.18/2.79x，短链 exp/masked_scale/foreach 提速 1.78/1.67/1.55x；优化后 IR 全 7 任务快于 CTL 中位 1.8-3.5x（达标线：长链 gap≤1.2 全过、短链不回退全过）",
   "verdict_impact": "无：判词组（判词依据）数据与记录冻结不动；本优化为 C4/性能域的后续迭代，全部新数据独立归档"
+ },
+ "toolchain_iteration_v1_3": {
+  "at": "2026-10-13 ~ 2026-10-15, after C1 verdict (判词组数据不变，判词后工具链迭代；L2/L3 能力评估的归约/广播基础)",
+  "trigger": "判词后能力扩展：L2/L3 任务映射（业主指令的延续——先 A 组逐元素族，后 B 组归一化族）",
+  "change_stage1": "emit.py：repeat_reduce_sum 目的 buffer 从硬编码 8 放宽到 64（VF 宽）；二元/标量 op 新增 VF 宽广播源形态（{op}_bcast_vf helper，逐块 load 复用，无偏移）；融合层同步支持广播源。commit fc7c285。",
+  "change_stage2": "emit.py：reduce_sum_vf helper 末尾新增 asc_duplicate(bcast_reg, acc_reg, vmask)（3510 vdup POS_LOWEST/MODE_ZEROING）——asc_reduce_sum 语义为行和只落 lane0（其余 lane 置 0，知识卡与板上一致），helper 先累加后把 lane0 广播到全部 64 lane 再 storealign；_emit_reduce 目的收紧为必须恰 64 个 f32（8 通道形态废除——旧形态 storealign 写 256B 进 32B 声明，靠越界静默通过 M0b lane0 检查）；rms_norm IR 的 mean 因子修正 1/TILE²→1/TILE。遗留 dst=8 调用点同步更新（tests/reduce_legal/build_board_pack/build_schedule_roles）。",
+  "knowledge_gap_found": "62 张对照臂 API 知识卡缺 asc_duplicate（vector 广播形态，reg_broadcast.h/reg_vector.h）与 asc_reduce_max/min——归约→广播链在卡集内不可表达；IR 工具链经头文件核对（cann-9.1.0-fullops x86_64-linux/asc impl vdup POS_LOWEST 实测确认）。后续 C 系列实验的知识卡集需补此类跨 lane 形态。",
+  "validation": "单测 43/43（含两个融合时代陈旧锚点修复：WAR 释放断言 add_vf→fused_vf_0、pack 参考核 mul_custom.asc 同步重生成）；M4/M5 注入集 27/27 召回、6/6 零误拒；35 份判词组 IR 源零 reduce 使用、代表源 HEAD/工作树哈希一致（reduce helper 仅在使用处物化，输出不受影响）。",
+  "board_result": "容器 level23_bfix_run.log（2026-10-15）：maximum 0/4194304 违例 525.0us；apply_adam_w 0/1048576 违例 240.6us；softmax 0/4194304 违例 903.4us（修复前 ~94% 违例）；rms_norm 0/4194304 违例 1965.9us（修复前全违例）。GATE PASS。",
+  "perf_context": "单核 AIV 口径（同判词组）；cann-bench 多核基线 softmax case2 15.89us / rms_norm case2 15.61us 不可比。rms_norm 已知冗余：gamma 逐行重载（4096×4KB 多余 MTE2 流量）与 fused 块内 inv_n 链重算，属后续优化项。",
+  "semantics_notes": "softmax case2 输入域 [-2,2]，直接 exp 形（无 max 减）与 torch 稳定式在该域内差异在容差内；rms_norm 采用 sqrt(mean)+eps（与上板 golden 一致；与 cann-bench ref 的 sqrt(mean+eps) 在该输入域内差异 <2e-6，同容差内）。",
+  "verdict_impact": "无：判词组（判词依据）数据与记录冻结不动；L2/L3 评估与本次修复属判词后 C4/能力域，数据独立归档"
  }
 }
