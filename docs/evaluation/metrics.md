@@ -103,3 +103,78 @@ HAP_i = (T_baseline,i − T_HW,i) / ((T_cand,i − T_HW,i) + (T_baseline,i − T
 ## 已确认决定（2026-09-26 更新）
 
 仓定位（分层，独立建仓）、主设备 950、C1 处理为整套工具链、逃逸与越面都作废、每臂 5 次、计时口径 CANNBench kernel-only、负载与基线取自 cann-bench tasks、C4 不否决 IR、cannbot-dsl 可作第三臂（只定位不判赢）。任务判词以 claims.md v2.8 为准。M0、检查器召回等未写进该判词赢线的阈值仍是提案值。
+
+## M0/M0b 测量清单（2026-09-28 冻结，manifest v1.2）
+
+vector_add 配对（`examples/vector_add/add_golden.asc` 生成版 vs `add_reference.asc` 手写版，ADR 0014 lowering 后）的首次上板测量。缺任一项不得开跑；测完不得回头修改本清单。
+版本史（均发生在任何测量数据产生之前）：
+- v1.0→v1.1：CANN 9.2.0 → 9.1.0（cann-bench docker/base 验证配对：torch_npu 2.10.0.post4 ↔ torch 2.10.0 ↔ CANN 9.1.0）。
+- v1.1→v1.2：不再使用 asc-devkit 头 overlay 与私有副本（shim）。ADR 0014 的 reg 向量 lowering 所需全部接口（reg_load/reg_store/reg_vector/reg_convert、sync、vector_datamove、sys_var）在 **CANN 9.1.0 自带 asc 树的 3510 分支原生齐备**（实测编译通过），内核 TU 与 harness 运行统一用原生 9.1.0。另按 cann-bench docker/eval 的 950 配方补装 **950-ops 包（refonly：保留 libopapi、剥离内置 kernel 二进制）**——950PR 为 aclnn-only 设备，H2D/D2H 拷贝走 aclnnInplaceCopy，无 ops 时 torch_npu 张量搬运直接失败（ERR01007）；refonly 同时封禁内置算子路由（防作弊姿态，harness 的升频/清 cache 为 cann_bench_utils 自定义算子，不依赖内置 kernel）。
+
+### 设备与环境
+
+| 项 | 冻结值 |
+|---|---|
+| 主设备 | Ascend 950PR（逻辑名 `950pr`），torch_npu 实测名 `Ascend950PR_9589`：64 vector core / 32 cube core / 126208 MB / L2 128 MB。与 C1 同一台 |
+| 设备序列号 | PCIe Device Serial Number `00-07-00-09-00-b8-44-00`（PCI 0000:04:00.0，device id `d806` rev 20；宿主机 npu-smi 二进制缺失，以 PCIe DSN 为设备标识） |
+| 宿主/容器 | 100.105.88.102 / `w00964611_asc_playground`（/dev/davinci0） |
+| 驱动 | 9.1.T13.0.B130（宿主机 /usr/local/Ascend/driver） |
+| CANN | 9.1.0 toolkit（官方桶 `Ascend-cann-toolkit_9.1.0_linux-x86_64.run`，`--force` 安装：容器内驱动元数据不全导致兼容检查误报；驱动 9.1.T13 与 toolkit 9.1.0 为正常配对） |
+| ops 包 | `Ascend-cann-950-ops_9.1.0_linux-x86_64.run`（同桶同经代理下载）安装到 9.1.0 树，随后 **refonly 剥离**：`rm -rf …/opp/built-in/op_impl/ai_core/tbe/kernel`（保留 libopapi，内置 kernel 二进制删除） |
+| libhccl | SONAME-only stub（`int __hccl_stub;` 编成 `libhccl.so` 放入 9.1.0 lib64；torch_npu 的 DT_NEEDED 依赖，direct-launch 不调用 HCCL 功能；对齐 cann-bench docker/base 配方） |
+| 编译工具链（内核 TU） | bisheng（CANN 9.1.0 自带，clang 15.0.5，2026-07-30 构建）`--npu-arch=dav-3510 --asc-aicore-lang`；C API 头 = **CANN 9.1.0 自带 asc 树**（`x86_64-linux/asc/include`，3510 分支原生含 reg API；无 overlay） |
+| harness 运行环境 | 同一原生 9.1.0 环境（构建与运行同树；`source /usr/local/Ascend/ascend-toolkit/set_env.sh`） |
+| torch / torch_npu | 2.10.0+cpu / 2.10.0.post4（cann-bench requirements 钉版；配对 ↔ CANN 9.1.0） |
+| cann-bench | gitcode.com/cann/cann-bench master `abb6e47`（2026-09-24），kernel-only 口径（perf_metric_strategy=kernel_details） |
+| 提交形态 | direct_launch 样例结构（build.sh → dist/cann_bench-*.whl → TORCH_LIBRARY 直调），两个候选各自独立提交、独立评测 run |
+
+### 冻结 shape（测完不得换）
+
+- TILE=2048 个 f32；TILES=8（GM 每张量 16384 个 f32）；x/y stages=2、z stages=1
+- 单核：`add_custom<<<1, 0, stream>>>`；`add_vf` 的 data_len=2048（VF repeat_time=32）
+- dtype 一律 float32
+
+### 锁频与清 cache（CANNBench 内置机制，不另设手工命令）
+
+- 测量窗口前一次：`cann_bench_warmup`（MatMul，10240×10240 f16 ×2）+ `torch.npu.synchronize`
+- 每个测量 step 前：`cann_bench_cache_clean`（ReduceMax，96×1024×1024 f16）+ `torch.npu.synchronize`
+- 判分时按保留名 `CannBenchWarmup` / `CannBenchCacheClean`（回退匹配 MatMulV3/ReduceMax 的 warmup shape）剔除这些行
+
+### warmup 丢弃、采样与统计
+
+- profiler schedule `wait=0, warmup=3, active=20`；warmup step 不进统计
+- 每候选重复次数：`--warmup 3 --repeat 20`；统计量 = **中位**（每 step 目标 kernel 时长求和，跨 20 个 step 取中位；本任务每 step 恰一次目标 launch）。不用最小值
+- 单卡 `--device-id 0`，`--processes-per-card 1`
+
+### kernel 名匹配规则（判分只读原始 csv）
+
+- 判分脚本只读评测归档的原始 `kernel_details.csv`，不接受手抄时延
+- 目标行定义：排除 warmup 保留名后，Name 与被测 kernel 符号一致（含 `add_custom`）、Input Shapes 为本 case 的 16384-f32 输入形态的行
+- 同一 step 出现多行同名时按 Input Shapes 过滤，**禁止挑较短的一行**；过滤后仍多于一行则全部计入该 step 的求和，禁止挑选
+- 实测的 Name/Type 列值在冒烟后补注到归档记录里（补注事实，不改本规则）
+
+### M0 判据
+
+- `tax = T_generated / T_handwritten − 1`（正值表示生成更慢）；T 取上述中位
+- 通过线（提案，未冻结）：中位 ≤ 5% 且该对 ≤ 10%（当前可生成 op 只有 add，中位即该对）
+- CANNBench 的 HAP/评分不作判据（本任务无 baseline，得分项按缺失处理）
+
+### M0b 数值容差（开跑前写死；测后改容差无效）
+
+- 比较式（claims.md v2.5.12）：逐元素 `abs(a − b) ≤ atol + rtol × abs(b)`；a=内核输出，b=golden；**atol=1e-6，rtol=1e-6**；比较在 golden 的 dtype（float32）上进行；任一元素不满足、出现 NaN、dtype 或元素个数不一致 → 该内核失败
+- golden = `torch.add(x, y)`（CPU，float32）
+- 必测输入组（两组都必须过；构造规则如下，开跑时对输入与 golden 分别哈希归档）：
+  - G1 均匀：`torch.manual_seed(0)`；`x = torch.rand(16384) * 4 − 2`；`y = torch.rand(16384) * 4 − 2`
+  - G2 边界：v = [0.0, -0.0, 1.4e-45, -1.4e-45, 1.1754944e-38, -1.1754944e-38, 2.0, -2.0, 1e30, -1e30]；x = v 循环填充 16384；y = v 错开一位循环填充（所有和均为有限值）
+- 逐位一致率单独报告，不与容差构成「或」
+- M0b 与 C1 共用同一比较式；C1 的容差文件届时另行冻结
+
+### 防污染与归档
+
+- 开跑前封存哈希：`add_golden.asc`、`add_reference.asc`、`pack/vector_add_m0/` 全部源码、两个 wheel；上板执行中不改上述内容（修改即该候选作废）
+- 收包归档：两份原始 `kernel_details.csv`、两份评测报告 JSON、构建日志、输入组与 golden 的哈希、本清单引用的全部工具版本
+- 判分、M0b 检查与 tax 计算脚本随归档保存，只读上述原始文件
+
+### 顺序
+
+1. 本清单入仓 → 2. 构建两候选 wheel + 冒烟（跑通一次、结果对）→ 3. 封存哈希 → 4. 正式评测 run（两候选各一次，参数如上）→ 5. 判分与报告。冒烟不产生计分数据。
