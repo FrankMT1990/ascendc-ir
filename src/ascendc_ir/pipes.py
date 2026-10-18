@@ -31,6 +31,16 @@ class _CopyPipe(PipeFacade):
     def copy(self, src, dst) -> None:
         current_builder().add_stmt(CopyStmt(self.pipe, _coerce(src), _coerce(dst), user_callsite()))
 
+    def copy_strided(self, src, dst, burst_count: int, burst_len: int, src_stride: int, dst_stride: int) -> None:
+        """高维切分搬运（ADR 0016）：按 burst_count 个 burst_len 字节数据块搬运，
+        stride 为相邻数据块首地址的头距（字节单位）。对照 asc_copy_gm2ub/ub2gm 高维切分形态：
+        burst_len 仅需 dtype 对齐；gm2ub 的 dst_stride≠burst_len 时 dst_stride 需 32B 对齐，
+        ub2gm 的 src_stride≠burst_len 时 src_stride 需 32B 对齐。"""
+        self._copy_form(
+            "strided", src, dst,
+            (int(burst_count), int(burst_len), int(src_stride), int(dst_stride)),
+        )
+
     def nd2nz(self, src, dst, rows: int, cols: int, row_stride: int | None = None) -> None:
         """GM 上的 ND 矩阵搬到 L1，并转成 NZ。rows、cols 是这一块的逻辑行列。
 
@@ -78,6 +88,25 @@ class _VectorPipe(PipeFacade):
 
     def repeat_reduce_sum(self, dst, src) -> None:
         self._record("repeat_reduce_sum", dst, (src,), ())
+
+    def repeat_reduce_max(self, dst, src) -> None:
+        """行最大值：asc_reduce_max 只在 lane0 落结果（其余 lane 未定义，板级探针 2026-10-16），
+        helper 经 asc_duplicate 只取 lane0 广播到全部 64 lane。dst 必须是 64 个 f32。"""
+        self._record("repeat_reduce_max", dst, (src,), ())
+
+    def gather(self, dst, table, idx) -> None:
+        """dst[j] = table[idx[j]]。asc_gather/vgather2：**元素索引**（板级探针 2026-10-16），
+        表在 UB，索引为 i32 缓冲（与 dst 等长，逐 VF 块 gather）。"""
+        self._record("gather", dst, (table, idx), ())
+
+    def brc(self, dst, src, offset_base: int, offset_stride: int = 0) -> None:
+        """把 src 的第 offset 个元素广播到 dst 全部 lane（vlds BRC_B32，元素偏移，板级探针
+        2026-10-16）。offset = offset_base + 迭代号 * offset_stride（循环仿射，直写段只用 base）。"""
+        self._record("brc", dst, (src,), (int(offset_base), int(offset_stride)))
+
+    def arange_i32(self, dst, start: int = 0) -> None:
+        """按起始值写 i32 等差数列（索引算术素材：配合 shiftleft_scalar/sub 做元素下标变换）。"""
+        self._record("arange_i32", dst, (), (int(start),))
 
     def datablock_reduce_sum(self, dst, src) -> None:
         self._record("datablock_reduce_sum", dst, (src,), ())

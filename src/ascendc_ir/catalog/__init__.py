@@ -36,11 +36,15 @@ SCALAR_I32 = frozenset({"shiftleft_scalar", "shiftright_scalar"})
 
 # 已有专门降级，不走上面的通用模板。
 # select / select_gt* / duplicate / arange 按 asc-devkit 02_simd_c_api 样例角色降级。
+# gather / brc / repeat_reduce_max / arange_i32 为工具链迭代 #5 新增（板级探针 2026-10-16 核实语义）。
 SPECIAL = frozenset({
     "add",
     "leakyrelu",
     "cast",
     "repeat_reduce_sum",
+    "repeat_reduce_max",
+    "gather",
+    "brc",
     "datablock_reduce_sum",
     "mmad",
     "select",
@@ -58,6 +62,7 @@ SPECIAL = frozenset({
     "select_le_scalar",
     "duplicate",
     "arange",
+    "arange_i32",
 })
 
 

@@ -406,11 +406,49 @@ def v012_cube_contract(kernel, device) -> list:
     diags = []
     diags.extend(_check_no_mix(kernel))
     for index, stmt in enumerate(kernel.statements):
-        if isinstance(stmt, CopyStmt) and stmt.form != "linear":
+        if isinstance(stmt, CopyStmt) and stmt.form == "strided":
+            diags.extend(_check_strided_copy(stmt))
+        elif isinstance(stmt, CopyStmt) and stmt.form != "linear":
             diags.extend(_check_cube_copy(stmt))
         elif isinstance(stmt, ComputeStmt) and stmt.op == "mmad":
             diags.extend(_check_mmad(stmt))
             diags.extend(_check_mmad_links(kernel.statements, index, stmt))
+    return diags
+
+
+def _check_strided_copy(stmt: CopyStmt) -> list:
+    """ADR 0016 高维切分搬运：MTE2/MTE3、gm↔ub、四标量（bc/bl/头距），对齐约束在 codegen 细查。"""
+    diags = []
+    ok_dir = (
+        (stmt.pipe is Pipe.MTE2 and _space(stmt.src) == "gm" and _space(stmt.dst) == "ubuf")
+        or (stmt.pipe is Pipe.MTE3 and _space(stmt.src) == "ubuf" and _space(stmt.dst) == "gm")
+    )
+    _need(stmt, ok_dir, f"strided 搬运只支持 mte2 的 gm→ub 或 mte3 的 ub→gm，当前是 {stmt.pipe.value} {_space(stmt.src)}->{_space(stmt.dst)}",
+          "改用 mte2.copy_strided / mte3.copy_strided", diags)
+    if len(stmt.scalars) != 4 or not all(isinstance(x, int) for x in stmt.scalars):
+        _need(stmt, False, "strided 搬运需要 (burst_count, burst_len, src_stride, dst_stride) 四个整数",
+              "用 copy_strided(src, dst, burst_count, burst_len, src_stride, dst_stride)", diags)
+        return diags
+    bc, bl, ss, ds = stmt.scalars
+    _need(stmt, 1 <= bc <= 65535 and 1 <= bl <= 65535 and 0 <= ss <= 65535 and 0 <= ds <= 65535,
+          f"strided 参数超界：bc={bc} bl={bl} src_stride={ss} dst_stride={ds}（均需在 [0, 65535]，bc/bl ≥ 1）",
+          "burst_count/burst_len/stride 都是 uint16 字节量", diags)
+    _need(stmt, bl % 4 == 0, f"strided 的 burst_len={bl} 需为 4 的倍数（b32 dtype 对齐）",
+          "burst_len 按 4B 粒度取值", diags)
+    if stmt.pipe is Pipe.MTE2:
+        _need(stmt, ds == bl or ds % 32 == 0,
+              f"gm2ub 的 dst_stride={ds} ≠ burst_len={bl} 时需 32B 对齐",
+              "dst 打包时令 dst_stride=burst_len，或按 32B 对齐", diags)
+    else:
+        _need(stmt, ss == bl or ss % 32 == 0,
+              f"ub2gm 的 src_stride={ss} ≠ burst_len={bl} 时需 32B 对齐",
+              "src 打包时令 src_stride=burst_len，或按 32B 对齐", diags)
+    buf = stmt.dst.buffer if isinstance(stmt.dst, BufRef) else (stmt.src.buffer if isinstance(stmt.src, BufRef) else None)
+    if buf is not None:
+        need = bc * bl
+        _need(stmt, buf.elems * buf.dtype.nbytes >= need,
+              f"{buf.name} 有 {buf.elems * buf.dtype.nbytes}B，装不下 {bc}×{bl}B 的搬运量",
+              f"把 {buf.name} 扩到至少 {need}B", diags)
     return diags
 
 

@@ -1,17 +1,27 @@
 # Copyright (c) 2026 Huawei Technologies Co., Ltd.
-# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+# This program is free software and you can redistribute it and/or modify it under the terms and conditions of
 # CANN Open Software License Agreement Version 2.0 (the "License").
-# Please refer to the License for details. You may not use this file except in compliance with the License.
+# You may refer to the License for details on the use of this software distributed under the License.
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 
-"""循环重卷：trace 期展开的语句序列，按仿射规律还原为单迭代循环体。
+"""循环重卷：trace 期展开的语句序列，按仿射规律还原为「顺序多段」结构。
 
 trace 期 `for i in range(TILES)` 被展开（ADR 0002），模型只保留平铺语句。
-reroll 用 sync 的 stage（迭代号，见 ir-syntax.md）推断 TILES，再验证每轮迭代
-与首轮模板一致：结构（op / PIPE / 操作数个数 / 标量）相同、GM 偏移关于 i 仿射、
-第 i 轮 buffer 槽位等于 i % stages（第 0 轮必须是 0）。
+reroll 用 sync 的 stage（迭代号，见 ir-syntax.md）把语句序列切成若干段：
+
+- ("plain", start, stmts)：无带 stage 的 sync 的直写段（每个槽位至多写一次）；
+- ("loop", start, per, tiles, body, init_first)：单迭代模板 body（第 0 轮，位于全局
+  语句下标 start 处），per 为周期、tiles 为轮数，其后各轮与首轮模板一致：结构
+  （op / PIPE / 操作数个数 / 标量）相同、GM 偏移关于 i 仿射、第 i 轮 buffer 槽位
+  等于 i % stages（第 0 轮必须是 0）。
+
+段切分规则（ADR 0015，多循环支持）：带 stage 的 sync 按「stage 从 0 重新计数」
+分属各个循环；两个 stage-0 sync 的间距即周期 per；循环体起点从段界开始逐位尝试，
+取最小的能通过整环结构校验的候选（把直写语句误吸进循环需要逐语句结构+仿射全部
+巧合，且误吸的 stride-0 语句逐轮重放是幂等的，不产生错码）。段间由发射端插入
+PIPE_ALL 全屏障，跨段依赖不需要手工 sync。
 
 失败处理（ADR 0009）：重卷失败返回 ok=False，由 generate() 拒绝生成；
 不允许展开生成（展开会丢槽位下标与 WAR，产生错码）。
@@ -24,67 +34,105 @@ from ..model.stmts import ComputeStmt, CopyStmt, SyncStmt
 
 
 def reroll(kernel) -> tuple:
-    """返回 (tiles, body, epilogue, ok, mmad_init_first)。
+    """返回 (sections, ok)。
 
-    tiles == 1 且 ok：无循环的直写形态（每个槽位至多写一次；mmad 累加不算第二次初写）。
-    tiles > 1 且 ok：body 为单迭代模板（第 0 轮）。循环之后可以有一段只执行一次的收尾。
-    mmad_init_first：第 0 轮 mmad 清 L0C，其后各轮改为累加。
+    sections 为段列表：空列表仅在 ok=False 时出现。每个循环段自带 mmad_init_first
+    （第 0 轮 mmad 清 L0C，其后各轮改为累加）。
     非 ok：无法安全生成，调用方必须拒绝。
     """
     stmts = list(kernel.statements)
-    split = _split_loop(stmts)
-    if split is None:
-        if _has_slot_reuse(stmts):
-            return 1, [], [], False, False
-        return 1, stmts, [], True, False
-    tiles, per, epilogue = split
-    body = stmts[:per]
-    init_first = False
-    strides = _strides(body, stmts[per : 2 * per])
-    if strides is None:
-        return tiles, [], [], False, False
-    init_first = _uses_init_first(body, stmts[per : 2 * per])
-    for i in range(2, tiles):
-        group = stmts[i * per : (i + 1) * per]
-        if not _group_matches(body, group, i, strides):
-            return tiles, [], [], False, False
-        init_first = init_first or _uses_init_first(body, group)
-    return tiles, body, epilogue, True, init_first
-
-
-def _split_loop(stmts):
-    """用带 stage 的 sync 把重复的循环体和其后的收尾切开。没有这种 sync 时返回 None。"""
     staged = [(i, s.stage) for i, s in enumerate(stmts) if isinstance(s, SyncStmt) and s.stage is not None]
     if not staged:
+        if _has_slot_reuse(stmts):
+            return [], False
+        return [("plain", 0, stmts)], True
+    sections = []
+    prev_end = 0
+    si = 0
+    while si < len(staged):
+        parsed = _parse_loop_at(stmts, staged, si, prev_end)
+        if parsed is None:
+            return [], False
+        tiles, per, start, init_first = parsed
+        if start > prev_end:
+            plain = stmts[prev_end:start]
+            if _has_slot_reuse(plain):
+                return [], False
+            sections.append(("plain", prev_end, plain))
+        sections.append(("loop", start, per, tiles, stmts[start : start + per], init_first))
+        prev_end = start + tiles * per
+        si = _staged_consumed(staged, si, prev_end)
+    if prev_end < len(stmts):
+        tail = stmts[prev_end:]
+        if _has_slot_reuse(tail):
+            return [], False
+        sections.append(("plain", prev_end, tail))
+    return sections, True
+
+
+def _staged_consumed(staged, si, upto):
+    n = si
+    while n < len(staged) and staged[n][0] < upto:
+        n += 1
+    return n
+
+
+def _parse_loop_at(stmts, staged, si, prev_end):
+    """从 staged[si]（必须是 stage 0）起解析一个循环，返回 (tiles, per, start, init_first)。
+
+    per = 第 0 轮首个 staged sync 到第 1 轮首个 staged sync 的间距（循环至少两轮）。
+    tiles 候选取观察到的 stage 值 +1（从大到小）：整环校验（各轮窗口内 stage 必须等于
+    轮号、超出 span 的 sync 一律不属于本循环）会拒绝把后续循环吸进来的候选——
+    span 外的 stage-0 sync 属于下一个循环，span 内窗口错位直接拒绝。最大的合法
+    tiles 即真实轮数；更小的候选即使通过也会让余下 stage≠0 的 sync 无法续 parse
+    而整体 fail closed。
+    """
+    pos0, stage0 = staged[si]
+    if stage0 != 0:
         return None
-    tiles = max(stage for _, stage in staged) + 1
-    if tiles <= 1:
+    nxt = None
+    for p, s in staged[si + 1 :]:
+        if s == 1:
+            nxt = p
+            break
+    if nxt is None:
         return None
-    groups = []
-    for stage in range(tiles):
-        hits = [i for i, got in staged if got == stage]
-        if not hits:
-            return None
-        groups.append(hits)
-    if len({len(hits) for hits in groups}) != 1:
+    per = nxt - pos0
+    if per <= 0:
         return None
-    per = groups[1][0] - groups[0][0]
-    if per <= 0 or groups[0][0] >= per:
-        return None
-    for stage in range(tiles):
-        for nth, index in enumerate(groups[stage]):
-            if index != groups[0][nth] + stage * per:
+    for tiles in sorted({s + 1 for _, s in staged[si:] if s >= 1}, reverse=True):
+        for start in range(prev_end, pos0 + 1):
+            if start + tiles * per > len(stmts):
+                continue
+            got = _loop_valid(stmts, staged, start, per, tiles)
+            if got is not None:
+                return (tiles, per, start, got)
+    return None
+
+
+def _loop_valid(stmts, staged, start, per, tiles):
+    """校验以 stmts[start:start+per] 为模板、tiles 轮的循环；返回 init_first 或 None。"""
+    body = stmts[start : start + per]
+    for pos, stage in staged:
+        if start <= pos < start + tiles * per:
+            if stage != (pos - start) // per:
                 return None
-    if tiles * per > len(stmts):
+        elif pos >= start + tiles * per:
+            break
+    strides = _strides(body, stmts[start + per : start + 2 * per])
+    if strides is None:
         return None
-    epilogue = stmts[tiles * per :]
-    if any(isinstance(s, SyncStmt) and s.stage is not None for s in epilogue):
-        return None
-    return tiles, per, epilogue
+    init_first = _uses_init_first(body, stmts[start + per : start + 2 * per])
+    for i in range(2, tiles):
+        group = stmts[start + i * per : start + (i + 1) * per]
+        if not _group_matches(body, group, i, strides):
+            return None
+        init_first = init_first or _uses_init_first(body, group)
+    return init_first
 
 
 def _has_slot_reuse(stmts) -> bool:
-    """直写形态只允许「每个槽位至多写一次」。
+    """直写段只允许「每个槽位至多写一次」。
 
     既读又写同一槽位的语句（就地 RMW）不算复用证据——那不是被抹平的循环；
     它会在发射端被「生产 PIPE 必须唯一」拒绝，并带更准确的报错。

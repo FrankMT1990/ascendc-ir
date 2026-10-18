@@ -10,6 +10,10 @@
 
 生成规则：
 - 先跑检查器，存在 block 诊断即拒绝生成（fail closed）。
+- 段结构（ADR 0015）：reroll 把语句序列切成顺序多段——若干循环段 + 直写段。
+  每个循环段独立做 event 分配（按段隔离 id，保证同一 id 上 notify/wait 严格
+  交替）、软件流水（ADR 0013）与融合分析；段间发射 `asc_sync_pipe(PIPE_ALL)`
+  全屏障，跨段依赖（上一段的读者 vs 下一段的写者）由屏障兜底，不需要手工 sync。
 - event 分配（ADR 0010/0011）：event id 按 (生产PIPE, 消费PIPE) 对独立分配，且全部为
   字面量。循环按流水深度展开，同一 id 上 notify/wait 严格交替；TILES 不能被流水深度整除时拒绝生成。
 - 软件流水（ADR 0013，M0 的去守卫通过线）：把循环切成 prologue / 稳态 / epilogue。
@@ -23,7 +27,14 @@
   repeat_reduce_sum 的行和只在 dst 的 lane0 有效（asc_reduce_sum 语义），helper 末尾用
   `asc_duplicate`（vdup POS_LOWEST）把 lane0 广播到全部 64 lane，dst 因此必须恰好 64 个 f32，
   广播后的 dst 可作为二元/标量 op 的 VF 宽广播源。
-  向量计算在 3510 上没有 UB 指针版实现，lowering 为 reg 向量风格（ADR 0014）。
+  迭代 #5 新增（板级探针 2026-10-16 核实）：v.gather（asc_gather/vgather2，**元素索引**，
+  表在 UB）；v.brc（asc_loadalign_brc/vlds BRC_B32，把表的第 offset 个元素广播到全部 lane，
+  **元素偏移**）；v.repeat_reduce_max（asc_reduce_max：lane0=max、其余 lane 未定义，
+  helper 经 asc_duplicate 只取 lane0，累加器初值 -FLT_MAX）；v.arange_i32；
+  mte.copy_strided（高维切分搬运，stride=头距字节单位，burst_len 仅需 dtype 对齐；
+  gm2ub 的 dst_stride≠burst_len 时需 32B 对齐，ub2gm 的 src_stride≠burst_len 时需 32B 对齐）。
+  vscatter 板级探针语义不符（两种索引假设均不匹配，写越界污染）——不提供 v.scatter。
+- 向量计算在 3510 上没有 UB 指针版实现，lowering 为 reg 向量风格（ADR 0014）。
   搬运 burst_len 在 3510 上单位为字节（2201 为 32B 块数），搬运量直接发单 stage 字节数。
 - v0.2 不生成多核切分；不支持跨 PIPE 就地改写（一个 buffer 的生产 PIPE 必须唯一）。
 """
@@ -63,11 +74,11 @@ _SPACE_QUAL = {
 }
 
 _SUPPORTED_COMPUTE = {
-    "add", "leakyrelu", "cast", "repeat_reduce_sum", "select",
+    "add", "leakyrelu", "cast", "repeat_reduce_sum", "repeat_reduce_max", "select",
     "select_gt", "select_gt_scalar", "select_lt", "select_lt_scalar",
     "select_ne", "select_ne_scalar", "select_eq", "select_eq_scalar",
     "select_ge", "select_ge_scalar", "select_le", "select_le_scalar",
-    "duplicate", "arange", "mmad",
+    "duplicate", "arange", "arange_i32", "gather", "brc", "mmad",
 }
 
 _LICENSE = """/* !
@@ -153,6 +164,54 @@ _REDUCE_VF_HELPER = """__simd_vf__ inline void reduce_sum_vf(
     }
     asc_duplicate(bcast_reg, acc_reg, vmask);
     asc_storealign(y_local, bcast_reg, vmask);
+}"""
+
+_REDUCE_MAX_VF_HELPER = """__simd_vf__ inline void reduce_max_vf(
+    __ubuf__ float* x_local, __ubuf__ float* y_local, uint32_t data_len)
+{
+    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);
+    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;
+
+    vector_bool vmask;
+    vector_float src_reg;
+    vector_float dst_reg;
+    vector_float acc_reg;
+    vector_float bcast_reg;
+    asc_duplicate_scalar(acc_reg, -3.402823466e+38f);
+    for (uint16_t i = 0; i < repeat_time; ++i) {
+        vmask = asc_update_mask_b32(data_len);
+        asc_loadalign(src_reg, x_local + i * one_rep_size);
+        asc_reduce_max(dst_reg, src_reg, vmask);
+        asc_max(acc_reg, acc_reg, dst_reg, vmask);
+    }
+    asc_duplicate(bcast_reg, acc_reg, vmask);
+    asc_storealign(y_local, bcast_reg, vmask);
+}"""
+
+_GATHER_VF_HELPER = """__simd_vf__ inline void gather_vf(
+    __ubuf__ float* table, __ubuf__ int32_t* idx, __ubuf__ float* dst, uint32_t data_len)
+{
+    uint16_t one_rep_size = asc_get_vf_len() / sizeof(float);
+    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;
+
+    vector_bool vmask;
+    vector_float reg_dst;
+    vector_uint32_t reg_idx;
+    for (uint16_t i = 0; i < repeat_time; ++i) {
+        vmask = asc_update_mask_b32(data_len);
+        asc_loadalign(reg_idx, idx + i * one_rep_size);
+        asc_gather(reg_dst, table, reg_idx, vmask);
+        asc_storealign(dst + i * one_rep_size, reg_dst, vmask);
+    }
+}"""
+
+_BRC_VF_HELPER = """__simd_vf__ inline void brc_vf(
+    __ubuf__ float* src, __ubuf__ float* dst, int32_t offset)
+{
+    vector_bool vmask = asc_create_mask_b32(PAT_ALL);
+    vector_float reg_dst;
+    asc_loadalign_brc(reg_dst, src, offset);
+    asc_storealign(dst, reg_dst, vmask);
 }"""
 
 _SELECT_VF_HELPER = """__simd_vf__ inline void select_vf(
@@ -247,11 +306,29 @@ _ARANGE_VF_HELPER = """__simd_vf__ inline void arange_vf(
     }
 }"""
 
+_ARANGE_I32_VF_HELPER = """__simd_vf__ inline void arange_i32_vf(
+    __ubuf__ int32_t* dst, uint32_t data_len, int32_t start_value)
+{
+    uint16_t one_rep_size = asc_get_vf_len() / sizeof(int32_t);
+    uint16_t repeat_time = (data_len + one_rep_size - 1) / one_rep_size;
+
+    vector_bool vmask = asc_create_mask_b32(PAT_ALL);
+    vector_int32_t reg_dst;
+    for (uint16_t i = 0; i < repeat_time; ++i) {
+        asc_arange(reg_dst, start_value);
+        asc_storealign(dst + i * one_rep_size, reg_dst, vmask);
+        start_value += static_cast<int32_t>(one_rep_size);
+    }
+}"""
+
 _HELPERS = {
     "add": _ADD_VF_HELPER,
     "leakyrelu": _LEAKYRELU_VF_HELPER,
     "cast": _CAST_VF_HELPER,
     "repeat_reduce_sum": _REDUCE_VF_HELPER,
+    "repeat_reduce_max": _REDUCE_MAX_VF_HELPER,
+    "gather": _GATHER_VF_HELPER,
+    "brc": _BRC_VF_HELPER,
     "select": _SELECT_VF_HELPER,
     "select_gt": _SELECT_GT_VF_HELPER,
     "select_gt_scalar": _SELECT_GT_SCALAR_VF_HELPER,
@@ -267,6 +344,7 @@ _HELPERS = {
     "select_le_scalar": _SELECT_LE_SCALAR_VF_HELPER,
     "duplicate": _DUPLICATE_VF_HELPER,
     "arange": _ARANGE_VF_HELPER,
+    "arange_i32": _ARANGE_I32_VF_HELPER,
 }
 
 
@@ -280,33 +358,99 @@ def generate(kernel, device=None) -> str:
     if blocks:
         detail = "; ".join(f"{d.id}@{d.callsite.line}: {d.message}" for d in blocks)
         raise CodegenError(f"检查器拒绝生成：{detail}")
-    tiles, body, epilogue, ok, mmad_init_first = reroll(kernel)
+    sections, ok = reroll(kernel)
     if not ok:
         raise CodegenError(
             f"循环重卷失败：trace 展开的 {len(kernel.statements)} 条语句不满足仿射规律，"
             "或存在无循环标记的槽位复用。循环体内的 sync 必须写 stage=迭代号；"
             "循环体语句保持一致、GM 偏移关于 i 仿射、buffer 槽位为 i % stages"
         )
-    return _Emitter(kernel, dev, tiles, body, epilogue, mmad_init_first).emit()
+    return _Emitter(kernel, dev, sections).emit()
+
+
+class _LoopState:
+    """单个循环段的发射上下文（ADR 0015 多循环）。"""
+
+    def __init__(self, kernel, start, per, tiles, body, init_first, loop_id):
+        self.start = start
+        self.per = per
+        self.tiles = tiles
+        self.body = body
+        self.init_first = init_first
+        self.loop_id = loop_id
+        factor = 1
+        for buf in kernel.buffers:
+            factor = math.lcm(factor, buf.stages)
+        if tiles % factor != 0:
+            raise CodegenError(
+                f"循环 {loop_id} 的轮数 {tiles} 不能被流水深度 {factor} 整除，无法按槽位展开；"
+                "请调整 TILES 或 stages"
+            )
+        self.unroll = factor
+        self.war = _analyze_war_body(kernel, body, f"循环 {loop_id} ")
+        self.last_read = {}
+        for j, stmt in enumerate(body):
+            for ref in _stmt_reads(stmt):
+                self.last_read[ref.buffer.name] = j
+        self.fuse_plans = plan_fusion(body)
+
+
+def _analyze_war_body(kernel, body, label):
+    """一段语句内每 buffer 的生产/消费 PIPE；跨 PIPE 的 buffer 需要 WAR 通道。
+
+    本段不写、只读的 buffer（跨段生产）不发 WAR——段间 PIPE_ALL 屏障已兜底。
+    """
+    war = {}
+    for buf in kernel.buffers:
+        writers, readers = set(), set()
+        for stmt in body:
+            if isinstance(stmt, CopyStmt):
+                if isinstance(stmt.dst, BufRef) and stmt.dst.buffer is buf:
+                    writers.add(stmt.pipe)
+                if isinstance(stmt.src, BufRef) and stmt.src.buffer is buf:
+                    readers.add(stmt.pipe)
+            elif isinstance(stmt, ComputeStmt):
+                if isinstance(stmt.dst, BufRef) and stmt.dst.buffer is buf:
+                    writers.add(stmt.pipe)
+                for s in stmt.srcs:
+                    if isinstance(s, BufRef) and s.buffer is buf:
+                        readers.add(stmt.pipe)
+        cross = readers - writers
+        if len(writers) == 1 and len(cross) == 1:
+            p, q = next(iter(writers)), next(iter(cross))
+            if p != q:
+                war[buf.name] = (p, q)
+        elif len(writers) == 1 and not cross:
+            continue
+        elif not writers:
+            continue
+        elif writers or readers:
+            raise CodegenError(
+                f"buffer {buf.name} 在{label}有多个生产/消费 PIPE"
+                f"（{sorted(p.value for p in writers)} / {sorted(p.value for p in readers)}），"
+                "v0.2 不支持跨 PIPE 就地改写；请读旧 buffer、写新 buffer"
+            )
+    return war
 
 
 class _Emitter:
-    def __init__(self, kernel, device, tiles, body, epilogue, mmad_init_first):
+    def __init__(self, kernel, device, sections):
         self.kernel = kernel
         self.device = device
-        self.tiles = tiles
-        self.body = body
-        self.epilogue = epilogue
-        self.mmad_init_first = mmad_init_first
-        self.looped = tiles > 1
+        self.sections = sections
+        self._ctx = None  # 当前正在发射的循环段（直写段为 None）
         self._slot_from_ref = False
-        self.per = len(body) if tiles > 1 else len(kernel.statements)
         self._pair_events = {}  # (set_pipe, wait_pipe) -> {channel_key: base_id}
         self._pair_used = {}  # (set_pipe, wait_pipe) -> int
-        self._war = self._analyze_war()
-        self._last_read = self._analyze_last_reads()
-        self._unroll = self._unroll_factor()
-        self._fuse_plans = plan_fusion(self.body)
+        self._loop_states = {}
+        loop_no = 0
+        for sec in sections:
+            if sec[0] == "plain":
+                _analyze_war_body(kernel, sec[2], "直写段")
+                continue
+            loop_no += 1
+            _, start, per, tiles, body, init_first = sec
+            self._loop_states[id(sec)] = _LoopState(kernel, start, per, tiles, body, init_first, loop_no)
 
     # ---- 融合：把循环体里连续的 v 管语句批提升为寄存器直通 ----
     # 判定逻辑在 codegen/fusion.py（与 verify 的 V002 容量扣除共享）
@@ -406,62 +550,7 @@ class _Emitter:
 
     # ---- 分析 ----
 
-    def _analyze_war(self):
-        """每 buffer 的生产/消费 PIPE；跨 PIPE 的 buffer 需要 WAR 通道。"""
-        war = {}
-        scope = self.body if self.looped else self.kernel.statements
-        for buf in self.kernel.buffers:
-            writers, readers = set(), set()
-            for stmt in scope:
-                if isinstance(stmt, CopyStmt):
-                    if isinstance(stmt.dst, BufRef) and stmt.dst.buffer is buf:
-                        writers.add(stmt.pipe)
-                    if isinstance(stmt.src, BufRef) and stmt.src.buffer is buf:
-                        readers.add(stmt.pipe)
-                elif isinstance(stmt, ComputeStmt):
-                    if isinstance(stmt.dst, BufRef) and stmt.dst.buffer is buf:
-                        writers.add(stmt.pipe)
-                    for s in stmt.srcs:
-                        if isinstance(s, BufRef) and s.buffer is buf:
-                            readers.add(stmt.pipe)
-            cross = readers - writers
-            if len(writers) == 1 and len(cross) == 1:
-                p, q = next(iter(writers)), next(iter(cross))
-                if p != q:
-                    war[buf.name] = (p, q)
-            elif len(writers) == 1 and not cross:
-                continue
-            elif writers or readers:
-                raise CodegenError(
-                    f"buffer {buf.name} 有多个生产/消费 PIPE（{sorted(p.value for p in writers)} / "
-                    f"{sorted(p.value for p in readers)}），v0.2 不支持跨 PIPE 就地改写；"
-                    "请读旧 buffer、写新 buffer"
-                )
-        return war
-
-    def _analyze_last_reads(self):
-        """每个 buffer 在循环体内最后一次被读的语句下标（WAR 释放点，复审第 1 条）。"""
-        last = {}
-        for j, stmt in enumerate(self.body):
-            for ref in _stmt_reads(stmt):
-                last[ref.buffer.name] = j
-        return last
-
-    def _unroll_factor(self) -> int:
-        """循环按各 buffer 流水深度的最小公倍数展开；TILES 须被整除。"""
-        if not self.looped:
-            return 1
-        factor = 1
-        for buf in self.kernel.buffers:
-            factor = math.lcm(factor, buf.stages)
-        if self.tiles % factor != 0:
-            raise CodegenError(
-                f"循环轮数 {self.tiles} 不能被流水深度 {factor} 整除，无法按槽位展开；"
-                "请调整 TILES 或 stages"
-            )
-        return factor
-
-    # ---- event 分配（按 PIPE 对独立，全部字面量）----
+    # ---- event 分配（按 PIPE 对独立，全部字面量；WAR 通道按段隔离）----
 
     def _alloc(self, pair, key, n: int = 1) -> int:
         channels = self._pair_events.setdefault(pair, {})
@@ -479,7 +568,8 @@ class _Emitter:
 
     def _war_event_id(self, buf, producer: Pipe, consumer: Pipe, k: int) -> str:
         """WAR 通道按槽位一个字面量 id，保证同一 id 上 notify/wait 严格交替。"""
-        base = self._alloc((consumer, producer), ("war", buf.name), buf.stages)
+        lid = self._ctx.loop_id if self._ctx is not None else 0
+        base = self._alloc((consumer, producer), ("war", lid, buf.name), buf.stages)
         return f"EVENT_ID{base + k % buf.stages}"
 
     # ---- 引用表达式（k 为展开后的子迭代号，槽位与偏移均为字面量/仿射式）----
@@ -488,13 +578,13 @@ class _Emitter:
         buf = ref.buffer
         if buf.stages == 1:
             return buf.name
-        # 直写形态和循环收尾每条语句自带槽位。循环体的槽位由展开下标 k 决定。
-        slot = ref.stage if self._slot_from_ref or not self.looped else k % buf.stages
+        # 直写段每条语句自带槽位。循环体的槽位由展开下标 k 决定。
+        slot = ref.stage if self._slot_from_ref or self._ctx is None else k % buf.stages
         return buf.name if slot == 0 else f"{buf.name} + {slot * buf.elems}"
 
     def _gm_ptr(self, ref: GmRef, stmt_index: int, ref_index: int, k: int, i_value) -> str:
-        base = ref.offset  # body 是第 0 轮，offset 即基址。收尾不在循环里，用它自己的偏移。
-        if not self.looped or self._slot_from_ref:
+        base = ref.offset  # body 是第 0 轮，offset 即基址。直写段用它自己的偏移。
+        if self._ctx is None or self._slot_from_ref:
             return ref.param.name if base == 0 else f"{ref.param.name} + {base}"
         stride = self._gm_stride(stmt_index, ref_index)
         if i_value is not None:
@@ -508,49 +598,50 @@ class _Emitter:
         return f"{ref.param.name} + {base} + {term}"
 
     def _gm_stride(self, stmt_index: int, ref_index: int) -> int:
-        first = _stmt_refs(self.kernel.statements[stmt_index])[ref_index]
-        second = _stmt_refs(self.kernel.statements[self.per + stmt_index])[ref_index]
+        ctx = self._ctx
+        first = _stmt_refs(self.kernel.statements[ctx.start + stmt_index])[ref_index]
+        second = _stmt_refs(self.kernel.statements[ctx.start + ctx.per + stmt_index])[ref_index]
         return second.offset - first.offset
 
     # ---- 软件流水：同一段里 WAR 的有无必须对每个 i 都一样，才能不写 if ----
 
-    def _signature(self, group_start: int) -> tuple:
+    def _signature(self, ctx, group_start: int) -> tuple:
         items = []
         for buf in self.kernel.buffers:
-            if buf.name not in self._war or self.tiles <= buf.stages:
+            if buf.name not in ctx.war or ctx.tiles <= buf.stages:
                 continue
-            for k in range(self._unroll):
+            for k in range(ctx.unroll):
                 gi = group_start + k
                 wait = "emit" if gi >= buf.stages else "omit"
-                notify = "emit" if gi + buf.stages < self.tiles else "omit"
+                notify = "emit" if gi + buf.stages < ctx.tiles else "omit"
                 items.append((buf.name, k, wait, notify))
         return tuple(items)
 
-    def _regions(self) -> list:
-        starts = list(range(0, self.tiles, self._unroll))
+    def _regions(self, ctx) -> list:
+        starts = list(range(0, ctx.tiles, ctx.unroll))
         regions = []
         index = 0
         while index < len(starts):
-            signature = self._signature(starts[index])
+            signature = self._signature(ctx, starts[index])
             end = index + 1
-            while end < len(starts) and self._signature(starts[end]) == signature:
+            while end < len(starts) and self._signature(ctx, starts[end]) == signature:
                 end += 1
             lo = starts[index]
-            hi = starts[end - 1] + self._unroll
+            hi = starts[end - 1] + ctx.unroll
             regions.append((lo, hi, signature))
             index = end
         return regions
 
-    def _emit_regions(self) -> list:
+    def _emit_regions(self, ctx) -> list:
         """第一轮 mmad 负责清零时，把它从后续累加循环里剥出来，稳态里就不必再写 if。"""
-        regions = self._regions()
-        if not self.mmad_init_first:
+        regions = self._regions(ctx)
+        if not ctx.init_first:
             return regions
         peeled = []
         for lo, hi, signature in regions:
-            if lo == 0 and hi - lo > self._unroll:
-                peeled.append((0, self._unroll, signature))
-                peeled.append((self._unroll, hi, signature))
+            if lo == 0 and hi - lo > ctx.unroll:
+                peeled.append((0, ctx.unroll, signature))
+                peeled.append((ctx.unroll, hi, signature))
             else:
                 peeled.append((lo, hi, signature))
         return peeled
@@ -591,6 +682,10 @@ class _Emitter:
             if op in ops:
                 lines.extend(_HELPERS[op].splitlines())
                 lines.append("")
+        for op in ("repeat_reduce_max", "gather", "brc", "arange_i32"):
+            if op in ops:
+                lines.extend(_HELPERS[op].splitlines())
+                lines.append("")
         emitted = set()
         for op in sorted(ops):
             kind = lowering_kind(op)
@@ -602,7 +697,12 @@ class _Emitter:
             if kind in {"reg_binary", "reg_scalar"} and (op == "add" or reg_c_dtype(op) == "f32"):
                 lines.extend(_bcast_helper(op, "add" if op == "add" else kind).splitlines())
                 lines.append("")
-        for plan in self._fuse_plans:
+        all_plans = []
+        for sec in self.sections:
+            if sec[0] != "loop":
+                continue
+            all_plans.extend(self._loop_states[id(sec)].fuse_plans)
+        for plan in all_plans:
             lines.extend(self._gen_fused_helper(plan))
             lines.append("")
         params = ", ".join(f"__gm__ {_DTYPE_TO_C[p.dtype.value]}* {p.name}" for p in k.params)
@@ -615,7 +715,7 @@ class _Emitter:
         lines.append("    asc_init();")
         lines.append("")
         promoted = set()
-        for plan in self._fuse_plans:
+        for plan in all_plans:
             promoted.update(b.name for b in plan["temps"])
         for buf in k.buffers:
             if buf.name in promoted:
@@ -624,44 +724,58 @@ class _Emitter:
             count = buf.stages * buf.elems
             lines.append(f"    {_SPACE_QUAL[buf.space]} {c_type} {buf.name}[{count}];")
         lines.append("")
-        if self.looped:
-            for lo, hi, signature in self._emit_regions():
-                if hi - lo == self._unroll:
-                    if lo == 0:
-                        label = "prologue"
-                    elif hi == self.tiles and not self.epilogue:
-                        label = "epilogue"
-                    else:
-                        label = "peeled"
-                    lines.append(f"    // {label} i = {lo}")
-                    self._emit_group(lines, "    ", lo, signature)
-                else:
-                    lines.append(f"    for (uint32_t i = {lo}; i < {hi}; i += {self._unroll}) {{")
-                    self._emit_group(lines, "        ", None, signature)
-                    lines.append("    }")
-            if self.epilogue:
-                lines.append("    // 循环之后")
+        n_loops = sum(1 for s in self.sections if s[0] == "loop")
+        prev_was_loop = False
+        for sec_no, sec in enumerate(self.sections):
+            if sec[0] == "loop" and prev_was_loop:
+                lines.append("    // 段间全屏障：上一循环的读者（V/MTE3）与下一循环的写者（MTE2）无硬件序")
+                lines.append("    asc_sync_pipe(PIPE_ALL);")
+                lines.append("")
+            if sec[0] == "plain":
+                _, _, stmts = sec
+                if prev_was_loop:
+                    lines.append("    // 循环之后")
+                self._ctx = None
                 self._slot_from_ref = True
                 try:
-                    for j, stmt in enumerate(self.epilogue):
+                    for j, stmt in enumerate(stmts):
                         lines.extend("    " + line for line in self._emit_stmt(stmt, j, 0, None, (), set()))
                 finally:
                     self._slot_from_ref = False
-        else:
-            for j, stmt in enumerate(self.body):
-                lines.extend("    " + line for line in self._emit_stmt(stmt, j, 0, None, (), set()))
+                prev_was_loop = False
+            else:
+                ctx = self._loop_states[id(sec)]
+                self._ctx = ctx
+                last = sec_no == len(self.sections) - 1
+                tag = f"循环 {ctx.loop_id} " if n_loops > 1 else ""
+                for lo, hi, signature in self._emit_regions(ctx):
+                    if hi - lo == ctx.unroll:
+                        if lo == 0:
+                            label = "prologue"
+                        elif hi == ctx.tiles and last:
+                            label = "epilogue"
+                        else:
+                            label = "peeled"
+                        lines.append(f"    // {tag}{label} i = {lo}")
+                        self._emit_group(lines, "    ", ctx, lo, signature)
+                    else:
+                        lines.append(f"    for (uint32_t i = {lo}; i < {hi}; i += {ctx.unroll}) {{")
+                        self._emit_group(lines, "        ", ctx, None, signature)
+                        lines.append("    }")
+                self._ctx = None
+                prev_was_loop = True
         lines.append("}")
         lines.append("")
         return "\n".join(lines)
 
-    def _emit_group(self, lines, indent: str, i_value, signature) -> None:
-        plan_by_start = {p["start"]: p for p in self._fuse_plans}
-        for sub in range(self._unroll):
-            if self._unroll > 1:
+    def _emit_group(self, lines, indent: str, ctx, i_value, signature) -> None:
+        plan_by_start = {p["start"]: p for p in ctx.fuse_plans}
+        for sub in range(ctx.unroll):
+            if ctx.unroll > 1:
                 lines.append(f"{indent}// 槽位 {sub}")
             waited = set()
             skip_until = -1
-            for j, stmt in enumerate(self.body):
+            for j, stmt in enumerate(ctx.body):
                 if j < skip_until:
                     continue
                 if j in plan_by_start:
@@ -699,7 +813,8 @@ class _Emitter:
         raise CodegenError(f"未知语句类型 {type(stmt).__name__}")
 
     def _war_wait(self, buf, k: int, signature, waited: set) -> list:
-        if buf.name not in self._war or not self.looped or self.tiles <= buf.stages:
+        ctx = self._ctx
+        if ctx is None or buf.name not in ctx.war or ctx.tiles <= buf.stages:
             return []
         if self._war_decision(signature, buf, k, "wait") != "emit":
             return []
@@ -708,18 +823,21 @@ class _Emitter:
         if key in waited:
             return []
         waited.add(key)
-        p, q = self._war[buf.name]
+        p, q = ctx.war[buf.name]
         return [f"asc_sync_wait({_PIPE_TO_C[q]}, {_PIPE_TO_C[p]}, {self._war_event_id(buf, p, q, k)});"]
 
     def _war_notify(self, buf, k: int, signature) -> list:
-        if buf.name not in self._war or not self.looped or self.tiles <= buf.stages:
+        ctx = self._ctx
+        if ctx is None or buf.name not in ctx.war or ctx.tiles <= buf.stages:
             return []
         if self._war_decision(signature, buf, k, "notify") != "emit":
             return []
-        p, q = self._war[buf.name]
+        p, q = ctx.war[buf.name]
         return [f"asc_sync_notify({_PIPE_TO_C[q]}, {_PIPE_TO_C[p]}, {self._war_event_id(buf, p, q, k)});"]
 
     def _emit_copy(self, stmt: CopyStmt, j: int, k: int, i_value, signature, waited: set) -> list:
+        if stmt.form == "strided":
+            return self._emit_strided_copy(stmt, j, k, i_value, signature, waited)
         if stmt.form != "linear":
             return self._emit_cube_copy(stmt, j, k, i_value, signature, waited)
         if stmt.pipe == Pipe.MTE2 and isinstance(stmt.src, GmRef) and isinstance(stmt.dst, BufRef):
@@ -736,10 +854,48 @@ class _Emitter:
             lines = [
                 f"asc_copy_ub2gm({self._gm_ptr(stmt.dst, j, 1, k, i_value)}, {self._buf_ptr(stmt.src, k)}, 1, {_burst(buf)}, 0, 0);"
             ]
-            if self._last_read.get(buf.name) == j:
+            if (self._ctx.last_read if self._ctx is not None else {}).get(buf.name) == j:
                 lines.extend(self._war_notify(buf, k, signature))
             return lines
         raise CodegenError(f"v0.2 不支持的 copy 形态：pipe={stmt.pipe.value}")
+
+    def _emit_strided_copy(self, stmt: CopyStmt, j: int, k: int, i_value, signature, waited: set) -> list:
+        """高维切分搬运（ADR 0016）：stride 为相邻数据块首地址头距，字节单位。"""
+        if len(stmt.scalars) != 4:
+            raise CodegenError("strided 搬运需要 (burst_count, burst_len, src_stride, dst_stride) 四个标量")
+        bc, bl, ss, ds = (int(x) for x in stmt.scalars)
+        if not (1 <= bc <= 65535 and 1 <= bl <= 65535 and 0 <= ss <= 65535 and 0 <= ds <= 65535):
+            raise CodegenError(f"strided 搬运参数超界：bc={bc} bl={bl} src_stride={ss} dst_stride={ds}")
+        if bl % 4 != 0:
+            raise CodegenError(f"strided 搬运的 burst_len={bl} 需为 4 的倍数（b32 dtype 对齐）")
+        if stmt.pipe == Pipe.MTE2 and isinstance(stmt.src, GmRef) and isinstance(stmt.dst, BufRef):
+            buf = stmt.dst.buffer
+            if buf.space is not Space.UB:
+                raise CodegenError(f"strided 搬运的目的 {buf.name} 不在 ubuf")
+            if ds != bl and ds % 32 != 0:
+                raise CodegenError(
+                    f"gm2ub 的 dst_stride={ds} ≠ burst_len={bl} 时需 32B 对齐（3510 高维切分约束）"
+                )
+            lines = self._war_wait(buf, k, signature, waited)
+            lines.append(
+                f"asc_copy_gm2ub({self._buf_ptr(stmt.dst, k)}, {self._gm_ptr(stmt.src, j, 0, k, i_value)}, "
+                f"{bc}, {bl}, {ss}, {ds});"
+            )
+            return lines
+        if stmt.pipe == Pipe.MTE3 and isinstance(stmt.src, BufRef) and isinstance(stmt.dst, GmRef):
+            buf = stmt.src.buffer
+            if ss != bl and ss % 32 != 0:
+                raise CodegenError(
+                    f"ub2gm 的 src_stride={ss} ≠ burst_len={bl} 时需 32B 对齐（3510 高维切分约束）"
+                )
+            lines = [
+                f"asc_copy_ub2gm({self._gm_ptr(stmt.dst, j, 1, k, i_value)}, {self._buf_ptr(stmt.src, k)}, "
+                f"{bc}, {bl}, {ss}, {ds});"
+            ]
+            if (self._ctx.last_read if self._ctx is not None else {}).get(buf.name) == j:
+                lines.extend(self._war_notify(buf, k, signature))
+            return lines
+        raise CodegenError(f"strided 搬运不支持的 pipe/方向：pipe={stmt.pipe.value}")
 
     def _emit_compute(self, stmt: ComputeStmt, j: int, k: int, i_value, signature, waited: set) -> list:
         if stmt.op == "add":
@@ -750,6 +906,12 @@ class _Emitter:
             return self._emit_cast(stmt, j, k, signature, waited)
         if stmt.op == "repeat_reduce_sum":
             return self._emit_reduce(stmt, j, k, signature, waited)
+        if stmt.op == "repeat_reduce_max":
+            return self._emit_reduce_max(stmt, j, k, signature, waited)
+        if stmt.op == "gather":
+            return self._emit_gather(stmt, j, k, signature, waited)
+        if stmt.op == "brc":
+            return self._emit_brc(stmt, j, k, i_value, signature, waited)
         if stmt.op == "select":
             return self._emit_select(stmt, j, k, signature, waited)
         if stmt.op in {"select_gt", "select_lt", "select_ne", "select_eq", "select_ge", "select_le"}:
@@ -763,6 +925,8 @@ class _Emitter:
             return self._emit_duplicate(stmt, j, k, signature, waited)
         if stmt.op == "arange":
             return self._emit_arange(stmt, j, k, signature, waited)
+        if stmt.op == "arange_i32":
+            return self._emit_arange_i32(stmt, j, k, signature, waited)
         if stmt.op == "mmad":
             return self._emit_mmad(stmt, j, k, i_value, signature)
         kind = lowering_kind(stmt.op)
@@ -808,7 +972,11 @@ class _Emitter:
                 f"{fn}({self._buf_ptr(stmt.dst, k)}, {self._buf_ptr(stmt.src, k)}, "
                 f"0, 0, {m_step}, {k_step}, {m_step}, {m_step});"
             )
-            if isinstance(stmt.src, BufRef) and self._last_read.get(stmt.src.buffer.name) == j:
+            if (
+                isinstance(stmt.src, BufRef)
+                and self._ctx is not None
+                and self._ctx.last_read.get(stmt.src.buffer.name) == j
+            ):
                 lines.extend(self._war_notify(stmt.src.buffer, k, signature))
             return lines
         if stmt.form == "l0c2gm":
@@ -824,7 +992,7 @@ class _Emitter:
 
     def _emit_mmad(self, stmt: ComputeStmt, j: int, k: int, i_value, signature) -> list:
         m_dim, k_dim, n_dim, init = (int(x) for x in stmt.scalars)
-        if self.mmad_init_first and self.looped:
+        if self._ctx is not None and self._ctx.init_first:
             clears = i_value == 0 and k == 0
         else:
             clears = bool(init)
@@ -1015,6 +1183,21 @@ class _Emitter:
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
 
+    def _emit_arange_i32(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        if stmt.srcs:
+            raise CodegenError("arange_i32 没有源向量，只有目的和起始标量")
+        if not stmt.scalars:
+            raise CodegenError("arange_i32 需要起始标量")
+        dst = stmt.dst
+        if not isinstance(dst, BufRef) or dst.buffer.dtype is not DType.i32 or dst.buffer.space is not Space.UB:
+            raise CodegenError("arange_i32 这一批只生成 ubuf 上的 i32")
+        self._require_vl(dst)
+        start = int(stmt.scalars[0])
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(f"arange_i32_vf({self._buf_ptr(dst, k)}, {dst.buffer.elems}, {start});")
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
     def _require_f32_ub(self, ref: BufRef, op: str) -> None:
         self._require_ub(ref, op, DType.f32)
 
@@ -1090,6 +1273,73 @@ class _Emitter:
         lines.extend(self._release_reads(stmt, j, k, signature))
         return lines
 
+    def _emit_reduce_max(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        dst = stmt.dst
+        src = stmt.srcs[0]
+        if not isinstance(src, BufRef) or src.buffer.dtype is not DType.f32:
+            raise CodegenError("repeat_reduce_max 当前只生成 f32")
+        self._require_f32(dst, "repeat_reduce_max")
+        if dst.buffer.elems != 64:
+            raise CodegenError("repeat_reduce_max 的目的 buffer 必须是 64（VF 宽）：asc_reduce_max 只在 lane0 落行最大值（其余 lane 未定义，板级探针 2026-10-16），helper 经 asc_duplicate 只取 lane0 广播到全部 lane")
+        if src.buffer.elems % 64 != 0:
+            raise CodegenError("repeat_reduce_max 的源元素个数必须是 64 的倍数，对齐 3510 的 VF 长度")
+        if src.buffer.stage_bytes > _BURST_LEN_MAX:
+            raise CodegenError(
+                f"buffer {src.buffer.name} 单 stage {src.buffer.stage_bytes}B 超过搬运上限 {_BURST_LEN_MAX}"
+            )
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(f"reduce_max_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {src.buffer.elems});")
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_gather(self, stmt: ComputeStmt, j: int, k: int, signature, waited: set) -> list:
+        dst = stmt.dst
+        if len(stmt.srcs) != 2:
+            raise CodegenError("gather 需要两个源：UB 表和 i32 索引缓冲")
+        table, idx = stmt.srcs
+        self._require_f32_ub(dst, "gather")
+        self._require_f32_ub(table, "gather")
+        if not isinstance(idx, BufRef) or idx.buffer.dtype is not DType.i32 or idx.buffer.space is not Space.UB:
+            raise CodegenError("gather 的索引必须是 ubuf 上的 i32（vgather2 元素索引，运行时值）")
+        if idx.buffer.elems != dst.buffer.elems:
+            raise CodegenError(
+                f"gather 的索引元素个数 {idx.buffer.elems} 必须与目的 {dst.buffer.elems} 相同"
+            )
+        self._require_vl(dst)
+        self._require_vl(idx)
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(
+            f"gather_vf({self._buf_ptr(table, k)}, {self._buf_ptr(idx, k)}, "
+            f"{self._buf_ptr(dst, k)}, {dst.buffer.elems});"
+        )
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
+    def _emit_brc(self, stmt: ComputeStmt, j: int, k: int, i_value, signature, waited: set) -> list:
+        dst = stmt.dst
+        src = stmt.srcs[0]
+        if len(stmt.scalars) != 2:
+            raise CodegenError("brc 需要 (offset_base, offset_stride) 两个标量：offset = base + 迭代号*stride")
+        self._require_f32_ub(dst, "brc")
+        self._require_f32_ub(src, "brc")
+        if dst.buffer.elems != 64:
+            raise CodegenError("brc 的目的 buffer 必须是 64（VF 宽，vlds BRC_B32 单 VF 广播）")
+        base, stride = int(stmt.scalars[0]), int(stmt.scalars[1])
+        if self._ctx is None or self._slot_from_ref or stride == 0:
+            offset = str(base)
+        elif i_value is not None:
+            offset = str(base + (i_value + k) * stride)
+        else:
+            b = f"{base} + " if base else ""
+            if stride == 1:
+                offset = f"{b}i" if k == 0 else f"{b}(i + {k})"
+            else:
+                offset = f"{b}i * {stride}" if k == 0 else f"{b}(i + {k}) * {stride}"
+        lines = self._war_wait(dst.buffer, k, signature, waited)
+        lines.append(f"brc_vf({self._buf_ptr(src, k)}, {self._buf_ptr(dst, k)}, {offset});")
+        lines.extend(self._release_reads(stmt, j, k, signature))
+        return lines
+
     def _require_f32(self, ref: BufRef, op: str) -> None:
         if ref.buffer.dtype is not DType.f32:
             raise CodegenError(f"{op} 当前只核对了 f32 的 3510 头文件签名")
@@ -1104,11 +1354,12 @@ class _Emitter:
     def _release_reads(self, stmt: ComputeStmt, j: int, k: int, signature) -> list:
         lines = []
         released = set()
+        last_read = self._ctx.last_read if self._ctx is not None else {}
         for src in stmt.srcs:
             if src.buffer.name in released:
                 continue
             released.add(src.buffer.name)
-            if self._last_read.get(src.buffer.name) != j:
+            if last_read.get(src.buffer.name) != j:
                 continue
             lines.extend(self._war_notify(src.buffer, k, signature))
         return lines
