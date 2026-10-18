@@ -1,0 +1,7 @@
+# M0b results (2026-09-29T00:40:41+08:00); tolerance atol=rtol=1e-6 (manifest v1.2)
+[add_generated:G1_uniform] tolerance_ok=True max_abs_diff=0.000e+00 bit_exact=16384/16384 input_sha=26685bc8acd2ec13,221a0d37e980fd49 golden_sha=d3c6638b061bba31
+[add_generated:G2_boundary] tolerance_ok=True max_abs_diff=0.000e+00 bit_exact=16384/16384 input_sha=78265c87a5037ccb,feb17df34e87408d golden_sha=0e898761a0427a45
+[add_generated] M0B_PASS G1_uniform:ok=True,bitexact=16384/16384 G2_boundary:ok=True,bitexact=16384/16384
+[add_reference:G1_uniform] tolerance_ok=True max_abs_diff=0.000e+00 bit_exact=16384/16384 input_sha=26685bc8acd2ec13,221a0d37e980fd49 golden_sha=d3c6638b061bba31
+[add_reference:G2_boundary] tolerance_ok=True max_abs_diff=0.000e+00 bit_exact=16384/16384 input_sha=78265c87a5037ccb,feb17df34e87408d golden_sha=0e898761a0427a45
+[add_reference] M0B_PASS G1_uniform:ok=True,bitexact=16384/16384 G2_boundary:ok=True,bitexact=16384/16384

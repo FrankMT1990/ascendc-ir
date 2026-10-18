@@ -1,0 +1,151 @@
+{
+  "framework_version": "1.0.0",
+  "tasks_version": "1.0.0",
+  "eval_code": "cann_performance_eval_20260929_145917",
+  "timestamp": "2026-09-29T14:59:17.861239",
+  "device": "npu:0",
+  "total_operators": 1,
+  "total_cases": 1,
+  "passed_cases": 1,
+  "failed_cases": 0,
+  "overall_score": 50.0,
+  "summary": {
+    "total_operators": 1,
+    "total_cases": 1,
+    "passed_cases": 1,
+    "failed_cases": 0,
+    "cascade_cases": 0,
+    "pass_rate": 1.0,
+    "genuine_pass_rate": 1.0,
+    "overall_score": 50.0
+  },
+  "setup_info": {
+    "metadata": {
+      "framework": "CANN-Bench V1.0.0",
+      "tasks_version": "1.0.0",
+      "date": "2026-09-29 14:59:17",
+      "agent_skill": "",
+      "base_model": "",
+      "harness": "",
+      "benchmark": "CANN-Bench tasks",
+      "license": "CANN Open Software License v2.0"
+    },
+    "environment": {
+      "npu": "Ascend950PR_9589 × 1",
+      "cpu": "x86_64",
+      "cann": "9.1.0",
+      "driver": "cann-9.1.0",
+      "pytorch": "2.10.0+cpu",
+      "pytorch_npu": "2.10.0.post4",
+      "torchvision": null,
+      "python": "3.10.12",
+      "os": "Linux-5.4.0-125-generic-x86_64-with-glibc2.35",
+      "docker": "container / CANN 9.1.0"
+    }
+  },
+  "operators": [
+    {
+      "rel_path": "level1/add_m0",
+      "operator": "Add",
+      "total_cases": 1,
+      "passed_cases": 1,
+      "failed_cases": 0,
+      "pass_rate": 1.0,
+      "avg_speedup": 0.0,
+      "score": 50.0,
+      "compilation_score": 20.0,
+      "compile_runtime_score": 20.0,
+      "compile_runtime_fail_cases": 0,
+      "function_score": 30.0,
+      "performance_score": 0.0,
+      "cases": [
+        {
+          "rel_path": "level1/add_m0",
+          "operator": "Add",
+          "case_id": "level1/add_m0_1",
+          "status": "success",
+          "elapsed_us": 4.4,
+          "op_times": {
+            "device_kernels": {
+              "_Z10add_customPfS_S_": 4.4
+            }
+          },
+          "error_msg": null,
+          "performance_error_msg": null,
+          "device": "",
+          "timestamp": "2026-09-29T14:59:17.861199",
+          "accuracy": {
+            "passed": true,
+            "error_msg": null,
+            "output_results": [
+              {
+                "index": 0,
+                "name": "z",
+                "dtype": "float32",
+                "passed": true,
+                "error_msg": "",
+                "mismatch_count": 0,
+                "total_count": 16384,
+                "dtype_category": "float",
+                "threshold": 0.0001220703125,
+                "mere": 0.0,
+                "mare": 0.0,
+                "max_diff": 0.0,
+                "mean_diff": 0.0,
+                "max_abs_diff": 0,
+                "small_value_error_count": 0,
+                "small_value_cpu_error_count": 0,
+                "small_value_total_count": 0,
+                "cancel_error_count": 0,
+                "cancel_cpu_error_count": 0,
+                "cancel_total_count": 0,
+                "small_value_passed": true,
+                "cancel_passed": true,
+                "normal_error_count": 0,
+                "normal_cpu_error_count": 0,
+                "normal_total_count": 0,
+                "normal_passed": true
+              }
+            ],
+            "metadata": {
+              "checker_name": "relative_error",
+              "mere": 0.0,
+              "mare": 0.0,
+              "max_diff": 0.0,
+              "mean_diff": 0.0,
+              "mismatch_count": 0,
+              "total_count": 16384,
+              "mismatch_ratio": 0.0,
+              "small_value_error_count": 0,
+              "small_value_cpu_error_count": 0,
+              "small_value_total_count": 0,
+              "cancel_error_count": 0,
+              "cancel_cpu_error_count": 0,
+              "cancel_total_count": 0,
+              "small_value_passed": true,
+              "cancel_passed": true,
+              "failure_type": null,
+              "trial": 1
+            },
+            "threshold": 0.0001220703125
+          },
+          "speedup": 0.0,
+          "baseline_perf_us": 0.0,
+          "t_hw_us": 0.0,
+          "perf_score": null,
+          "_perf_result": null,
+          "failure_type": null,
+          "perf_recheck": null,
+          "memory_peak_mb": null,
+          "memory_baseline_mb": null
+        }
+      ],
+      "compilation_error": null,
+      "subprocess_failure_reason": null,
+      "score_error_code": null,
+      "score_error": null
+    }
+  ],
+  "result_stage": "performance",
+  "contains_performance": true
+}

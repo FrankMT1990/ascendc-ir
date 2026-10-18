@@ -1,0 +1,56 @@
+# M0 timing blocked — box-wide device-profiling failure evidence (2026-09-29T00:41:04+08:00)
+
+## 1. 内核侧 prof 通道初始化失败（容器 slog，msprof 探针运行时）
+[ERROR] DRV(6416,aicpu_scheduler):2026-09-28-15:54:11.296.629 [prof_ioctl_cmd.c:49][ascend][curpid:6416,6432][drv][prof][prof_open]Failed to open the prof device file. (error=2)
+[ERROR] DRV(6416,aicpu_scheduler):2026-09-28-15:54:11.296.644 [prof_ioctl_cmd.c:88][ascend][curpid:6416,6432][drv][prof][prof_ioctl]Invalid prof fd. (fd=-1)
+[ERROR] DRV(6416,aicpu_scheduler):2026-09-28-15:54:11.296.655 [prof_ioctl_cmd.c:235][ascend][curpid:6416,6432][drv][prof][prof_ioctl_register]Failed to register. (dev_id=0, chan_id=143, ret=-1)
+[ERROR] DRV(6416,aicpu_scheduler):2026-09-28-15:54:11.296.665 [prof_adapt_user.c:204][ascend][curpid:6416,6432][drv][prof][prof_user_register_channel]Failed to register channel to kernel. (dev_id=0, c
+[ERROR] DRV(6416,aicpu_scheduler):2026-09-28-15:54:11.296.674 [prof_core.c:34][ascend][curpid:6416,6432][drv][prof][prof_core_register_channel]Failed to register channel to adapt. (dev_id=0, chan_id=1
+[ERROR] DRV(6416,aicpu_scheduler):2026-09-28-15:54:11.296.683 [prof_interface.c:69][ascend][curpid:6416,6432][drv][prof][prof_sample_register_inner]Failed to register channel. (dev_id=0, chan_id=143, 
+[ERROR] PROFILING(6416,aicpu_scheduler):2026-09-28-15:54:11.296.691 [devprof_drv_aicpu.cpp:698] (tid:6432) Failed to register aicpu sample ops, ret = 17.
+[ERROR] CCECPU(6416,aicpu_scheduler):2026-09-28-15:54:11.296.699 [profiling_adp.cc:175][tid:6432]:Failed init profiling(-1).
+
+## 2. dmesg：IOMMU 未启用 -> vdavinci(SVM) 不支持该设备（宿主机）
+
+## 3. 宿主机 /proc/cmdline（无 intel_iommu=on）
+BOOT_IMAGE=/vmlinuz-5.4.0-125-generic root=/dev/mapper/ubuntu--vg-ubuntu--lv ro
+
+## 4. 宿主机当前 davinci 设备节点（无 devmm_svm；/proc/devices 无 devmm 主设备号）
+crw-rw----  1 1001    1001 236,   0 Sep 17 09:59 davinci0
+crw-rw----  1 1001    1001 237,   0 Sep 17 09:59 davinci_manager
+crw-rw----  1 1001    1001 235,   0 Sep 17 09:59 hisi_hdc
+235 hisi_hdc
+237 hisi_davinci_intf
+
+## 5. msprof 探针：device_0/data 为空、无 op_summary/kernel_details
+（见 results/add_*/prof_data/**/PROF_*/device_0/data 目录均为空；msprof 输出 device_0 状态 NA）
+
+## 6. torch_npu profiler 走 kernel_details 策略 -> KernelViewParser 无 op_summary 可转
+（results/add_generated/prof_data/**/logs/*KernelViewParser.log: start->finish 1ms 无输出）
+
+## 2b. dmesg (host, 2026-09-29T00:43:51+08:00)
+[  101.441793] devdrv_device_driver 0000:04:00.0: [vascend] [hw_dvt_init_device_info 786] iommu is not enabled, vdavinci does not support this device
+[  101.441795] devdrv_device_driver 0000:04:00.0: [vascend] [hw_dvt_init 29] vdavinci: unsupported device
+
+## 2c. Host boot time; no PROF_* dirs found anywhere after 2026-09-17 (find -newermt 2026-09-17: empty)
+boot time: 2026-09-17 09:57:23
+
+## 2d. /proc/devices char entries (no devmm major registered)
+235 hisi_hdc
+237 hisi_davinci_intf
+
+## 3. 【2026-09-29 根因修正】IOMMU 大概率不是根因；更可能是内核选择错配
+
+后续复查（宿主机只读检查）修正上文第 2/2b 节的 IOMMU 归因方向：
+
+- /boot/grub/grub.cfg 全文 0 处 intel_iommu（含历史启动项）——即 9 月 17 日前的多次启动同样没开 IOMMU，而本机 2026-06/08 等多个用户的 PROF_ 目录证明不开 IOMMU 时设备采集正常。dmesg 的 vdavinci/IOMMU 行更像长期背景噪声，不是断点。
+- 时间线：/usr/local/Ascend/driver/version.info 与 /lib/modules/5.4.0-216-generic/updates/（驱动内核模块）修改时间均为 2026-09-16 10:17——当天有人重装驱动（9.1.T13.0.B130），当时运行内核是 2025 年的 5.4.0-216（驱动安装器只为在跑内核部署模块）。
+- 2026-09-17 01:57 重启后机器起来在 2022 年的旧内核 5.4.0-125 上（uname -r 实证），加载的是旧内核目录里的旧模块 → 9 月 16 日的新用户态驱动与旧内核模块版本错配 → prof 通道初始化、devmm 节点创建等边缘功能损坏，计算主路径正常（与全部观测吻合：内核能跑、M0b 全过、仅采集坏）。
+- 旁证：/usr/local/bin/npu-smi 为空目录的状态自 2026-02-10 就存在（早于一切），与本故障无关。
+
+给管理员的修复建议（按优先级）：
+1. 核对 9 月 17 日前后 grub 默认内核是否从 5.4.0-216 变成 5.4.0-125；把默认内核切回 5.4.0-216 并重启（无需 BIOS/IOMMU 变更）。一分钟验证法：-216 模块目录时间戳（09-16）与当前 uname -r（-125）的矛盾。
+2. 若必须留在 -125：为 -125 重装配套驱动包。
+3. IOMMU 方案仅在前两者无效时再考虑（历史上不开 IOMMU 采集正常）。
+
+本假说无法从容器内 100% 证实（看不到历史 boot 配置）。证据链强度：模块部署时间戳与运行内核矛盾 + grub 从未配置 IOMMU + 故障日期与重启/驱动重装重合。
