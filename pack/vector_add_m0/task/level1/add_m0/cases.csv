@@ -1,0 +1,2 @@
+operator,case_id,input_shape,dtype,attrs,value_range,note
+Add,1,"[[16384], [16384]]","['float32', 'float32']",{},"[[-2, 2], [-2, 2]]",M0-frozen-TILE2048f32-TILES8-single-core

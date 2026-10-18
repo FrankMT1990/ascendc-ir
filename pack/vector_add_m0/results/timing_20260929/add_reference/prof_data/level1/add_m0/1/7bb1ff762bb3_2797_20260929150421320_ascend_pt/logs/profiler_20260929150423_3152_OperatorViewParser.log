@@ -1,0 +1,3 @@
+[2026-09-29-15:04:23.898] [INFO] [AscendProfiler_OperatorViewParser:97] Profiler logger initialized at: /home/w00964611/ascendc-ir/pack/vector_add_m0/results/timing_20260929/add_reference/prof_data/level1/add_m0/1/7bb1ff762bb3_2797_20260929150421320_ascend_pt/logs/profiler_20260929150423_3152_OperatorViewParser.log
+[2026-09-29-15:04:23.898] [INFO] [AscendProfiler_OperatorViewParser:30] OperatorViewParser start.
+[2026-09-29-15:04:23.899] [INFO] [AscendProfiler_OperatorViewParser:39] OperatorViewParser finish.

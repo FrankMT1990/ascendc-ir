@@ -1,0 +1,3 @@
+[2026-09-29-15:04:24.404] [INFO] [AscendProfiler_KernelViewParser:97] Profiler logger initialized at: /home/w00964611/ascendc-ir/pack/vector_add_m0/results/timing_20260929/add_reference/prof_data/level1/add_m0/1/7bb1ff762bb3_2797_20260929150421320_ascend_pt/logs/profiler_20260929150424_3159_KernelViewParser.log
+[2026-09-29-15:04:24.405] [INFO] [AscendProfiler_KernelViewParser:38] KernelViewParser start.
+[2026-09-29-15:04:24.407] [INFO] [AscendProfiler_KernelViewParser:46] KernelViewParser finish.

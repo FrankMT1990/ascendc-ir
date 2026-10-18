@@ -1,0 +1,20 @@
+# env evidence after driver fix (collected 2026-09-29, timing session)
+## host /usr/local/Ascend/driver/version.info:
+Version=9.1.T13.0.B130
+timestamp=20260929_000325090
+ascendhal_version=7.35.23
+aicpu_version=1.0
+tdt_version=1.0
+log_version=1.0
+prof_version=2.0
+dvppkernels_version=1.1
+tsfw_version=1.0
+required_firmware_firmware_version=1.0
+
+## host uname -r:
+5.4.0-125-generic
+## host uptime -s:
+2026-09-29 04:25:28
+## host davinci nodes:
+crw-rw---- 1 HwHiAiUser HwHiAiUser 236, 0 Sep 29 04:26 /dev/davinci0
+crw-rw---- 1 HwHiAiUser HwHiAiUser 237, 0 Sep 29 04:25 /dev/davinci_manager

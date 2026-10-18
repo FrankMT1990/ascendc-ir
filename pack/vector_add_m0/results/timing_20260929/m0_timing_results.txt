@@ -1,0 +1,27 @@
+# M0 timing results (2026-09-29, timing session 14:49–15:04 +08:00; manifest v1.2, 原始判分输出如下)
+# 环境：宿主机 2026-09-29 00:03 为运行内核 5.4.0-125 重装驱动（9.1.T13.0.B130，version.info timestamp=20260929_000325090），
+#       04:25:28 重启；容器/设备/CANN/torch 栈与 manifest v1.2 冻结值一致（驱动版本串不变，为 -125 重装后匹配）。
+# 完整性：pack 源码 39/39 与 frozen_hashes.txt 一致；两候选重建 _C.abi3.so 与冻结哈希位级一致（186cdef9… / 5d3fe8b8…），
+#         即所测内核二进制与冻结版相同；wheel zip 因时间戳哈希变化（ad12300a… / de30982c…），冻结版 wheel 已备份于 prebuild_artifacts_backup/。
+# 评测参数（manifest 冻结）：--warmup 3 --repeat 20 --device-id 0 --processes-per-card 1；schedule wait=0/warmup=3/active=20。
+# 判分：score_m0.py 只读原始 kernel_details.csv（两份均在 prof_data 归档内），统计量=中位。
+
+csv: results/timing_20260929/add_generated/prof_data/level1/add_m0/1/7bb1ff762bb3_1613_20260929145908324_ascend_pt/ASCEND_PROFILER_OUTPUT/kernel_details.csv
+  measured steps: 20
+  per-step totals (us): [4.247, 4.394, 4.277, 4.494, 4.366, 4.631, 4.358, 4.522, 4.37, 4.545, 4.399, 4.533, 4.262, 4.398, 4.255, 4.414, 4.276, 4.457, 4.265, 4.54]
+  MEDIAN (us): 4.396
+  target rows: ['_Z10add_customPfS_S_ | N/A']
+csv: results/timing_20260929/add_reference/prof_data/level1/add_m0/1/7bb1ff762bb3_2797_20260929150421320_ascend_pt/ASCEND_PROFILER_OUTPUT/kernel_details.csv
+  measured steps: 20
+  per-step totals (us): [4.251, 4.448, 4.247, 4.542, 4.409, 4.537, 4.404, 4.568, 4.369, 4.555, 4.37, 4.38, 4.273, 4.392, 4.288, 4.432, 4.273, 4.449, 4.253, 4.535]
+  MEDIAN (us): 4.398
+  target rows: ['_Z10add_customPfS_S_ | N/A']
+
+# 交叉验证：harness 自身 elapsed_us 两候选均为 4.4（op_times: device_kernels._Z10add_customPfS_S_ = 4.4），与判分中位一致。
+# tax = T_generated / T_handwritten − 1 = 4.396 / 4.398 − 1 = −0.000455 ≈ −0.05%（生成版快 0.05%，在噪声内）
+# 提案通过线（manifest：中位 ≤5% 且该对 ≤10%）：|−0.05%| ≤ 5% → 通过（提案线，未冻结）。
+# csv 事实补注（manifest「补注事实，不改规则」条款）：
+#   - 实际列含 Input Shapes（add_custom 行为 N/A，因 record_shapes=False）；Name 列为 mangled 符号 _Z10add_customPfS_S_（含 add_custom，匹配规则成立）
+#   - cache-clean 内核名 _Z19CannBenchCacheCleanIDhEvPhS0_llj（含 CannBenchCacheClean 保留名，Type 列同值，剔除规则成立）
+#   - 每步结构 = cache-clean 行 + add_custom 行各一；40 数据行 = 20 步 × 2；cann_bench_warmup（MatMul）在 profiler 窗口外，不出现在 csv
+#   - 逐行时长见上 per-step totals；两候选分布区间高度重叠（gen 4.247–4.631 / ref 4.247–4.568）

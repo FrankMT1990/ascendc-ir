@@ -1,0 +1,22 @@
+/**
+ * Copyright (c) 2026 Huawei Technologies Co., Ltd.
+ * This file is part of the M0 handwritten-reference submission (see ADR 0014).
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/*!
+ * \file add_kernel.cpp
+ * \brief M0 候选（手写对照版）的内核包装：引入冻结的 kernel.asc 并暴露 launch。
+ *        编译器：bisheng --npu-arch=dav-3510 --asc-aicore-lang。
+ *        本文件不改动 kernel.asc 的指令流，只做 #include 与直调 launch。
+ */
+
+#include "acl/acl.h"
+#include "c_api/asc_simd.h"
+#include "kernel.asc"
+
+extern "C" void launch_add_custom(void* x, void* y, void* z, aclrtStream stream)
+{
+    add_custom<<<1, 0, stream>>>(reinterpret_cast<float*>(x), reinterpret_cast<float*>(y),
+        reinterpret_cast<float*>(z));
+}

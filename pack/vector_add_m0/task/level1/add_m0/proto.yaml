@@ -1,0 +1,28 @@
+# ----------------------------------------------------------------------------
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
+# This file is part of the ascendc-ir M0 measurement pack (see docs/evaluation/metrics.md).
+# ----------------------------------------------------------------------------
+
+operator:
+  name: Add
+  category: Elementwise
+  difficulty: L1
+  formula: y = x1 + x2
+  description: 逐元素加法（ascendc-ir M0 配对测量任务；冻结 shape 16384×f32，单核）
+  shape_support: 两输入同 shape；本任务冻结为一维 16384 个 float32
+  attrs: []
+  inputs:
+  - name: x
+    description: 第1个输入张量（冻结 16384 个 float32）
+    dtype:
+    - float32
+  - name: y
+    description: 第2个输入张量（与x同shape）
+    dtype:
+    - float32
+  outputs:
+  - name: z
+    description: 输出张量，逐元素加法结果
+    dtype:
+    - float32
+  schema: add(Tensor x, Tensor y) -> Tensor z

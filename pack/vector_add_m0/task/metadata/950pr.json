@@ -1,0 +1,8 @@
+{
+    "_metadata": {
+        "description": "ascendc-ir M0 测量任务（vector_add 配对）。无 baseline：M0 判据为两候选间 tax（docs/evaluation/metrics.md manifest v1.0），CANNBench HAP/评分不作判据。",
+        "hardware": "950pr",
+        "source": "none",
+        "note": "本文件仅声明无 baseline，防止误用默认平台数据"
+    }
+}
