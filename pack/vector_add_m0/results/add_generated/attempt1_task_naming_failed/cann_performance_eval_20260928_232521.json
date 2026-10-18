@@ -1,0 +1,49 @@
+{
+  "framework_version": "1.0.0",
+  "tasks_version": "1.0.0",
+  "eval_code": "cann_performance_eval_20260928_232521",
+  "timestamp": "2026-09-28T23:25:21.721050",
+  "device": "npu:0",
+  "total_operators": 0,
+  "total_cases": 0,
+  "passed_cases": 0,
+  "failed_cases": 0,
+  "overall_score": 0,
+  "summary": {
+    "total_operators": 0,
+    "total_cases": 0,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "cascade_cases": 0,
+    "pass_rate": 0.0,
+    "genuine_pass_rate": 0.0,
+    "overall_score": 0
+  },
+  "setup_info": {
+    "metadata": {
+      "framework": "CANN-Bench V1.0.0",
+      "tasks_version": "1.0.0",
+      "date": "2026-09-28 23:25:21",
+      "agent_skill": "",
+      "base_model": "",
+      "harness": "",
+      "benchmark": "CANN-Bench tasks",
+      "license": "CANN Open Software License v2.0"
+    },
+    "environment": {
+      "npu": "Ascend950PR_9589 × 1",
+      "cpu": "x86_64",
+      "cann": "9.1.0",
+      "driver": "cann-9.1.0",
+      "pytorch": "2.10.0+cpu",
+      "pytorch_npu": "2.10.0.post4",
+      "torchvision": null,
+      "python": "3.10.12",
+      "os": "Linux-5.4.0-125-generic-x86_64-with-glibc2.35",
+      "docker": "container / CANN 9.1.0"
+    }
+  },
+  "operators": [],
+  "result_stage": "performance",
+  "contains_performance": true
+}

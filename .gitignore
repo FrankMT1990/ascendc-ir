@@ -4,3 +4,5 @@ dist/
 build/
 .venv/
 .pytest_cache/
+tmp/
+nul

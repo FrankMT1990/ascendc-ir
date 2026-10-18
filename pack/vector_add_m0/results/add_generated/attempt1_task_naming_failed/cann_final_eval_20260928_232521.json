@@ -1,0 +1,93 @@
+{
+  "framework_version": "1.0.0",
+  "tasks_version": "1.0.0",
+  "eval_code": "cann_final_eval_20260928_232521",
+  "timestamp": "2026-09-28T23:25:21.723121",
+  "device": "npu:0",
+  "total_operators": 1,
+  "total_cases": 1,
+  "passed_cases": 0,
+  "failed_cases": 1,
+  "overall_score": 0.0,
+  "summary": {
+    "total_operators": 1,
+    "total_cases": 1,
+    "passed_cases": 0,
+    "failed_cases": 1,
+    "cascade_cases": 0,
+    "pass_rate": 0.0,
+    "genuine_pass_rate": 0.0,
+    "overall_score": 0.0
+  },
+  "setup_info": {
+    "metadata": {
+      "framework": "CANN-Bench V1.0.0",
+      "tasks_version": "1.0.0",
+      "date": "2026-09-28 23:25:21",
+      "agent_skill": "",
+      "base_model": "",
+      "harness": "",
+      "benchmark": "CANN-Bench tasks",
+      "license": "CANN Open Software License v2.0"
+    },
+    "environment": {
+      "npu": "Ascend950PR_9589 × 1",
+      "cpu": "x86_64",
+      "cann": "9.1.0",
+      "driver": "cann-9.1.0",
+      "pytorch": "2.10.0+cpu",
+      "pytorch_npu": "2.10.0.post4",
+      "torchvision": null,
+      "python": "3.10.12",
+      "os": "Linux-5.4.0-125-generic-x86_64-with-glibc2.35",
+      "docker": "container / CANN 9.1.0"
+    }
+  },
+  "operators": [
+    {
+      "rel_path": "level1/add_m0",
+      "operator": "Add",
+      "total_cases": 1,
+      "passed_cases": 0,
+      "failed_cases": 1,
+      "pass_rate": 0.0,
+      "avg_speedup": 0.0,
+      "score": 0.0,
+      "compilation_score": 0.0,
+      "compile_runtime_score": 0.0,
+      "compile_runtime_fail_cases": 1,
+      "function_score": 0.0,
+      "performance_score": 0.0,
+      "cases": [
+        {
+          "rel_path": "level1/add_m0",
+          "operator": "Add",
+          "case_id": "level1/add_m0_1",
+          "status": "failed",
+          "elapsed_us": null,
+          "op_times": {},
+          "error_msg": "AI算子执行失败: cann_bench::add() is missing value for argument 'x'. Declaration: cann_bench::add(Tensor x, Tensor y) -> Tensor\nTraceback (most recent call last):\n  File \"/home/w00964611/cann-bench/src/kernel_eval/eval/op_runner.py\", line 395, in _run_simple\n    outputs = func(**updated_params)\n  File \"/usr/local/lib/python3.10/dist-packages/torch/_ops.py\", line 1209, in __call__\n    return self._op(*args, **kwargs)\n  File \"/home/w00964611/cann-bench/src/kernel_eval/security/torch_op_guard.py\", line 313, in __torch_function__\n    return func(*args, **kwargs)\n  File \"/usr/local/lib/python3.10/dist-packages/torch/_ops.py\", line 1209, in __call__\n    return self._op(*args, **kwargs)\nRuntimeError: cann_bench::add() is missing value for argument 'x'. Declaration: cann_bench::add(Tensor x, Tensor y) -> Tensor",
+          "performance_error_msg": null,
+          "device": "",
+          "timestamp": "2026-09-28T23:25:21.723085",
+          "accuracy": null,
+          "speedup": 0.0,
+          "baseline_perf_us": 0.0,
+          "t_hw_us": 0.0,
+          "perf_score": null,
+          "_perf_result": null,
+          "failure_type": "compile_runtime_error",
+          "perf_recheck": null,
+          "memory_peak_mb": 1469.7734375,
+          "memory_baseline_mb": 1462.45703125
+        }
+      ],
+      "compilation_error": null,
+      "subprocess_failure_reason": null,
+      "score_error_code": null,
+      "score_error": null
+    }
+  ],
+  "result_stage": "final",
+  "contains_performance": true
+}

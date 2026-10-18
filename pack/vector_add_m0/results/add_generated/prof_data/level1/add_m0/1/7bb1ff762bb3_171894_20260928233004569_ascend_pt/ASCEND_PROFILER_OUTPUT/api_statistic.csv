@@ -1,0 +1,7 @@
+Device_id,Level,API Name,Time(us),Count,Avg(us),Min(us),Max(us),Variance
+host,acl,aclrtFreeHost,146.653,40,3.666,3.131,5.607,0.359
+host,acl,aclrtGetDeviceCount,0.975,1,0.975,0.975,0.975,0
+host,acl,aclrtLaunchKernelWithHostArgs,240.133,40,6.003,4.888,10.187,1.695
+host,acl,aclrtMallocHost,218.573,40,5.464,4.771,7.35,0.358
+host,acl,aclrtSynchronizeDeviceWithTimeout,2065.241,41,50.372,8.981,98.761,1519.316
+host,node,launch,1164.888,40,29.122,24.2,52.702,24.736
