@@ -6,3 +6,4 @@ build/
 .pytest_cache/
 tmp/
 nul
+pack/vector_add_m0/results/timing_20260929/prebuild_artifacts_backup/
